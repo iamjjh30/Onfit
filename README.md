@@ -25,12 +25,7 @@
 
 ---
 
-## 📐 3. 시스템 아키텍처
-
-
----
-
-## 📂 4. 프로젝트 구조 (Project Structure)
+## 📂 3. 프로젝트 구조 (Project Structure)
 ```text
 src/main/java/com/example/onfit
 ├── config          # 보안 및 웹 설정
