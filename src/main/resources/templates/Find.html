@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <link rel="stylesheet" th:href="@{/css/Find.css}"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com</title>
+</head>
+<body>
+    <div id="wrap">
+        <div id="header">
+            <a href="../index/Main.html">
+                <img src="../img/interface/log_logo.png" alt="loglogo">
+            </a>
+        </div>
+        <div id="main">
+            <div id="main_inner">
+                <h1 id="title">Find ID</h1>
+                
+                <div id="step1" class="step">
+                    <p class="guide">성함을 입력해주세요</p>
+                    <input type="text" id="name" class="big_bubble" placeholder="Name" required>
+                    <button type="button" class="next_btn" onclick="goNext(1, 2)">다음</button>
+                </div>
+
+                <div id="step2" class="step" style="display:none;">
+                    <p class="guide">전화번호를 입력해주세요</p>
+                    <input type="tel" id="tel" class="big_bubble" placeholder="010-0000-0000" required>
+                    <button type="button" class="next_btn" onclick="goNext(2, 3)">조회하기</button>
+                </div>
+
+                <div id="step3" class="step" style="display:none;">
+                    <p class="guide">정보를 찾았습니다</p>
+                    <div id="result" class="result_box"></div>
+                    <a href="../index/Login.html">
+                        <input type="button" class="small_bubble1" value="로그인" style="margin-left:300px;">
+                    </a>
+                </div>
+
+                <div class="nav_box">
+                    <span id="toggle_mode" onclick="changeMode()">비밀번호 찾기 전환</span>
+                    <a href="../index/Login.html"><p class="back">로그인으로 돌아가기</p></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../index/js/Find.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+@keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(5px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    width: 120px;
+    height: 40px;
+    margin-left: 40px;
+    margin-top: 5px;
+}
+
+#wrap {
+    max-width: 1440px;
+    margin: 0 auto;
+    animation: fadeInPage 0.3s ease-out forwards;
+}
+
+#header {
+    height: 50px;
+    border-bottom: 1px solid black;
+}
+
+#main {
+    width: 100%;
+    background-color: #F9F9F9;
+    height: 675px;
+}
+
+#main_inner {
+    height: 610px;
+    width: 720px;
+    margin: 0 auto;
+    border: 1px solid #F9F9F9;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 110px;
+    font-size: 50px;
+}
+
+.guide {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 18px;
+    color: #333;
+}
+
+.big_bubble {
+    width: 300px;
+    height: 50px;
+    border-radius: 25px;
+    background-color: white;
+    font-size: 20px;
+    display: block;
+    margin: 20px auto;
+    padding-left: 15px;
+    border: 1px solid #cccccc;
+    outline: none;
+}
+
+.big_bubble:focus {
+    border-color: #FFB834;
+}
+
+.next_btn {
+    display: block;
+    width: 120px;
+    height: 40px;
+    margin: 20px auto;
+    border-radius: 25px;
+    border: 1px solid #cccccc;
+    background: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.next_btn:hover {
+    background-color: #FFB834;
+}
+
+.result_box {
+    width: 300px;
+    height: 80px;
+    border-radius: 25px;
+    background-color: white;
+    margin: 20px auto;
+    text-align: center;
+    line-height: 80px;
+    font-size: 22px;
+    border: 2px solid #FFB834;
+    font-weight: bold;
+}
+
+.small_bubble1 {
+    height: 40px;
+    width: 120px;
+    background-color: white;
+    border-radius: 25px;
+    font-size: 20px;
+    border: 1px solid #cccccc;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.small_bubble1:hover {
+    background-color: #FFB834;
+}
+
+.nav_box {
+    text-align: center;
+    margin-top: 60px;
+}
+
+#toggle_mode {
+    color: #999;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.back {
+    margin-top: 20px;
+    color: black;
+}
+
+.back:hover {
+    font-weight: bolder;
+    color: #FFB834;
+    transition: 0.3s ease;
+}
+.step {
+    animation: fadeInPage 0.4s ease-in;
+}
