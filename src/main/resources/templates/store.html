@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OnFit - Color Store</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/store.css}">
+</head>
+<body>
+<div id="header-container"></div>
+<div id="wrap">
+    <div class="store-header">
+        <p class="breadcrumb">여름 쿨톤 / 남성 / 신발</p>
+        <h1>COLOR STORE</h1>
+
+        <div class="store-nav">
+            <nav class="category-tabs">
+                <a href="#">남성 전체 제품</a>
+                <a href="#" class="active">신발</a>
+                <a href="#">의류</a>
+                <a href="#">티셔츠</a>
+                <a href="#">자켓</a>
+                <a href="#">슬리퍼/샌들</a>
+                <a href="#">후드</a>
+            </nav>
+
+            <div class="filter-wrapper">
+                <button id="filter-btn" class="filter-toggle">
+                    FILTER & SORT <span class="icon">▼</span>
+                </button>
+
+                <div id="filter-dropdown" class="filter-dropdown-menu">
+                    <div class="filter-inner">
+                        <div class="filter-column">
+                            <h4>정렬기준</h4>
+                            <label><input type="radio" name="sort"> 가격 낮은순</label>
+                            <label><input type="radio" name="sort"> 최신순</label>
+                            <label><input type="radio" name="sort"> 인기순</label>
+                        </div>
+
+                        <div class="filter-column">
+                            <h4>사이즈</h4>
+                            <div class="size-chips">
+                                <span>250</span><span>260</span><span>270</span><span>280</span>
+                            </div>
+                        </div>
+
+                        <div class="filter-column color-filter-group">
+                            <h4>컬러</h4>
+                            <div class="tone-section">
+                                <div class="tone-header">
+                                    <span>뉴트럴 톤</span>
+                                    <span class="arrow-icon">▼</span>
+                                </div>
+                                <div class="tone-content">
+                                    <div class="color-grid">
+                                        <span class="color-circle" style="background: #ffffff; border: 1px solid #ddd;" title="화이트"></span>
+                                        <span class="color-circle" style="background: #000000;" title="블랙"></span>
+                                        <span class="color-circle" style="background: #adb5bd;" title="그레이"></span>
+                                        <span class="color-circle" style="background: #f5f5dc;" title="베이지"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tone-section">
+                                <div class="tone-header">
+                                    <span>쿨톤</span>
+                                    <span class="arrow-icon">▼</span>
+                                </div>
+                                <div class="tone-content">
+                                    <div class="color-grid">
+                                        <span class="color-circle" style="background: #e2d1f9;" title="라벤더"></span>
+                                        <span class="color-circle" style="background: #a0d2eb;" title="스카이블루"></span>
+                                        <span class="color-circle" style="background: #000080;" title="네이비"></span>
+                                        <span class="color-circle" style="background: #95d5b2;" title="민트"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tone-section">
+                                <div class="tone-header">
+                                    <span>웜톤</span>
+                                    <span class="arrow-icon">▼</span>
+                                </div>
+                                <div class="tone-content">
+                                    <div class="color-grid">
+                                        <span class="color-circle" style="background: #ffdab9;" title="피치"></span>
+                                        <span class="color-circle" style="background: #ff7f50;" title="코랄"></span>
+                                        <span class="color-circle" style="background: #808000;" title="올리브"></span>
+                                        <span class="color-circle" style="background: #ffdb58;" title="머스터드"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tone-section">
+                                <div class="tone-header">
+                                    <span>비비드 톤</span>
+                                    <span class="arrow-icon">▼</span>
+                                </div>
+                                <div class="tone-content">
+                                    <div class="color-grid">
+                                        <span class="color-circle" style="background: #ff0000;" title="레드"></span>
+                                        <span class="color-circle" style="background: #0000ff;" title="블루"></span>
+                                        <span class="color-circle" style="background: #ffff00;" title="옐로우"></span>
+                                        <span class="color-circle" style="background: #ff00ff;" title="마젠타"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-column">
+                            <h4>가격</h4>
+                            <div class="price-inputs">
+                                <input type="number" placeholder="최소">
+                                <span>~</span>
+                                <input type="number" placeholder="최대">
+                            </div>
+                        </div>
+                    </div> <div class="filter-actions">
+                    <button type="button" class="apply-btn">적용하기</button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="product-grid">
+        <div class="product-item" th:each="i : ${#numbers.sequence(1, 8)}">
+            <a href="../itemDetail">
+            <div class="product-thumb"></div>
+            <div class="product-info">
+                <p class="price">63,200원</p>
+                <p class="name">product name</p>
+                <p class="category">category</p>
+            </div>
+            </a>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/include.js}"></script>
+<script th:src="@{/js/store.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

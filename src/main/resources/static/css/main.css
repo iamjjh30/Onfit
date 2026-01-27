@@ -1,13 +1,13 @@
 :root {
-            scroll-behavior: smooth; 
+            scroll-behavior: smooth;
         }
         @keyframes contentLoadIn {
-            from { 
-                opacity: 0; 
+            from {
+                opacity: 0;
                 transform: translateY(20px);
             }
-            to { 
-                opacity: 1; 
+            to {
+                opacity: 1;
                 transform: translateY(0);
         }
         }
@@ -20,10 +20,10 @@
             list-style-type: none;
         }
         #wrap{
-            padding-left: 25px; 
+            padding-left: 25px;
             padding-right: 25px;
             max-width: 1440px;
-            width: 90%; 
+            width: 90%;
             margin-left: auto;
             margin-right: auto;
             opacity: 0;
@@ -36,23 +36,29 @@
         a:hover{
             color: #FFB834;
         }
-        #header {
+
+        #header-container {
             margin-top: 30px;
             width: 100%;
+            max-width: 1400px;
             height: 50px;
             border-radius: 25px;
             position: sticky;
             top: 15px;
             z-index: 999;
-            background: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(25px) saturate(200%);
             -webkit-backdrop-filter: blur(25px) saturate(200%);
             border: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 10px 50px -10px rgba(0, 0, 0, 0.1);
             transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
         }
         #header.warm-mode {
-            background: rgba(255, 245, 247, 0.4); 
+            background: rgba(255, 245, 247, 0.4);
             border-color: rgba(255, 45, 85, 0.3);
             box-shadow: 0 15px 40px -10px rgba(255, 45, 85, 0.15);
         }
@@ -68,7 +74,7 @@
             width: auto;
             float: left;
         }
-        #logo img{  
+        #logo img{
             width: 40px;
             height: 40px;
             margin-top: 5px;
@@ -210,18 +216,18 @@
             margin-top: 30px;
             height: 600px;
             border: 1px solid black;
-            position: relative; 
-            overflow: hidden; 
+            position: relative;
+            overflow: hidden;
         }
         .slide {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            position: absolute; 
+            position: absolute;
             top: 0;
             left: 0;
-            opacity: 0; 
-            transition: opacity 0.8s ease-in-out; 
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
         }
         #banner_button{
             margin-top: 30px;
@@ -247,7 +253,7 @@
             height: 45px;
             border-radius: 5%;
             width: 100px;
-            margin: 0 20px; 
+            margin: 0 20px;
             color: white;
         }
         #banner_button_right{
@@ -255,7 +261,7 @@
             height: 45px;
             border-radius: 5%;
             width: 100px;
-            margin: 0 20px; 
+            margin: 0 20px;
         }
         #banner_button_left:hover{
             background-color: white;
@@ -293,7 +299,7 @@
             height: 45px;
             border-radius: 5%;
             width: 100px;
-            margin: 0 20px; 
+            margin: 0 20px;
             color: white;
         }
         #banner_button_right_c{
@@ -301,7 +307,7 @@
             height: 45px;
             border-radius: 5%;
             width: 100px;
-            margin: 0 20px; 
+            margin: 0 20px;
         }
         #banner_button_left_c:hover{
             background-color: white;
@@ -340,7 +346,7 @@
             height: 45px;
             border-radius: 5%;
             width: 100px;
-            margin: 0 20px; 
+            margin: 0 20px;
             color: white;
         }
         #banner_button_right_w{
@@ -348,7 +354,7 @@
             height: 45px;
             border-radius: 5%;
             width: 100px;
-            margin: 0 20px; 
+            margin: 0 20px;
         }
         #banner_button_left_w:hover{
             background-color: white;
@@ -374,7 +380,7 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
         .fade-out {
-            animation: text-fade-out 0.3s ease-in forwards; 
+            animation: text-fade-out 0.3s ease-in forwards;
         }
         .fade-in {
             animation: text-fade-in 0.4s ease-out forwards;
@@ -400,7 +406,7 @@
         #search nav ul{
             padding: 0;
             margin: 0;
-            display: flex; 
+            display: flex;
             justify-content: center;
         }
         #search nav ul li{
@@ -452,7 +458,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .image-hover-wrapper img {
-            position: absolute; 
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -463,8 +469,8 @@
             opacity: 0;
         }
         .image-hover-wrapper:hover {
-            transform: translateY(-5px); 
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); 
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
         .image-hover-wrapper:hover .hover-image {
             opacity: 1;
@@ -519,7 +525,7 @@
             margin-right: -25px;
             padding-left: 25px;
             padding-right: 25px;
-            
+
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -618,7 +624,7 @@
         margin-bottom: 70px;
     }
     .logo-icon img {
-        width: 400px; 
+        width: 400px;
         height: 400px;
         margin-bottom: 30px;
     }
@@ -680,7 +686,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .image-hover-wrapper img {
-            position: absolute; 
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -691,8 +697,8 @@
             opacity: 0;
         }
         .image-hover-wrapper:hover {
-            transform: translateY(-5px); 
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); 
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
         .image-hover-wrapper:hover .hover-image {
             opacity: 1;
@@ -747,7 +753,7 @@
             margin-right: -25px;
             padding-left: 25px;
             padding-right: 25px;
-            
+
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -846,7 +852,7 @@
         margin-bottom: 70px;
     }
     .logo-icon img {
-        width: 400px; 
+        width: 400px;
         height: 400px;
         margin-bottom: 30px;
     }
@@ -904,7 +910,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .image-hover-wrapper img {
-            position: absolute; 
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -915,8 +921,8 @@
             opacity: 0;
         }
         .image-hover-wrapper:hover {
-            transform: translateY(-5px); 
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); 
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
         .image-hover-wrapper:hover .hover-image {
             opacity: 1;
@@ -971,7 +977,7 @@
             margin-right: -25px;
             padding-left: 25px;
             padding-right: 25px;
-            
+
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -1070,7 +1076,7 @@
         margin-bottom: 70px;
     }
     .logo-icon img {
-        width: 400px; 
+        width: 400px;
         height: 400px;
         margin-bottom: 30px;
     }
@@ -1125,14 +1131,14 @@
         height: auto;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 
+        box-shadow:
         0 30px 80px rgba(255, 51, 102, 0.3),
         inset 0 0 0 1px rgba(255, 255, 255, 0.08);
         transition: all 0.5s ease;
     }
     #summer .summer-img:hover {
         transform: scale(1.02);
-        box-shadow: 
+        box-shadow:
         0 50px 120px rgba(255, 51, 102, 0.45),
         inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     }
@@ -1142,14 +1148,14 @@
         height: auto;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 
+        box-shadow:
         0 30px 80px rgba(255, 51, 102, 0.3),
         inset 0 0 0 1px rgba(255, 255, 255, 0.08);
         transition: all 0.5s ease;
     }
     #summer_c .summer-img:hover {
         transform: scale(1.02);
-        box-shadow: 
+        box-shadow:
         0 50px 120px rgba(255, 51, 102, 0.45),
         inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     }
@@ -1159,14 +1165,14 @@
         height: auto;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 
+        box-shadow:
         0 30px 80px rgba(255, 51, 102, 0.3),
         inset 0 0 0 1px rgba(255, 255, 255, 0.08);
         transition: all 0.5s ease;
     }
     #summer_w .summer-img:hover {
         transform: scale(1.02);
-        box-shadow: 
+        box-shadow:
         0 50px 120px rgba(255, 51, 102, 0.45),
         inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     }
@@ -1175,11 +1181,11 @@
     background-color: black;
     position: relative;
     overflow: hidden;
-    cursor: pointer; 
+    cursor: pointer;
     }
     #f_left {
-        float: left; 
-        width: 30%; 
+        float: left;
+        width: 30%;
         padding-right: 20px;
         box-sizing: border-box;
         animation: slideUpFadeIn 0.8s ease-out forwards;
@@ -1198,25 +1204,25 @@
         transform: rotate(+45deg);
     }
     #f_right {
-        float: right; 
-        width: 70%; 
+        float: right;
+        width: 70%;
         box-sizing: border-box;
-        text-align: right; 
-        padding-top: 130px; 
+        text-align: right;
+        padding-top: 130px;
     }
     #f_right nav ul {
         list-style: none;
         padding: 0;
         margin: 0;
-        overflow: hidden; 
-        display: inline-block; 
+        overflow: hidden;
+        display: inline-block;
     }
     #f_right nav ul li {
         color: white;
-        float: right; 
-        margin-left: 20px; 
-        margin-right: 0; 
-        line-height: 50px; 
+        float: right;
+        margin-left: 20px;
+        margin-right: 0;
+        line-height: 50px;
     }
     #f_right nav ul li:hover{
         color: #FFB834;
@@ -1224,17 +1230,17 @@
         transition:0.3s ease;
     }
     @keyframes slideUpFadeIn {
-        from { 
-            opacity: 0; 
+        from {
+            opacity: 0;
             transform: translateY(20px);
         }
-        to { 
-            opacity: 1; 
+        to {
+            opacity: 1;
             transform: translateY(0);
         }
     }
     #floating_button {
-    width: 50px;           
+    width: 50px;
     height: 50px;
     border-radius: 50%;
     background-color: white;
@@ -1253,10 +1259,10 @@
     transition: all 0.7s ease;
 }
 #floating_button img {
-    width: 100%;             
+    width: 100%;
     height: 100%;
-    object-fit: contain;      
-    display: block;           
+    object-fit: contain;
+    display: block;
     transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 #floating_button:hover {
@@ -1273,7 +1279,7 @@
     transform: translateY(10px);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: fixed;
-    bottom: 105px; 
+    bottom: 105px;
     right: 30px;
     width: auto;
     white-space: nowrap;
@@ -1309,8 +1315,8 @@
     transform: translateY(0);
 }
 #floating_bubble_window {
-    visibility: hidden; 
-    opacity: 0;        
+    visibility: hidden;
+    opacity: 0;
     width: 250px;
     height: 400px;
     background: white;

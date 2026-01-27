@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div id="wrap">
+    <div id="header-container">
+        <a href="#wrap">
+            <div id="logo">
+                <img src="../img//interface/logo.png">
+            </div>
+        </a>
+        <nav>
+            <ul>
+                <a href="/diagnosis">
+                    <li>AI진단</li>
+                </a>
+                <a href="/virtualFitting">
+                    <li>가상피팅</li>
+                </a>
+                <a href="/store">
+                    <li>스토어</li>
+                </a>
+                <li>커뮤니티</li>
+                <li>내 팔레트</li>
+            </ul>
+        </nav>
+        <div class="header_icon">
+            <img src="../img/Main/icon_profile.png">
+            <div class="header_icon_hover1">
+                <nav>
+                    <ul>
+                        <a href="../login">
+                            <li>로그인</li>
+                        </a>
+                        <a href="../signIn">
+                            <li>회원가입</li>
+                        </a>
+                        <a href="../find">
+                            <li>ID 찾기</li>
+                        </a>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="header_icon">
+            <img src="../img/Main/icon_cart (1).png">
+            <div class="header_icon_hover2">
+                <nav>
+                    <ul>
+                        <li>장바구니</li>
+                        <li>주문내역</li>
+                        <li>스토어</li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="header_icon">
+            <img src="../img/Main/icon_search.png">
+            <div class="header_icon_hover3">
+                <div class="header_search">
+                    <form>
+                        <input class="header_search_main" type="search" placeholder="검색어를 입력해주세요">
+                    </form>
+                </div>
+                <div class="header_main">
+                    <p>실시간 검색 결과</p>
+                    <div class="header_main_search">
+                        <div class="header_main_s"></div>
+                        <div class="header_main_s"></div>
+                        <div class="header_main_s"></div>
+                        <div class="header_main_s"></div>
+                        <div class="header_main_s"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main_content">
+        <div id="banner">
+            <img class="slide" src="../img/Main/bannert1.png" alt="배너 이미지 1">
+            <img class="slide" src="../img/Main/bannert2.jpeg" alt="배너 이미지 2">
+            <img class="slide" src="../img/Main/bannert3.jpeg" alt="배너 이미지 3">
+        </div>
+        <div id="banner_button">
+            <h2 id="banner-title">New start with OnFit</h2>
+            <p id="banner-subtitle">2026 구정 빅 세일</p>
+            <div id="banner_button_wrap">
+                <button id="banner_button_left">이전</button>
+                <button id="banner_button_right">다음</button>
+            </div>
+        </div>
+        <div id="search">
+            <p>탐색</p>
+            <nav>
+                <ul id="tab_button">
+                    <li data-tab="neutral" class="active"># 뉴트럴톤</li>
+                    <li data-tab="cool"># 쿨톤</li>
+                    <li data-tab="warm"># 웜톤</li>
+                </ul>
+            </nav>
+        </div>
+        <div id="content_area">
+            <div id="neutral" data-tab-content="neutral" class="content active">
+                <p id="p1">OnFit 120 Series</p>
+                <p id="p2">Far most sold boots in the world</p>
+                <div class="content_dv">
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/Main/test.jpg" alt="기본 1" class="default-image">
+                        <img src="../img/Main/hover.png" alt="호버 1" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/Main/test.jpg" alt="기본 2" class="default-image">
+                        <img src="../img/Main/hover.png" alt="호버 2" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/Main/test.jpg" alt="기본 3" class="default-image">
+                        <img src="../img/Main/hover.png" alt="호버 3" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/Main/test.jpg" alt="기본 4" class="default-image">
+                        <img src="../img/Main/hover.png" alt="호버 4" class="hover-image">
+                    </div>
+                </div>
+                <div id="one_button_wrap">
+                    <button class="one_button">가상피팅하기</button>
+                </div>
+                <div class="gallery-section">
+                    <h1>Fit. 내 몸처럼</h1>
+                    <p>Always On Sale</p>
+
+                    <div class="scroll-gallery">
+
+                        <div class="image-hover-wrapper">
+                            <img src="../img/Main/test.jpg" alt="기본 1" class="default-image">
+                            <img src="../img/Main/hover.png" alt="호버 1" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="../img/Main/test.jpg" alt="기본 1" class="default-image">
+                            <img src="../img/Main/hover.png" alt="호버 1" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="../img/Main/test.jpg" alt="기본 1" class="default-image">
+                            <img src="../img/Main/hover.png" alt="호버 1" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="../img/Main/test.jpg" alt="기본 1" class="default-image">
+                            <img src="../img/Main/hover.png" alt="호버 1" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="../img/Main/test.jpg" alt="기본 1" class="default-image">
+                            <img src="../img/Main/hover.png" alt="호버 1" class="hover-image">
+                        </div>
+
+                    </div>
+                </div>
+                <div id="banner_button_wrap">
+                    <button id="banner_button_left">가상피팅하기</button>
+                    <button id="banner_button_right">구매하기</button>
+                </div>
+                <div class="containerx">
+                    <div class="half_img_box">
+                        <img src="../img/Main/hover.png" alt="image1">
+                        <div class="half_img_button1">구매하기</div>
+                    </div>
+                    <div class="half_img_box">
+                        <img src="../img/Main/hover.png" alt="image2">
+                        <div class="half_img_button2">구매하기</div>
+                    </div>
+                </div>
+                <div class="ai">
+                    <div class="main-content">
+                        <h1 class="main-title">나만의 코디 친구</h1>
+                        <p class="main-subtitle">코디 고민 해결사</p>
+
+                        <div class="logo-icon">
+                            <img src="../img/Main/ai.png" alt="Fit AI 로고">
+                        </div>
+
+                        <h2 class="section-title">Fit AI</h2>
+                        <button class="chat-button">대화하기</button>
+                    </div>
+                </div>
+                <div id="summer">
+                    <p class="final1">Hello Summer</p>
+                    <p class="final2">Never too early</p>
+                    <img class="summer-img"
+                         src="https://images.pexels.com/photos/33445370/pexels-photo-33445370.jpeg"
+                         alt="Vibrant summer fashion vibe">
+                </div>
+            </div>
+            <div id="cool" data-tab-content="cool" class="content">
+                <p id="p1_c">쿨톤 페이지임다</p>
+                <p id="p2_c">Far most sold boots in the world</p>
+                <div class="content_dv">
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 1" class="default-image">
+                        <img src="../img/hover.png" alt="호버 1" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 2" class="default-image">
+                        <img src="../img/hover.png" alt="호버 2" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 3" class="default-image">
+                        <img src="../img/hover.png" alt="호버 3" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 4" class="default-image">
+                        <img src="../img/hover.png" alt="호버 4" class="hover-image">
+                    </div>
+                </div>
+                <div id="one_button_wrap_c">
+                    <button class="one_button">가상피팅하기</button>
+                </div>
+                <div class="gallery-section">
+                    <h1>Fit. 내 몸처럼</h1>
+                    <p>Always On Sale</p>
+
+                    <div class="scroll-gallery">
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-1.jpg" alt="기본 1" class="default-image">
+                            <img src="path/to/hover-img-1.jpg" alt="호버 1" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-2.jpg" alt="기본 2" class="default-image">
+                            <img src="path/to/hover-img-2.jpg" alt="호버 2" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-3.jpg" alt="기본 3" class="default-image">
+                            <img src="path/to/hover-img-3.jpg" alt="호버 3" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-4.jpg" alt="기본 4" class="default-image">
+                            <img src="path/to/hover-img-4.jpg" alt="호버 4" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-5.jpg" alt="기본 5" class="default-image">
+                            <img src="path/to/hover-img-5.jpg" alt="호버 5" class="hover-image">
+                        </div>
+
+                    </div>
+                </div>
+                <div id="banner_button_wrap_c">
+                    <button id="banner_button_left_c">가상피팅하기</button>
+                    <button id="banner_button_right_c">구매하기</button>
+                </div>
+                <div class="containerx">
+                    <div class="half_img_box">
+                        <img src="../img/hover.png" alt="image1">
+                        <div class="half_img_button1">구매하기</div>
+                    </div>
+                    <div class="half_img_box">
+                        <img src="../img/hover.png" alt="image2">
+                        <div class="half_img_button2">구매하기</div>
+                    </div>
+                </div>
+                <div class="ai">
+                    <div class="main-content">
+                        <h1 class="main-title">나만의 코디 친구</h1>
+                        <p class="main-subtitle">코디 고민 해결사</p>
+
+                        <div class="logo-icon">
+                            <img src="../img/ai.png" alt="Fit AI 로고">
+                        </div>
+
+                        <h2 class="section-title">Fit AI</h2>
+                        <button class="chat-button">대화하기</button>
+                    </div>
+                </div>
+                <div id="summer_c">
+                    <p class="final1">Hello Summer</p>
+                    <p class="final2">Never too early</p>
+                    <img class="summer-img"
+                         src="https://images.pexels.com/photos/33445370/pexels-photo-33445370.jpeg"
+                         alt="Vibrant summer fashion vibe">
+                </div>
+            </div>
+            <div id="warm" data-tab-content="warm" class="content">
+                <p id="p1_w">웜톤 페이지임다</p>
+                <p id="p2_w">Far most sold boots in the world</p>
+                <div class="content_dv">
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 1" class="default-image">
+                        <img src="../img/hover.png" alt="호버 1" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 2" class="default-image">
+                        <img src="../img/hover.png" alt="호버 2" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 3" class="default-image">
+                        <img src="../img/hover.png" alt="호버 3" class="hover-image">
+                    </div>
+
+                    <div class="image-hover-wrapper" style="width: 200px; height: 200px;">
+                        <img src="../img/test.jpg" alt="기본 4" class="default-image">
+                        <img src="../img/hover.png" alt="호버 4" class="hover-image">
+                    </div>
+                </div>
+                <div id="one_button_wrap_w">
+                    <button class="one_button">가상피팅하기</button>
+                </div>
+                <div class="gallery-section">
+                    <h1>Fit. 내 몸처럼</h1>
+                    <p>Always On Sale</p>
+
+                    <div class="scroll-gallery">
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-1.jpg" alt="기본 1" class="default-image">
+                            <img src="path/to/hover-img-1.jpg" alt="호버 1" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-2.jpg" alt="기본 2" class="default-image">
+                            <img src="path/to/hover-img-2.jpg" alt="호버 2" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-3.jpg" alt="기본 3" class="default-image">
+                            <img src="path/to/hover-img-3.jpg" alt="호버 3" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-4.jpg" alt="기본 4" class="default-image">
+                            <img src="path/to/hover-img-4.jpg" alt="호버 4" class="hover-image">
+                        </div>
+
+                        <div class="image-hover-wrapper">
+                            <img src="path/to/default-img-5.jpg" alt="기본 5" class="default-image">
+                            <img src="path/to/hover-img-5.jpg" alt="호버 5" class="hover-image">
+                        </div>
+
+                    </div>
+                </div>
+                <div id="banner_button_wrap_w">
+                    <button id="banner_button_left_w">가상피팅하기</button>
+                    <button id="banner_button_right_w">구매하기</button>
+                </div>
+                <div class="containerx">
+                    <div class="half_img_box">
+                        <img src="../img/hover.png" alt="image1">
+                        <div class="half_img_button1">구매하기</div>
+                    </div>
+                    <div class="half_img_box">
+                        <img src="../img/hover.png" alt="image2">
+                        <div class="half_img_button2">구매하기</div>
+                    </div>
+                </div>
+                <div class="ai">
+                    <div class="main-content">
+                        <h1 class="main-title">나만의 코디 친구</h1>
+                        <p class="main-subtitle">코디 고민 해결사</p>
+
+                        <div class="logo-icon">
+                            <img src="../img/ai.png" alt="Fit AI 로고">
+                        </div>
+
+                        <h2 class="section-title">Fit AI</h2>
+                        <button class="chat-button">대화하기</button>
+                    </div>
+                </div>
+                <div id="summer_w">
+                    <p class="final1">Hello Summer</p>
+                    <p class="final2">Never too early</p>
+                    <img class="summer-img"
+                         src="https://images.pexels.com/photos/33445370/pexels-photo-33445370.jpeg"
+                         alt="Vibrant summer fashion vibe">
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div id="f_left" style="float: left; width: 30%; padding-right: 20px;">
+                <a href="#wrap">
+                    <img src="../img/interface/logo.png">
+                </a>
+            </div>
+            <div id="f_right" style="float: left; width: 70%;">
+                <nav>
+                    <ul>
+                        <li>AI진단</li>
+                        <li>가상피팅</li>
+                        <li>스토어</li>
+                        <li>커뮤니티</li>
+                        <li>내 팔레트</li>
+                    </ul>
+                </nav>
+            </div>
+        </footer>
+    </div>
+</div>
+<button id="floating_button">
+    <img src="../img/interface/logo.png" alt="icon">
+</button>
+
+<div id="floating_text">무엇을 도와드릴까요?</div>
+
+<div id="floating_bubble_window" tabindex="0">
+    <div style="padding: 20px;">
+        <h3>Fit AI</h3>
+        <hr>
+        <input type="text" autofocus placeholder="질문을 입력해주시오">
+    </div>
+</div>
+<script src="../index/js/Main.js"></script>
+<script th:src="@{/js/include.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const header = document.querySelector('#header');
+        const tabLinks = document.querySelectorAll('[data-tab]');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const tabValue = this.getAttribute('data-tab');
+                header.classList.remove('warm-mode', 'cool-mode', 'neutral-mode');
+                if (tabValue.includes('warm')) {
+                    header.classList.add('warm-mode');
+                } else if (tabValue.includes('cool')) {
+                    header.classList.add('cool-mode');
+                } else {
+                    header.classList.add('neutral-mode');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

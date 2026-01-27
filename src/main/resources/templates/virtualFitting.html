@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OnFit - 가상 피팅</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/virtualFitting.css}">
+</head>
+<body>
+<div id="header-container"></div>
+<div id="wrap">
+    <div class="v-header">
+        <h1 class="logo"><span>Fit.</span> 내 몸처럼</h1>
+        <p class="sub-title">Virtual Fitting</p>
+    </div>
+
+    <main class="v-container">
+        <section class="v-section">
+            <h2 class="section-title">당신의 실루엣</h2>
+            <p class="upload-guide">내 사진 올리기</p>
+            <p class="ai-notice"><span>AI</span> 인식을 위해 정면 <span>상반신</span> 사진을 권장합니다</p>
+
+            <div class="upload-box" id="user-upload">
+                <input type="file" id="user-file" accept="image/*" hidden>
+                <div class="icon-placeholder">
+                    <img th:src="@{/img/Main/icon_profile.png}" alt="user icon">
+                </div>
+            </div>
+        </section>
+
+        <section class="v-section">
+            <h2 class="section-title">옷장 미리보기</h2>
+            <div class="button-group">
+                <button class="btn-dark">옷 사진 올리기</button>
+                <button class="btn-light">장바구니</button>
+            </div>
+
+            <div class="upload-box" id="cloth-upload">
+                <input type="file" id="cloth-file" accept="image/*" hidden>
+                <div class="icon-placeholder">
+                    <img th:src="@{/img/Main/icon_cart.png}" alt="cloth icon">
+                </div>
+            </div>
+        </section>
+
+        <section class="v-section result-section">
+            <div class="result-header">
+                <h2 class="result-title">Result</h2>
+                <p class="result-desc">추천 컬러 맞춤 의상으로 입어볼 수 있음</p>
+            </div>
+
+            <div class="result-display">
+                <img th:src="@{/img/Main/test.jpg}" alt="Fitting Result" class="result-img">
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-dark">장바구니 추가</button>
+                <button class="btn-light">구매하기</button>
+            </div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/include.js}"></script>
+<script th:src="@{/js/virtual_fitting.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 퍼스널 컬러 진단 - 입력</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{css/Diagnosis.css}">
+</head>
+<body>
+<div id="header-container"></div>
+<div class="container">
+    <h1 style="display:inline;">AI 퍼스널 컬러 진단</h1>
+    <div class="help-container">
+        <span class="help-icon">?</span>
+        <div class="guide-popup">
+            <h4>사진 촬영 가이드</h4>
+            <ul>
+                <li>자연광에서 촬영해주세요 (형광등/LED 조명 <span class="red-x">X</span>)</li>
+                <li>머리카락이 얼굴을 가리지 않도록 귀까지 보이게 촬영</li>
+                <li>파운데이션 없이 스킨케어만 한 상태 권장</li>
+                <li>흰색·회색 등 중립적인 배경 사용</li>
+            </ul>
+            <h4>진단 전 준비사항</h4>
+            <ul>
+                <li>충분한 수면과 피부 컨디션 유지</li>
+                <li>얼굴이 잘 드러나는 헤어 스타일</li>
+            </ul>
+        </div>
+    </div>
+    <p style="color:#888; font-size:14px; margin-top:10px;">얼굴 사진을 업로드하면, AI가 당신의 퍼스널 컬러를 분석합니다.</p>
+    <div class="upload-box">
+
+        <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" class="upload-icon">
+    </div>
+
+    <button class="start-btn" onclick="location.href='AI_diagnosis_result.html'">
+        진단 시작
+    </button>
+</div>
+<script th:src="@{/js/include.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

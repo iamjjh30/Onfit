@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OnFit - Breeze Mesh Tank</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/store.css}">
+    <link rel="stylesheet" th:href="@{/css/itemDetail.css}">
+</head>
+<body>
+<div id="header-container"></div>
+<div id="wrap" class="detail-wrap">
+    <div class="store-header" style="border-bottom: none; padding-bottom: 0;">
+    </div>
+
+    <main class="product-detail-container">
+        <section class="detail-top">
+            <div class="image-gallery">
+                <div class="thumbnails">
+                    <div class="thumb-item active"><img th:src="@{/img/temp/thumb1.jpg}" alt="썸네일1"></div>
+                    <div class="thumb-item"><img th:src="@{/img/temp/thumb2.jpg}" alt="썸네일2"></div>
+                    <div class="thumb-item"><img th:src="@{/img/temp/thumb3.jpg}" alt="썸네일3"></div>
+                </div>
+                <div class="main-image">
+                    <img th:src="@{/img/Main/Breeze_Mesh_Tank.png}" alt="메인 이미지">
+                    <button class="nav-btn prev">◀</button>
+                    <button class="nav-btn next">▶</button>
+                </div>
+            </div>
+
+            <div class="product-info-box">
+                <p class="breadcrumb">여름 쿨톤 / 남성 / 의류</p>
+                <h1 class="product-title">Breeze Mesh Tank</h1>
+                <p class="product-price">99,000원</p>
+
+                <div class="option-group">
+                    <div class="size-buttons">
+                        <button class="size-btn">S</button>
+                        <button class="size-btn active">M</button>
+                        <button class="size-btn">L</button>
+                        <button class="size-btn">XL</button>
+                    </div>
+                </div>
+
+                <div class="social-actions">
+                    <span class="like-btn">♥ 24</span>
+                </div>
+
+                <div class="purchase-group">
+                    <div class="btn-row">
+                        <button class="btn-dark fill">구매하기</button>
+                        <button class="btn-light outline">장바구니</button>
+                    </div>
+                    <button class="btn-light outline virtual-fitting-btn">VIRTUAL FITTING</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="detail-bottom">
+            <div class="detail-grid">
+                <div class="detail-item placeholder">제품 이미지</div>
+                <div class="detail-item placeholder"></div>
+                <div class="detail-item placeholder"></div>
+                <div class="detail-item placeholder"></div>
+            </div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/include.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
