@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OnFit - 스타일의 시작</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/storeMain.css}">
+</head>
+<body>
+<div id="header-container"></div>
+<div id="main-container">
+    <section id="hero-banner">
+        <div class="banner-content">
+            <h2 id="banner-title">당신의 컬러에 딱 맞는 스타일</h2>
+            <p id="banner-subtitle">AI가 진단한 퍼스널 컬러에 맞춘 쇼핑</p>
+            <div class="banner-actions">
+                <button class="btn-primary">구매하기</button>
+                <button class="btn-secondary">자세히 보기</button>
+            </div>
+        </div>
+        <div class="hero-item" style="background-image: url('img2.jpg');"></div>
+        <div class="hero-item" style="background-image: url('img3.jpg');"></div>
+    </section>
+
+    <section class="mode-grid">
+        <div class="mode-item" style="background-image: url('neutral.jpg');">
+            <div class="mode-overlay">
+                <div class="mode-text">
+                    <h3>Neutral</h3>
+                    <div class="hover-content">
+                        <p>어떤 순간에도 자연스럽게</p>
+                        <button class="btn-sub">구매하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mode-item" style="background-image: url('cool.jpg');">
+            <div class="mode-overlay">
+                <div class="mode-text">
+                    <h3>Cool</h3>
+                    <div class="hover-content">
+                        <p>맑고 투명하게 빛나는</p>
+                        <button class="btn-sub">구매하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mode-item" style="background-image: url('warm.jpg');">
+            <div class="mode-overlay">
+                <div class="mode-text">
+                    <h3>Warm</h3>
+                    <div class="hover-content">
+                        <p>따스한 햇살을 머금은</p>
+                        <button class="btn-sub">구매하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mode-item" style="background-image: url('vivid.jpg');">
+            <div class="mode-overlay">
+                <div class="mode-text">
+                    <h3>Vivid</h3>
+                    <div class="hover-content">
+                        <p>시선을 사로잡는</p>
+                        <button class="btn-sub">구매하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="product-container">
+        <div class="section-header">
+            <h2>4가지의 컬러 무드</h2>
+            <p>당신의 분위기와 어울리는 스타일을 골라보세요.<br>컬러가 다르면, 느낌도 달라집니다.</p>
+        </div>
+
+        <div class="product-section">
+            <div class="section-label">
+                <span class="color-tag">여름 쿨톤</span>
+                <h3>Best</h3>
+            </div>
+            <div class="product-grid-3">
+                <div class="product-card">
+                    <div class="img-placeholder" style="background-image: url('../img/Main/test.jpg');"></div>
+                    <p class="product-name">Product name</p>
+                </div>
+                <div class="product-card">
+                    <div class="img-placeholder" style="background-image: url('../img/Main/test.jpg');"></div>
+                    <p class="product-name">Product name</p>
+                </div>
+                <div class="product-card">
+                    <div class="img-placeholder" style="background-image: url('../img/Main/test.jpg');"></div>
+                    <p class="product-name">Product name</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-section">
+            <div class="section-label">
+                <h3 class="label-new">New</h3>
+            </div>
+            <div class="banner-grid-2">
+                <div class="banner-item" style="background-image: url('../img/Main/hover.png');">
+                    <div class="banner-overlay">
+                        <h4>Breeze Mesh Tank</h4>
+                        <button class="btn-buy">구매하기</button>
+                    </div>
+                </div>
+                <div class="banner-item" style="background-image: url('../img/Main/hover.png');">
+                    <div class="banner-overlay">
+                        <h4>120 Winter</h4>
+                        <button class="btn-buy">구매하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script th:src="@{/js/include.js}"></script>
+</body>
+</html>

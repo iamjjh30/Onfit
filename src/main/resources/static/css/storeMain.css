@@ -1,0 +1,328 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    overflow-x: hidden;
+    background: #fff;
+}
+
+#main-container {
+    width: 100%;
+    max-width: 1400px; /* 1080p 최대 너비 */
+    margin: 0 auto;
+}
+
+/* 상단 3단 그리드 */
+.hero-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    height: 65vh; /* 화면의 약 65% 차지 */
+    gap: 2px;
+}
+
+.hero-item {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    transition: transform 0.5s ease;
+}
+
+.hero-overlay {
+    position: absolute;
+    bottom: 60px;
+    left: 40px;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.hero-overlay h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.hero-overlay p {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+/* 배너 전체 컨테이너 */
+#hero-banner {
+    position: relative;
+    width: 100%;
+    height: 700px; /* 1080p에서 적절한 높이 */
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* 배경 이미지: 전체를 채우되 살짝 어둡게 처리하여 가독성 확보 */
+.banner-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.85); /* 텍스트가 잘 보이도록 배경 밝기 조절 */
+}
+
+/* 텍스트 위치: 좌측 하단 고정 */
+.banner-content {
+    position: absolute;
+    bottom: 80px; /* 하단 여백 */
+    left: 80px;   /* 좌측 여백 */
+    color: #fff;
+    max-width: 800px;
+    z-index: 10;
+}
+
+#banner-title {
+    font-size: 52px; /* 1080p에 적합한 대형 타이틀 */
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+#banner-subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+/* 버튼 스타일 */
+.banner-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 15px 40px;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 15px 40px;
+    backdrop-filter: blur(5px);
+    border-radius: 4px;
+    cursor: pointer;
+}
+/* 하단 4단 그리드 */
+.mode-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 65vh; /* 화면의 나머지 차지 */
+    gap: 2px;
+}
+
+.mode-item {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    cursor: pointer;
+}
+
+/* 기본 오버레이 설정 */
+.mode-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2); /* 평소에는 살짝 어둡게 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    transition: background 0.4s ease;
+}
+
+/* 호버 시 배경을 더 어둡게 하여 글자 가독성 높임 */
+.mode-item:hover .mode-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* 제목(Neutral) 스타일 */
+.mode-overlay h3 {
+    font-size: 2rem;
+    font-weight: 900;
+    transition: transform 0.4s ease;
+}
+
+/* 호버 시 제목을 살짝 위로 올림 (내용이 들어올 공간 확보) */
+.mode-item:hover h3 {
+    transform: translateY(-10px);
+}
+
+/* 숨겨진 컨텐츠 초기 상태 */
+.hover-content {
+    opacity: 0;             /* 투명하게 */
+    transform: translateY(20px); /* 살짝 아래에 위치 */
+    transition: all 0.4s ease;   /* 부드러운 전환 */
+    text-align: center;
+}
+
+/* 마우스를 올렸을 때(Hover) 상태 */
+.mode-item:hover .hover-content {
+    opacity: 1;              /* 보이게 */
+    transform: translateY(0); /* 원래 위치로 복귀 */
+}
+
+/* 추가 스타일 */
+.hover-content p {
+    margin: 10px 0 20px;
+    font-size: 1rem;
+    font-weight: 300;
+}
+
+.btn-sub {
+    padding: 10px 30px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-sub:hover {
+    background: #000;
+    color: #fff;
+}
+
+.mode-overlay p {
+    margin: 10px 0;
+    font-size: 0.9rem;
+}
+.mode-text {
+    margin-top: 400px;
+    text-align: center;
+}
+/* 버튼 스타일 */
+.btn-main, .btn-sub {
+    padding: 12px 35px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-main:hover {
+    background: #fff;
+    color: #000;
+}
+/* --- 제품 섹션 스타일 --- */
+#product-container {
+    max-width: 1400px;
+    margin: 80px auto;
+    padding: 0 20px;
+    font-family: 'Pretendard', sans-serif;
+}
+
+/* 중앙 타이틀 */
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+.section-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+.section-header p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* 섹션 레이블 (Best, New) */
+.product-section { margin-bottom: 100px; }
+.section-label {
+    margin-bottom: 30px;
+    text-align: left;
+}
+.color-tag {
+    font-size: 12px;
+    color: #999;
+    display: block;
+    margin-bottom: 5px;
+}
+.section-label h3 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Best 상품 그리드 (3열) */
+.product-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+.product-card .img-placeholder {
+    width: 100%;
+    aspect-ratio: 3 / 4; /* 이미지와 동일한 세로 비율 */
+    background-color: #f4f4f4;
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+}
+.product-name {
+    margin-top: 15px;
+    font-size: 15px;
+    color: #333;
+}
+
+/* New 배너 그리드 (2열) */
+.banner-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.banner-item {
+    height: 500px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2px;
+    overflow: hidden;
+}
+.banner-overlay {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    color: #fff;
+}
+.banner-overlay h4 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+.btn-buy {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.btn-buy:hover {
+    background: #fff;
+    color: #000;
+}

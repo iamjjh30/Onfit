@@ -68,7 +68,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     border: none;
     width: 40px;
     height: 40px;
@@ -79,8 +79,14 @@
     align-items: center;
     justify-content: center;
 }
-.nav-btn.prev { left: 20px; }
-.nav-btn.next { right: 20px; }
+
+.nav-btn.prev {
+    left: 20px;
+}
+
+.nav-btn.next {
+    right: 20px;
+}
 
 .product-info-box {
     width: 450px;
@@ -124,7 +130,10 @@
     font-size: 14px;
     color: #555;
 }
-.like-btn { cursor: pointer; }
+
+.like-btn {
+    cursor: pointer;
+}
 
 .purchase-group {
     display: flex;
@@ -146,8 +155,19 @@
     cursor: pointer;
 }
 
-.btn-dark.fill { background: #000; color: #fff; border: none; }
-.btn-light.outline { background: #fff; color: #000; border: 1px solid #000; }
+.btn-dark.fill {
+    background: #000;
+    color: #fff;
+    border: none;
+    height: 55px;
+    font-size: 16px;
+}
+
+.btn-light.outline {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+}
 
 .virtual-fitting-btn {
     width: 100%;

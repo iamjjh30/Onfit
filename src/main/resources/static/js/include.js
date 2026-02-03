@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <ul>
                 <a href="../diagnosis"><li>AI진단</li></a>
                 <a href="../virtualFitting"><li>가상피팅</li></a>
-                <a href="../store"><li>스토어</li></a>
+                <a href="../storeMain"><li>스토어</li></a>
                 <li>커뮤니티</li>
                 <li>내 팔레트</li>
             </ul>

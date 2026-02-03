@@ -13,4 +13,5 @@ public class MainController {
     @GetMapping("/virtualFitting") public String virtualFittingPage() { return "virtualFitting"; }
     @GetMapping("/store") public String storePage() { return "store"; }
     @GetMapping("/itemDetail") public String itemDetailPage() { return "itemDetail"; }
+    @GetMapping("/storeMain") public String storeMainPage() { return "storeMain"; }
 }
