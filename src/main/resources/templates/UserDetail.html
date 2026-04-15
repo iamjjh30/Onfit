@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com</title>
+    <link rel="stylesheet" href="./css/MyInfo_sidebar.css">
+    <link rel="stylesheet" href="./css/UserDetail.css"/>
+</head>
+<body>
+    <div id="wrap">
+        <!--헤더-->
+        <div th:replace="~{fragments/header :: header}"></div>
+        <!--본문-->
+        <div id="MyInfo_wrapper">
+            <div id="sidebar_container"></div>
+            <main id="MyInfo">
+                <div id="box">
+                    <div id="img-box">
+                        <img src="" alt="사용자의 프로필 사진" id="profile-img-preview" style="cursor: pointer;">
+                        <input type="file" id="file-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div id="nick">
+                        <label for="user-nick">닉네임</label>
+                        <input type="text" id="user-nick" name="nick">
+                    </div>
+                </div>
+
+                <form id="item-box">
+                    <div class="item">
+                        <span>이름</span>
+                        <p id="user-name-text">-</p>
+                    </div>
+                    <div class="item">
+                        <span>생년월일</span>
+                        <p id="user-birth-text">-</p>
+                    </div>
+                    <div class="item">
+                        <label for="user-phone">휴대폰번호</label>
+                        <input type="text" id="user-phone" name="phone">
+                    </div>
+                    <div class="item">
+                        <label for="user-email">이메일</label>
+                        <input type="text" id="user-email" name="email">
+                    </div>
+                    <button type="submit" id="save-btn">저장</button>
+                </form>
+
+                <a href="./delete_member.html" id="delete-member-link">회원탈퇴 &gt;</a>
+            </main><div th:replace="~{fragments/footer :: footer}"></div><div th:replace="~{fragments/footer :: footer}"></div>
+        </div>
+        <!--푸터-->
+
+    <div id="msg_display">
+        <div id="msg"></div>
+    </div>
+<script src="./js/MyInfo_sidebar.js"> </script>
+<script type="module" src="./js/UserDetail.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com — 결제 완료</title>
+    <link rel="stylesheet" th:href="@{/css/Checkout.css}"/>
+    <link rel="stylesheet" th:href="@{/css/Main.css}"/>
+    <style>
+        /* 재로그인 안내 상태 */
+        #state-relogin { display: none; }
+        #state-relogin .result-desc { margin-bottom: 20px; }
+        #input-relogin-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #input-relogin-wrap input {
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+        #input-relogin-wrap input:focus { border-color: #000; }
+        #btn-relogin {
+            width: 100%;
+            padding: 14px 0;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        #btn-relogin:disabled { background: #ccc; cursor: not-allowed; }
+        .relogin-error {
+            font-size: 13px;
+            color: #e44;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+    <div id="wrap">
+        <div id="result-page">
+            <div id="result-card">
+
+                <!-- 처리 중 -->
+                <div id="state-loading">
+                    <div class="result-icon" style="font-size:40px;">⏳</div>
+                    <h2 class="result-title">주문을 처리하는 중입니다...</h2>
+                    <p class="result-desc">잠시만 기다려 주세요.</p>
+                </div>
+
+                <!-- 성공 -->
+                <div id="state-success" style="display:none;">
+                    <div class="result-icon success-icon">✓</div>
+                    <h2 class="result-title">결제가 완료됐어요</h2>
+                    <p class="result-desc">주문이 정상적으로 접수되었습니다.<br>주문내역에서 배송 상태를 확인할 수 있어요.</p>
+                    <div class="result-info" id="result-info"></div>
+                    <div class="result-actions">
+                        <a href="/OrderInfo"><button class="btn-primary">주문내역 보기</button></a>
+                        <a href="/store"><button class="btn-secondary">쇼핑 계속하기</button></a>
+                    </div>
+                </div>
+
+                <!-- 토큰 만료 → 재로그인 후 주문 완료 처리 -->
+                <div id="state-relogin">
+                    <div class="result-icon" style="font-size:40px;">🔒</div>
+                    <h2 class="result-title">로그인 세션이 만료됐어요</h2>
+                    <p class="result-desc">결제는 완료됐습니다.<br>아이디/비밀번호를 입력하면 주문이 자동으로 등록됩니다.</p>
+                    <div id="input-relogin-wrap">
+                        <input type="text"     id="relogin-id"  placeholder="아이디">
+                        <input type="password" id="relogin-pw"  placeholder="비밀번호">
+                        <p class="relogin-error" id="relogin-error"></p>
+                        <button id="btn-relogin">로그인 후 주문 완료하기</button>
+                    </div>
+                </div>
+
+                <!-- 실패 -->
+                <div id="state-fail" style="display:none;">
+                    <div class="result-icon fail-icon">✕</div>
+                    <h2 class="result-title">주문 처리에 실패했어요</h2>
+                    <p class="result-desc" id="fail-desc">결제는 완료됐으나 주문 생성에 실패했습니다.<br>고객센터로 문의해 주세요.</p>
+                    <div class="result-actions">
+                        <a href="./Cart.html"><button class="btn-primary">장바구니로 돌아가기</button></a>
+                        <a href="../index/Main.html"><button class="btn-secondary">홈으로 가기</button></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    // 1. API 주소 설정 (같은 도메인이면 비워두는 것이 세션 유지에 유리합니다)
+    var API_BASE = '';
+
+    // 2. URL 파라미터 추출
+    var params     = new URLSearchParams(window.location.search);
+    var paymentKey = params.get('paymentKey');
+    var orderId    = params.get('orderId');
+    var amount     = Number(params.get('amount'));
+    var recvName   = params.get('recvName') || '';
+    var phone      = params.get('phone')    || '';
+    var address    = params.get('address')  || '';
+    var deliFee    = Number(params.get('deliFee')) || 0;
+
+    // 🌟 [중요] items 데이터 추출 및 productId 강제 매핑
+    var rawItems = [];
+    try {
+        rawItems = JSON.parse(decodeURIComponent(params.get('items') || '[]'));
+    } catch(e) { console.error("아이템 파싱 에러:", e); }
+
+    // 🌟 서버로 보내기 전, 모든 아이템에 productId가 있는지 검사하고 보정합니다.
+    var items = rawItems.map(function(item) {
+        return {
+            // item.id가 있으면 productId로 쓰고, 없으면 기존 productId 사용
+            productId: item.productId || item.id,
+            size: item.size || 'FREE',
+            qty: item.qty || item.quantity || 1
+        };
+    });
+
+    /* ----------------------------------------------------------------
+       초기 실행
+    ---------------------------------------------------------------- */
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!paymentKey || !orderId || !amount) {
+            showFail('결제 정보가 올바르지 않습니다.');
+            return;
+        }
+
+        // 🌟 세션 기반이므로 별도의 토큰 없이 바로 호출합니다.
+        callConfirm();
+
+        // 재로그인 버튼 이벤트
+        document.getElementById('btn-relogin').addEventListener('click', reloginAndRetry);
+    });
+
+    /* ----------------------------------------------------------------
+       POST /api/confirm 호출 (세션 방식에 맞춰 수정)
+    ---------------------------------------------------------------- */
+    function callConfirm() {
+        fetch(API_BASE + '/api/confirm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 🌟 세션 방식이므로 Authorization 헤더는 삭제해도 됩니다.
+            },
+            // 🌟 [핵심] 세션 쿠키를 서버로 함께 보내기 위해 필수 설정!
+            credentials: 'include',
+            body: JSON.stringify({
+                paymentKey: paymentKey,
+                orderId:    orderId,
+                amount:     amount,
+                recvName:   recvName,
+                phone:      phone,
+                address:    address,
+                deliFee:    deliFee,
+                items:      items // 보정된 items 전송
+            })
+        })
+            .then(function(res) {
+                if (res.status === 401) {
+                    showRelogin();
+                    return null;
+                }
+                if (!res.ok) {
+                    return res.json().then(function(json) {
+                        throw new Error(json.message || '주문 처리 중 오류가 발생했습니다.');
+                    });
+                }
+                return res.json();
+            })
+            .then(function(data) {
+                if (data) showSuccess(data, amount);
+            })
+            .catch(function(err) {
+                console.error("최종 에러:", err);
+                showFail(err.message);
+            });
+    }
+
+    /* ----------------------------------------------------------------
+       재로그인 처리 (세션 로그인 방식에 맞춰 수정)
+    ---------------------------------------------------------------- */
+    function reloginAndRetry() {
+        var loginId = document.getElementById('relogin-id').value.trim();
+        var loginPw = document.getElementById('relogin-pw').value.trim();
+        var errEl   = document.getElementById('relogin-error');
+        var btn     = document.getElementById('btn-relogin');
+
+        if (!loginId || !loginPw) {
+            errEl.textContent = '아이디와 비밀번호를 입력해 주세요.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '로그인 중...';
+
+        fetch(API_BASE + '/api/auth/login', { // 실제 로그인 API 주소로 확인 필요
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // 세션 쿠키 생성을 위해 필요
+            body: JSON.stringify({ loginId: loginId, password: loginPw })
+        })
+            .then(function(res) {
+                if (!res.ok) throw new Error('로그인 정보가 일치하지 않습니다.');
+                // 로그인 성공 시 로딩 화면으로 돌아가서 재시도
+                document.getElementById('state-relogin').style.display = 'none';
+                document.getElementById('state-loading').style.display = 'block';
+                callConfirm();
+            })
+            .catch(function(err) {
+                errEl.textContent = err.message;
+                btn.disabled = false;
+                btn.textContent = '로그인 후 주문 완료하기';
+            });
+    }
+    function showSuccess(order, amount) {
+        document.getElementById('state-loading').style.display  = 'none';
+        document.getElementById('state-relogin').style.display  = 'none';
+        document.getElementById('state-success').style.display  = 'block';
+
+        var finalOrderId = (order && order.orderId) ? order.orderId : orderId;
+        var finalPayMethod = (order && order.payMethod) ? order.payMethod : '토스 간편결제';
+
+        document.getElementById('result-info').innerHTML =
+            '<div class="info-row"><span>주문번호</span><span>' + finalOrderId + '</span></div>' +
+            '<div class="info-row"><span>결제금액</span><span>' + Number(amount).toLocaleString() + '원</span></div>' +
+            '<div class="info-row"><span>결제수단</span><span>' + finalPayMethod + '</span></div>';
+    }
+
+    function showRelogin() {
+        document.getElementById('state-loading').style.display  = 'none';
+        document.getElementById('state-relogin').style.display  = 'block';
+    }
+
+    function showFail(message) {
+        document.getElementById('state-loading').style.display  = 'none';
+        document.getElementById('state-relogin').style.display  = 'none';
+        document.getElementById('state-fail').style.display     = 'block';
+
+        var desc = document.getElementById('fail-desc');
+        if (desc) {
+            desc.innerHTML = '결제는 완료됐으나 주문 생성에 실패했습니다.<br>' +
+                '<span style="color:#e44; font-size:13px;">(사유: ' + message + ')</span>';
+        }
+    }
+
+    // ... showSuccess, showFail 등 화면 전환 함수는 그대로 유지 ...
+</script>
+</body>
+</html>

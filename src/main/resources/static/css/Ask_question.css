@@ -1,0 +1,466 @@
+:root {
+    scroll-behavior: smooth;
+}
+
+@keyframes contentLoadIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: #FFB834;
+}
+
+a:visited {
+    color: black;
+}
+
+nav ul li {
+    float: left;
+    list-style-type: none;
+}
+
+#wrap {
+    padding-left: 25px;
+    padding-right: 25px;
+    max-width: 1440px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    animation: contentLoadIn 0.5s ease-out 0.5s forwards;
+}
+
+#header {
+    margin-top: 30px;
+    width: 100%;
+    height: 50px;
+    border-radius: 25px;
+    position: sticky;
+    top: 15px;
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 50px -10px rgba(0, 0, 0, 0.1);
+    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#header.warm-mode {
+    background: rgba(255, 245, 247, 0.4);
+    border-color: rgba(255, 45, 85, 0.3);
+    box-shadow: 0 15px 40px -10px rgba(255, 45, 85, 0.15);
+}
+
+#header.cool-mode {
+    background: rgba(240, 248, 255, 0.4);
+    border-color: rgba(0, 122, 255, 0.3);
+    box-shadow: 0 15px 40px -10px rgba(0, 122, 255, 0.15);
+}
+
+#logo {
+    width: auto;
+    float: left;
+}
+
+#logo img {
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 20px;
+    margin-right: 20px;
+    display: inline-block;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+#logo img:hover {
+    transform: rotate(45deg);
+}
+
+#header nav {
+    width: 700px;
+    float: left;
+}
+
+#header nav ul li {
+    margin-left: 30px;
+    line-height: 50px;
+    cursor: pointer;
+}
+
+#header nav ul li:hover {
+    color: #FFB834;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.header_icon {
+    float: right;
+    width: auto;
+    height: 100%;
+    margin-right: 30px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.header_icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.header_icon:hover > .header_icon_hover1 {
+    display: block !important;
+}
+
+.header_icon:hover > .header_icon_hover2 {
+    display: block !important;
+}
+
+.header_icon:hover > .header_icon_hover3 {
+    display: block !important;
+}
+
+.header_icon_hover1 {
+    display: none;
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 5%;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    transition: 0.4s ease;
+    left: -110px;
+    z-index: 10;
+    top: 43px;
+}
+
+.header_icon_hover1 nav ul li {
+    float: none;
+    line-height: 5px;
+}
+
+
+.header_icon_hover2 nav ul li {
+    float: none;
+    line-height: 5px;
+}
+
+.header_icon_hover3 {
+    display: none;
+    position: absolute;
+    width: 1200px;
+    height: 450px;
+    border-radius: 20px;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    transition: 0.4s ease;
+    left: -1065px;
+    z-index: 10;
+    top: 43px;
+}
+
+.header_search {
+    width: 1200px;
+    height: 100px;
+}
+
+
+.header_main {
+    width: 500px;
+    height: 350px;
+    margin-left: 350px;
+    margin-right: 350px;
+}
+
+.header_main p {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.header_main_s {
+    border-bottom-color: #555;
+    text-align: center;
+    overflow: hidden;
+    height: 30px;
+    line-height: 30px;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 40px auto;
+}
+
+h1 {
+    text-align: center;
+    color: black;
+}
+
+h2 {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.question-card {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.question-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.item_box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item_box label {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item_box label:hover {
+    background-color: #f0f7ff;
+}
+
+.item_box input[type="radio"]:checked + span {
+    color: rgb(255, 123, 7);
+    font-weight: bold;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.submit-btn:hover {
+    font-size: 1rem;
+    font-weight: bold;
+    border: 1px solid black;
+    color: black;
+    background-color: white;
+}
+
+#result-area {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f0f4f8;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.type-tag {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #FFB834;
+    margin-bottom: 20px;
+}
+
+.mbti-result h4 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.mbti-result p {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.result-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+}
+
+.result-buttons button {
+    flex: 1;
+    padding: 13px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+#btn-shop {
+    background: black;
+    color: white;
+    transition: 0.3s ease;
+}
+
+#btn-shop:hover {
+    background: white;
+    border: 1px solid black;
+    color: black;
+}
+
+#btn-retry {
+    background: #fff;
+    color: #333;
+    border: 1px solid black;
+    transition: 0.3s ease;
+}
+
+#btn-retry:hover {
+    background: black;
+    color: white;
+}
+.result-desc {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.7;
+    margin: 12px 0 16px;
+    text-align: left;
+}
+
+.tag-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.style-tag {
+    background: #fff7e6;
+    color: #FFB834;
+    border: 1px solid #FFB834;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.rec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.rec-card {
+    border-radius: 10px;
+    padding: 14px;
+    text-align: left;
+}
+
+.rec-card.good {
+    background: #f0faf4;
+    border: 1px solid #b2dfcc;
+}
+
+.rec-card.bad {
+    background: #fff4f4;
+    border: 1px solid #f5c0c0;
+}
+
+.rec-title {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.rec-card ul {
+    padding-left: 16px;
+    margin: 0;
+}
+
+.rec-card ul li {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.8;
+}
+footer {
+    width: 100%;
+    background-color: #000; /* 검은색 배경 꽉 채우기 */
+    margin-top: 100px;
+    padding: 80px 0 100px 0; /* 위아래 넉넉한 여백 */
+}
+
+/* 푸터 내부 콘텐츠는 본문과 똑같이 1400px 중앙 정렬 */
+.footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+#f_left img {
+    width: 50px;
+    height: auto;
+    transition: transform 0.4s ease;
+}
+
+#f_left img:hover {
+    transform: rotate(45deg);
+}
+
+#f_right nav ul {
+    color: white;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 40px; /* 메뉴 간격 */
+}
+
+#f_right nav ul li a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.3s, font-weight 0.3s;
+}
+
+#f_right nav ul li a:hover {
+    color: #FFB834; /* 호버 시 시그니처 노란색 */
+    font-weight: bold;
+}

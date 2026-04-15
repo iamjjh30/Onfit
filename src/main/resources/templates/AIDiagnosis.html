@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/AIDiagnosis.css}">
+</head>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
+<section class="ai-analysis-section">
+    <div class="v-container">
+        <h2 class="section-title">✨ AI 뷰티 & 스타일 컨설팅</h2>
+        <p class="sub-title">얼굴 사진을 올리면 AI가 퍼스널 컬러와 찰떡 스타일을 찾아드려요!</p>
+
+        <div class="upload-box">
+            <input type="file" id="face-image" accept="image/*" onchange="previewImage(event)">
+            <label for="face-image" class="upload-label">
+                <span id="upload-text">📸 여기를 눌러 정면 사진 업로드</span>
+                <img id="image-preview" src="" alt="미리보기" style="display: none;">
+            </label>
+            <button class="btn-primary" onclick="startAnalysis()" id="analyze-btn" disabled>AI 분석 시작하기</button>
+        </div>
+
+        <div id="loading-box" style="display: none;">
+            <div class="spinner"></div>
+            <p>AI 전문가가 이목구비와 피부톤을 분석하고 있어요... 🔍</p>
+        </div>
+
+        <div id="result-box" style="display: none;" class="result-card">
+            <div class="tone-header">
+                <h3>당신의 퍼스널 컬러는</h3>
+                <h1 id="res-tone" class="highlight-text">봄 라이트 웜톤</h1>
+            </div>
+
+            <div class="analysis-content">
+                <div class="analysis-item">
+                    <h4>💡 AI 분석 특징</h4>
+                    <p id="res-features">분석 내용이 여기에 들어갑니다.</p>
+                </div>
+
+                <div class="color-match">
+                    <div class="color-group">
+                        <h4>⭕ Best Colors</h4>
+                        <div id="best-colors" class="palette"></div>
+                    </div>
+                    <div class="color-group">
+                        <h4>❌ Worst Colors</h4>
+                        <div id="worst-colors" class="palette"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-item">
+                    <h4>👗 추천 스타일 키워드</h4>
+                    <div id="recommended-styles" class="tag-container"></div>
+                </div>
+            </div>
+
+            <button class="btn-dark" onclick="location.href='/shop'">추천 스타일 쇼핑하기</button>
+        </div>
+    </div>
+</section>
+<script th:src="@{js/include.js}"></script>
+<script th:src="@{js/AIDiagnosis.js}"></script>
+</body>
+</html>

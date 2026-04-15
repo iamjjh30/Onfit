@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 스타일 통합 솔루션</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/AIStyler.css">
+    <link rel="stylesheet" href="/css/Main.css">
+</head>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
+<div class="tab-navigation">
+    <button class="tab-btn active" data-target="tab-color">🎨 퍼스널 컬러 진단</button>
+    <button class="tab-btn" data-target="tab-fitting">👗 가상 피팅룸</button>
+</div>
+
+<main class="content-wrapper">
+
+    <section id="tab-color" class="tab-content active">
+        <div class="color-layout">
+            <div class="card diagnosis-card">
+                <h2 class="card-title">내 피부톤 찾기</h2>
+                <div class="upload-circle" onclick="document.getElementById('face-input').click()">
+                    <img id="face-preview" src="/img/default_face.png" alt="얼굴 업로드">
+                    <input type="file" id="face-input" hidden accept="image/*">
+                </div>
+                <p class="guide-text">자연광에서 찍은 정면 사진을 올려주세요.</p>
+                <button id="diagnose-btn" class="btn-primary">AI 진단 시작</button>
+
+                <div id="diagnosis-loading" class="loading-spinner" style="display: none;">
+                    <div class="spinner"></div><p>AI가 피부톤을 정밀 분석 중입니다...</p>
+                </div>
+            </div>
+
+            <div class="card result-card">
+                <div id="initial-message" class="empty-state">
+                    <i class="fas fa-magic fa-3x" style="color: #dfe4ea; margin-bottom: 15px;"></i>
+                    <p>진단을 완료하면 나와 어울리는<br>스타일을 추천해 드립니다.</p>
+                </div>
+
+                <div id="diagnosis-result" style="display: none">
+                    <div id="diagnosis-warning" class="warning-banner" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="warning-text">조명 경고 메시지</span>
+                    </div>
+                    <h3 id="result-tone" class="highlight">여름 라이트 쿨톤</h3>
+
+                    <p id="result-features" class="result-desc">피부톤 분석 결과가 여기에 표시됩니다.</p>
+
+                    <div class="palette-container">
+                        <div class="palette-group">
+                            <h4>⭕ Best Colors</h4>
+                            <div class="colors-row" id="best-colors-container"></div>
+                        </div>
+                        <div class="palette-group">
+                            <h4>❌ Worst Colors</h4>
+                            <div class="colors-row" id="worst-colors-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h4 class="sub-title">추천 스타일 <small>(클릭하면 피팅룸으로 이동합니다)</small></h4>
+                    <div id="recommendation-grid" class="grid-3"></div>
+                    <div style="text-align: center; margin-top: 24px;">
+                        <button id="save-palette-btn" class="btn-primary">내 팔레트에 저장하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="tab-fitting" class="tab-content">
+        <div class="fitting-layout">
+            <div class="card input-card">
+                <h2 class="card-title">피팅 준비하기</h2>
+                <div class="upload-group">
+                    <label>1. 선택된 상품</label>
+
+                    <div class="selected-product-display" id="product-display-wrap"
+                         th:style="${product == null ? 'display:none;' : 'display:block;'}">
+                        <div class="fixed-cloth-box">
+                            <img id="cloth-preview-fixed" th:src="${product != null ? product.imageUrl : ''}" alt="선택된 상품" style="width: 100%;">
+                            <input type="hidden" id="target-product-id" th:value="${product != null ? product.id : ''}">
+                        </div>
+                        <p class="selected-name" id="cloth-name-fixed" th:text="${product != null ? product.name : ''}">상품명</p>
+                    </div>
+
+                    <div class="no-product-selected" id="cloth-placeholder"
+                         th:style="${product != null ? 'display:none;' : 'display:block;'}">
+                        <p>선택된 상품이 없습니다.</p>
+                        <button type="button" onclick="location.href='/store'" class="btn-outline">스토어에서 옷 고르기</button>
+                    </div>
+                </div>
+                <div class="upload-group">
+                    <label>2. 내 전신 사진 <small>(얼굴 포함)</small></label>
+                    <div class="upload-box" onclick="document.getElementById('body-input').click()">
+                        <img id="body-preview" src="" style="display:none;">
+                        <span id="body-placeholder">+ 사진 올리기</span>
+                        <input type="file" id="body-input" hidden accept="image/*">
+                    </div>
+                </div>
+
+
+
+                <button id="try-on-btn" class="btn-primary" th:disabled="${product == null}">피팅 시작</button>
+            </div>
+            <div class="card output-card">
+                <div id="fitting-loading-overlay" style="display: none;">
+                    <div class="spinner-large"></div>
+                    <p>AI가 옷의 핏을 맞추고 있습니다...</p>
+                </div>
+
+                <div class="fitting-display" id="fitting-area">
+                    <img id="fitting-result-img" src="" alt="피팅 결과" style="display: none; width: 100%; border-radius: 12px;">
+
+                    <div id="fitting-placeholder-main" style="text-align: center; padding: 50px 0;">
+                        <i class="fas fa-tshirt fa-3x" style="color: #ced6e0; margin-bottom:15px;"></i>
+                        <p>당신의 실루엣과 옷을 선택해주세요.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{js/include.js}"></script>
+<script th:src="@{js/AIStyler.js}"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com</title>
+    <link rel="stylesheet" href="./css/OrderInfo.css"/>
+    <link rel="stylesheet" href="./css/Main.css"/>
+</head>
+<body>
+
+    <!-- ===== HEADER (Main.html 기준 — fixed sticky pill) ===== -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- ===== WRAP ===== -->
+    <div id="wrap">
+        <!--본문-->
+        <div id="Order_Info">
+            <h2 id="title">주문내역</h2>
+            <div id="Order_container"></div>
+        </div>
+        <!-- ===== FOOTER (Main.html 기준) ===== -->
+    </div><!-- /#wrap -->
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+    <script src="./js/OrderInfo.js"></script>
+</body>
+</html>

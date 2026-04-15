@@ -6,10 +6,10 @@
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/storeMain.css}">
 </head>
-<body>
-<div id="header-container"></div>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
 <div id="main-container">
-    <section id="hero-banner">
+    <section id="hero-banner" style="background-image: url('../img/Main/store_banner.jpg')">
         <div class="banner-content">
             <h2 id="banner-title">당신의 컬러에 딱 맞는 스타일</h2>
             <p id="banner-subtitle">AI가 진단한 퍼스널 컬러에 맞춘 쇼핑</p>
@@ -18,12 +18,10 @@
                 <button class="btn-secondary">자세히 보기</button>
             </div>
         </div>
-        <div class="hero-item" style="background-image: url('img2.jpg');"></div>
-        <div class="hero-item" style="background-image: url('img3.jpg');"></div>
     </section>
 
     <section class="mode-grid">
-        <div class="mode-item" style="background-image: url('neutral.jpg');">
+        <div class="mode-item" style="background-image: url('../img/Main/Neutral_banner.png')">
             <div class="mode-overlay">
                 <div class="mode-text">
                     <h3>Neutral</h3>
@@ -34,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <div class="mode-item" style="background-image: url('cool.jpg');">
+        <div class="mode-item" style="background-image: url('../img/Main/cool_banner.png')">
             <div class="mode-overlay">
                 <div class="mode-text">
                     <h3>Cool</h3>
@@ -45,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="mode-item" style="background-image: url('warm.jpg');">
+        <div class="mode-item" style="background-image: url('../img/Main/warm_banner 2.png')">
             <div class="mode-overlay">
                 <div class="mode-text">
                     <h3>Warm</h3>
@@ -56,21 +54,10 @@
                 </div>
             </div>
         </div>
-        <div class="mode-item" style="background-image: url('vivid.jpg');">
-            <div class="mode-overlay">
-                <div class="mode-text">
-                    <h3>Vivid</h3>
-                    <div class="hover-content">
-                        <p>시선을 사로잡는</p>
-                        <button class="btn-sub">구매하기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
     <section id="product-container">
         <div class="section-header">
-            <h2>4가지의 컬러 무드</h2>
+            <h2>3가지의 컬러 무드</h2>
             <p>당신의 분위기와 어울리는 스타일을 골라보세요.<br>컬러가 다르면, 느낌도 달라집니다.</p>
         </div>
 
@@ -81,16 +68,16 @@
             </div>
             <div class="product-grid-3">
                 <div class="product-card">
-                    <div class="img-placeholder" style="background-image: url('../img/Main/test.jpg');"></div>
-                    <p class="product-name">Product name</p>
+                    <div class="img-placeholder" style="background-image: url('../img/Main/s200_skyblue.png');"></div>
+                    <p class="product-name">데일리 워시드 하프 셔츠</p>
                 </div>
                 <div class="product-card">
-                    <div class="img-placeholder" style="background-image: url('../img/Main/test.jpg');"></div>
-                    <p class="product-name">Product name</p>
+                    <div class="img-placeholder" style="background-image: url('../img/Main/fit_j200_blue.png');"></div>
+                    <p class="product-name">아이스 블루 유틸리티 지퍼 자켓</p>
                 </div>
                 <div class="product-card">
-                    <div class="img-placeholder" style="background-image: url('../img/Main/test.jpg');"></div>
-                    <p class="product-name">Product name</p>
+                    <div class="img-placeholder" style="background-image: url('../img/Main/h200_cyan.png');"></div>
+                    <p class="product-name">데일리 풀오버 후드티</p>
                 </div>
             </div>
         </div>
@@ -100,15 +87,15 @@
                 <h3 class="label-new">New</h3>
             </div>
             <div class="banner-grid-2">
-                <div class="banner-item" style="background-image: url('../img/Main/hover.png');">
+                <div class="banner-item" style="background-image: url('../img/Main/fit_j100_brown.jpg');">
                     <div class="banner-overlay">
-                        <h4>Breeze Mesh Tank</h4>
+                        <h4>소프트 카멜 집업 자켓</h4>
                         <button class="btn-buy">구매하기</button>
                     </div>
                 </div>
-                <div class="banner-item" style="background-image: url('../img/Main/hover.png');">
+                <div class="banner-item" style="background-image: url('../img/Main/h300_khaki.png');">
                     <div class="banner-overlay">
-                        <h4>120 Winter</h4>
+                        <h4>N-2B 핏 헤비 보머 자켓</h4>
                         <button class="btn-buy">구매하기</button>
                     </div>
                 </div>
@@ -116,6 +103,6 @@
         </div>
     </section>
 </div>
-<script th:src="@{/js/include.js}"></script>
+
 </body>
 </html>

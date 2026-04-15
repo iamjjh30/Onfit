@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com — 결제</title>
+    <link rel="stylesheet" href="./css/Checkout.css"/>
+    <!-- 토스페이먼츠 SDK v1 (API 개별 연동) -->
+    <script src="https://js.tosspayments.com/v1"></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+    <div id="wrap">
+        <div id="Checkout">
+
+            <!-- 왼쪽: 주문 상품 + 배송지 -->
+            <div id="checkout-left">
+                <h2 id="title">결제하기</h2>
+
+                <!-- 주문 상품 -->
+                <section class="checkout-section">
+                    <h3 class="section-title">주문 상품</h3>
+                    <div id="checkout-items"></div>
+                </section>
+
+                <!-- 배송지 -->
+                <section class="checkout-section">
+                    <h3 class="section-title">배송지</h3>
+                    <div class="form-group">
+                        <label class="form-label">받는 분</label>
+                        <input type="text" id="input-name" class="form-input" placeholder="홍길동">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">연락처</label>
+                        <input type="tel" id="input-phone" class="form-input" placeholder="01012345678">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">주소</label>
+                        <input type="text" id="input-address" class="form-input" placeholder="배송 받을 주소를 입력해주세요">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">배송 메모</label>
+                        <select id="input-memo" class="form-select">
+                            <option value="">선택 안 함</option>
+                            <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
+                            <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
+                            <option value="부재 시 연락 주세요">부재 시 연락 주세요</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- 결제 수단 선택 -->
+                <section class="checkout-section">
+                    <h3 class="section-title">결제 수단</h3>
+                    <div id="pay-method-btns">
+                        <button class="pay-method-btn active" data-method="카드">신용·체크카드</button>
+                        <button class="pay-method-btn" data-method="카카오페이">카카오페이</button>
+                        <button class="pay-method-btn" data-method="네이버페이">네이버페이</button>
+                        <button class="pay-method-btn" data-method="토스페이">토스페이</button>
+                        <button class="pay-method-btn" data-method="계좌이체">계좌이체</button>
+                    </div>
+                </section>
+            </div>
+
+            <div id="checkout-right"></div>
+        </div>
+
+        <footer>
+            <div id="f_left">
+                <a href="#wrap"><img src="../img/interface/LOGO_W.png"></a>
+                <p id="f_tagline">당신의 스타일을 찾아드립니다</p>
+                <p id="f_copy">© 2026 OnFit. All rights reserved.</p>
+            </div>
+            <div id="f_right">
+                <div class="f_nav_group">
+                    <p class="f_nav_title">AI 진단</p>
+                    <a href="./AIStyler.html"><span>퍼스널 컬러 진단</span></a>
+                    <a href="./Ask.html"><span>Fit BTI 검사</span></a>
+                    <a href="./MyPalette.html"><span>내 팔레트</span></a>
+                </div>
+                <div class="f_nav_group">
+                    <p class="f_nav_title">스토어</p>
+                    <a href="./store.html"><span>전체 상품</span></a>
+                    <a href="./store.html"><span>신상품</span></a>
+                    <a href="./store.html"><span>베스트</span></a>
+                </div>
+                <div class="f_nav_group">
+                    <p class="f_nav_title">커뮤니티</p>
+                    <a href="./Community.html"><span>스타일 피드</span></a>
+                    <a href="./Community.html"><span>코디 공유</span></a>
+                    <a href="./Community.html"><span>이벤트</span></a>
+                </div>
+                <div class="f_nav_group">
+                    <p class="f_nav_title">고객지원</p>
+                    <a href="#"><span>공지사항</span></a>
+                    <a href="#"><span>자주 묻는 질문</span></a>
+                    <a href="#"><span>1:1 문의</span></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 결제 요약 -->
+    <div id="checkout-summary">
+        <h3 class="summary-title">결제 금액</h3>
+        <div class="summary-row">
+            <span>상품금액</span>
+            <span id="summary-product">0원</span>
+        </div>
+        <div class="summary-row">
+            <span>배송비</span>
+            <span id="summary-delivery">0원</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row summary-total">
+            <span>총 결제금액</span>
+            <span id="summary-total">0원</span>
+        </div>
+        <button id="pay-btn" type="button">결제하기</button>
+        <button id="back-btn" type="button" onclick="history.back()">장바구니로 돌아가기</button>
+    </div>
+
+    <script src="./js/Checkout.js"></script>
+</body>
+</html>

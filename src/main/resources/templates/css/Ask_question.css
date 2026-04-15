@@ -1,0 +1,260 @@
+:root {
+    scroll-behavior: smooth;
+}
+
+@keyframes contentLoadIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: #FFB834;
+}
+
+a:visited {
+    color: black;
+}
+
+nav ul li {
+    float: left;
+    list-style-type: none;
+}
+
+#wrap {
+    padding-left: 25px;
+    padding-right: 25px;
+    max-width: 1440px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    animation: contentLoadIn 0.5s ease-out 0.5s forwards;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 40px auto;
+}
+
+h1 {
+    text-align: center;
+    color: black;
+}
+
+h2 {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.question-card {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.question-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.item_box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item_box label {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item_box label:hover {
+    background-color: #f0f7ff;
+}
+
+.item_box input[type="radio"]:checked + span {
+    color: rgb(255, 123, 7);
+    font-weight: bold;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.submit-btn:hover {
+    font-size: 1rem;
+    font-weight: bold;
+    border: 1px solid black;
+    color: black;
+    background-color: white;
+}
+
+#result-area {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f0f4f8;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.type-tag {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #FFB834;
+    margin-bottom: 20px;
+}
+
+.mbti-result h4 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.mbti-result p {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.result-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+}
+
+.result-buttons button {
+    flex: 1;
+    padding: 13px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+#btn-shop {
+    background: black;
+    color: white;
+    transition: 0.3s ease;
+}
+
+#btn-shop:hover {
+    background: white;
+    border: 1px solid black;
+    color: black;
+}
+
+#btn-retry {
+    background: #fff;
+    color: #333;
+    border: 1px solid black;
+    transition: 0.3s ease;
+}
+
+#btn-retry:hover {
+    background: black;
+    color: white;
+}
+.result-desc {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.7;
+    margin: 12px 0 16px;
+    text-align: left;
+}
+
+.tag-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.style-tag {
+    background: #fff7e6;
+    color: #FFB834;
+    border: 1px solid #FFB834;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.rec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.rec-card {
+    border-radius: 10px;
+    padding: 14px;
+    text-align: left;
+}
+
+.rec-card.good {
+    background: #f0faf4;
+    border: 1px solid #b2dfcc;
+}
+
+.rec-card.bad {
+    background: #fff4f4;
+    border: 1px solid #f5c0c0;
+}
+
+.rec-title {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.rec-card ul {
+    padding-left: 16px;
+    margin: 0;
+}
+
+.rec-card ul li {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.8;
+}

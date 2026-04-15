@@ -2,71 +2,357 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>OnFit - Breeze Mesh Tank</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{/css/store.css}">
-    <link rel="stylesheet" th:href="@{/css/itemDetail.css}">
+    <title th:text="${product.name} + ' - OnFit'">OnFit - 상품 상세</title>
+    <link rel="stylesheet" href="../css/Main.css">
+    <link rel="stylesheet" href="../css/store.css">
+    <link rel="stylesheet" href="../css/itemDetail.css">
+    <style>
+        /* 🌟 OnFit만의 킬러 기능! 맞춤 추천 뱃지 스타일 */
+        .ai-curation-badges { margin: 15px 0 25px 0; display: flex; flex-direction: column; gap: 8px; }
+        .ai-badge { padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; letter-spacing: -0.02em; }
+        .ai-badge.color-match { background-color: #f0f7ff; color: #0056b3; border: 1px solid #cce3ff; }
+        .ai-badge.dna-match { background-color: #f9f0ff; color: #5a189a; border: 1px solid #eedcff; }
+        .ai-badge strong { font-weight: 800; margin-right: 4px; }
+
+        /* ===================== 🌟 아이콘 전용 스타일 업데이트 ===================== */
+        .feature-grid-container { display: flex; justify-content: space-around; align-items: stretch; margin-top: 30px; gap: 15px; }
+        .feature-item { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; padding: 10px; opacity: 0; transform: translateY(15px); animation: fadeInUp 0.6s ease forwards; }
+
+        /* 아이콘 배치 애니메이션 */
+        .feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .feature-item:nth-child(3) { animation-delay: 0.2s; }
+        .feature-item:nth-child(5) { animation-delay: 0.3s; }
+
+        .feature-icon-wrap { width: 56px; height: 56px; border-radius: 50%; background: #f8f8f8; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; border: 1px solid #eee; transition: all 0.3s ease; }
+        .feature-item:hover .feature-icon-wrap { background: #111; border-color: #111; transform: scale(1.05); }
+
+        /* SVG 아이콘 공통 스타일 */
+        .feature-icon-wrap svg { width: 26px; height: 26px; stroke: #333; transition: stroke 0.3s ease; }
+        .feature-item:hover .feature-icon-wrap svg { stroke: white; }
+
+        /* 스타일 태그별 전용 아이콘 설정 */
+        .style-icon svg { stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* 퍼스널 컬러별 전용 아이콘 설정 */
+        .color-icon svg { stroke: none !important; fill: none; }
+        .feature-item:hover .color-icon svg { fill: none; } /* 컬러 아이콘은 hover시 색 안 바꿈 */
+
+        .feature-label { font-size: 0.72rem; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 5px; }
+        .feature-value { font-size: 0.9rem; color: var(--black); font-weight: 800; letter-spacing: -0.02em; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-<div id="header-container"></div>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
 <div id="wrap" class="detail-wrap">
-    <div class="store-header" style="border-bottom: none; padding-bottom: 0;">
-    </div>
+    <div class="store-header" style="border-bottom: none; padding-bottom: 0;"></div>
 
     <main class="product-detail-container">
         <section class="detail-top">
             <div class="image-gallery">
-                <div class="thumbnails">
-                    <div class="thumb-item active"><img th:src="@{/img/temp/thumb1.jpg}" alt="썸네일1"></div>
-                    <div class="thumb-item"><img th:src="@{/img/temp/thumb2.jpg}" alt="썸네일2"></div>
-                    <div class="thumb-item"><img th:src="@{/img/temp/thumb3.jpg}" alt="썸네일3"></div>
+                <div class="main-image transition-fix">
+                    <img th:src="@{${product.imageUrl}}" th:alt="${product.name}" id="mainProductImg">
                 </div>
-                <div class="main-image">
-                    <img th:src="@{/img/Main/Breeze_Mesh_Tank.png}" alt="메인 이미지">
-                    <button class="nav-btn prev">◀</button>
-                    <button class="nav-btn next">▶</button>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <div class="thumb-item active" style="width: 80px; height: 80px; cursor: pointer; border: 2px solid #111; overflow: hidden; border-radius: 4px;">
+                        <img th:src="@{${product.imageUrl}}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="thumb-item" style="width: 80px; height: 80px; cursor: pointer; border: 1px solid #eee; overflow: hidden; border-radius: 4px;">
+                        <img th:src="@{${product.hoverImageUrl}}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                 </div>
             </div>
 
             <div class="product-info-box">
-                <p class="breadcrumb">여름 쿨톤 / 남성 / 의류</p>
-                <h1 class="product-title">Breeze Mesh Tank</h1>
-                <p class="product-price">99,000원</p>
+                <p class="breadcrumb" th:text="${product.category == 'SHIRT' ? '셔츠' : (product.category == 'JACKET' ? '자켓' : '후드티')} + ' / 남성 의류'">카테고리</p>
 
-                <div class="option-group">
+                <h1 class="product-title" th:text="${product.name}">상품명</h1>
+                <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">0원</p>
+
+                <div class="ai-curation-badges" th:if="${session.loginMember != null}">
+                    <div class="ai-badge color-match" th:if="${session.loginMember.personalColor != null and #strings.contains(product.recommendedSeasons, session.loginMember.personalColor)}">
+                        ✨ <strong>[[${session.loginMember.name}]]</strong>님의 피부톤을 완벽하게 밝혀줄 베스트 컬러!
+                    </div>
+                    <div class="ai-badge dna-match" th:if="${session.loginMember.styleDna != null and #strings.contains(product.styleTags, session.loginMember.styleDna)}">
+                        🧬 <strong>[[${session.loginMember.styleDna == 'MINIMAL' ? '미니멀' : (session.loginMember.styleDna == 'CASUAL' ? '캐주얼' : (session.loginMember.styleDna == 'STREET' ? '스트릿' : (session.loginMember.styleDna == 'FORMAL' ? '포멀' : '빈티지')))}]]</strong> 취향 저격! 스타일 DNA 매칭 완료
+                    </div>
+                </div>
+
+                <div class="option-group" id="size">
                     <div class="size-buttons">
-                        <button class="size-btn">S</button>
-                        <button class="size-btn active">M</button>
-                        <button class="size-btn">L</button>
-                        <button class="size-btn">XL</button>
+                        <button class="size-btn" value="S">S</button>
+                        <button class="size-btn active" value="M">M</button>
+                        <button class="size-btn" value="L">L</button>
+                        <button class="size-btn" value="XL">XL</button>
                     </div>
                 </div>
 
                 <div class="social-actions">
-                    <span class="like-btn">♥ 24</span>
+                    <span class="like-btn">♥ 87</span>
                 </div>
 
                 <div class="purchase-group">
                     <div class="btn-row">
-                        <button class="btn-light outline">VIRTUAL FITTING</button>
-                        <button class="btn-light outline">장바구니</button>
+                        <button class="btn-fitting" th:onclick="|location.href='/AIStyler?productId=' + ${product.id}|">VIRTUAL FITTING</button>
+                        <button id="btn-cart" class="btn-light outline" >장바구니</button>
                     </div>
-                    <button class="btn-dark fill">구매하기</button>
+                    <button class="btn-dark fill" id="btn-buy-now"
+                            th:data-id="${product.id}"
+                            th:data-name="${product.name}"
+                            th:data-price="${product.price}"
+                            th:data-img="${product.imageUrl}">
+                        구매하기
+                    </button>
+                </div>
+
+                <div class="product-info">
+                    <p th:text="'• 어울리는 스타일: ' + ${product.styleTags}">• 어울리는 스타일</p>
+                    <p th:text="'• 상품 관리 번호: ONFIT-' + ${product.id}">• 상품 번호</p>
+                </div>
+
+                <div class="info-accordion">
+                    <div class="accordion-header">
+                        <span>사이즈 & 팁</span>
+                        <span class="arrow-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>• 핏: 레귤러 핏 (정사이즈 추천)</p>
+                        <p>M：기장: 74 / 가슴둘레: 108 / 어깨너비: 48 / 소매길이: 62</p>
+                        <p>L：기장: 76 / 가슴둘레: 112 / 어깨너비: 50 / 소매길이: 63</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="detail-bottom">
-            <div class="detail-grid">
-                <div class="detail-item placeholder">제품 이미지</div>
-                <div class="detail-item placeholder"></div>
-                <div class="detail-item placeholder"></div>
-                <div class="detail-item placeholder"></div>
+        <div class="feature-highlight-section">
+            <h2>주요 특징</h2>
+
+            <div id="rawProductData" style="display:none;"
+                 th:data-id="${product.id}"
+                 th:data-tags="${product.styleTags}"
+                 th:data-seasons="${product.recommendedSeasons}"></div>
+
+            <div class="feature-grid-container">
+
+                <div class="feature-item">
+                    <div class="feature-icon-wrap style-icon" id="styleIconTarget">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ccc" fill="none"/></svg>
+                    </div>
+                    <span class="feature-label">STYLE DNA</span>
+                    <span class="feature-value" id="styleLabelTarget">분석 중</span>
+                </div>
+
+                <div class="feature-divider"></div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-wrap color-icon" id="colorIconTarget">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ccc" fill="none"/></svg>
+                    </div>
+                    <span class="feature-label">PERSONAL COLOR</span>
+                    <span class="feature-value" id="colorLabelTarget">분석 중</span>
+                </div>
+
+                <div class="feature-divider"></div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-wrap style-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20.38 3.46L16 2a8.5 8.5 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+                        </svg>
+                    </div>
+                    <span class="feature-label">MATERIAL</span>
+                    <span class="feature-value">코튼 100%</span>
+                </div>
+
             </div>
-        </section>
+        </div>
     </main>
 </div>
-<script th:src="@{/js/include.js}"></script>
-<script th:src="@{/js/main.js}"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:inline="javascript">
+    /* ================================================================
+       1. 서버 데이터 고정 (Thymeleaf가 자바스크립트 변수로 변환)
+       이 PRODUCT_DATA가 있어야 더 이상 undefined 에러가 나지 않습니다.
+    ================================================================ */
+    const PRODUCT_DATA = {
+        id:     /*[[${product.id}]]*/ 0,
+        name:   /*[[${product.name}]]*/ '상품명',
+        price:  /*[[${product.price}]]*/ 0,
+        imgUrl: /*[[${product.imageUrl}]]*/ ''
+    };
+
+    /* ================================================================
+       2. 상수 데이터 (아이콘 매핑)
+    ================================================================ */
+    const STYLE_ICONS = {
+        'MINIMAL': { label: '미니멀', icon: `<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="18"/></svg>` },
+        'CASUAL':  { label: '캐주얼', icon: `<svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>` },
+        'STREET':  { label: '스트릿', icon: `<svg viewBox="0 0 24 24"><rect x="3" y="16" width="18" height="4" rx="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M5 16l2-9.5a2 2 0 0 1 2-1.5h6a2 2 0 0 1 2 1.5l2 9.5"/></svg>` },
+        'FORMAL':  { label: '포멀',   icon: `<svg viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a8.5 8.5 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>` },
+        'VINTAGE': { label: '빈티지', icon: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="12" cy="11" r="4"/><rect x="7" y="2" width="10" height="2"/></svg>` }
+    };
+
+    const SEASON_ICONS = {
+        'SPRING_WARM': { label: '봄 웜톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff3ec"/><circle cx="8" cy="9" r="3" fill="#ff7043"/><circle cx="16" cy="11" r="3" fill="#ffb74d"/><circle cx="11" cy="17" r="3" fill="#fff176"/></svg>` },
+        'SUMMER_COOL': { label: '여름 쿨톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e0f7fa"/><circle cx="8" cy="9" r="3" fill="#4fc3f7"/><circle cx="16" cy="11" r="3" fill="#81d4fa"/><circle cx="11" cy="17" r="3" fill="#b2ebf2"/></svg>` },
+        'AUTUMN_WARM': { label: '가을 웜톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff0e8"/><circle cx="8" cy="9" r="3" fill="#bf360c"/><circle cx="16" cy="11" r="3" fill="#d84315"/><circle cx="11" cy="17" r="3" fill="#8d6e63"/></svg>` },
+        'WINTER_COOL': { label: '겨울 쿨톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#eef0ff"/><circle cx="8" cy="9" r="3" fill="#1a237e"/><circle cx="16" cy="11" r="3" fill="#311b92"/><circle cx="11" cy="17" r="3" fill="#b0bec5"/></svg>` }
+    };
+
+    /* ================================================================
+       3. 메인 로직 (페이지 로드 후 실행)
+    ================================================================ */
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("OnFit 상품 상세 페이지 로드 완료:", PRODUCT_DATA);
+
+        // [최근 본 상품 저장]
+        saveRecentProduct();
+
+        // [사이즈 선택 기능]
+        let selectedSize = 'M';
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                sizeBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedSize = this.innerText;
+            });
+        });
+
+        // [장바구니 담기]
+        // --- [5] 장바구니 담기 (수정된 로직) ---
+        const btnCart = document.getElementById('btn-cart');
+        if (btnCart) {
+            btnCart.addEventListener('click', function () {
+                // 🌟 핵심: rawDataEl을 찾지 말고, 이미 성공이 검증된 PRODUCT_DATA를 쓰세요!
+                const productId = PRODUCT_DATA.id;
+
+                // 🔍 [디버깅] 버튼 눌렀을 때 콘솔에 숫자가 찍히는지 확인하세요.
+                console.log("장바구니에 담을 상품 ID:", productId);
+
+                if (!productId || productId === 0) {
+                    alert('상품 번호를 읽어오지 못했습니다. 새로고침 후 다시 시도해주세요.');
+                    return;
+                }
+
+                if (!selectedSize) {
+                    alert('사이즈를 선택해 주세요!');
+                    return;
+                }
+
+                btnCart.innerText = '담는 중...';
+                btnCart.disabled = true;
+
+                // 서버로 전송
+                fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productId: productId, // 👈 이제 확실한 숫자가 들어갑니다.
+                        size: selectedSize,
+                        quantity: 1
+                    })
+                })
+                    .then(response => {
+                        btnCart.innerText = '장바구니';
+                        btnCart.disabled = false;
+
+                        if (response.ok) {
+                            if (confirm('장바구니에 담겼습니다! 🛒\n이동하시겠습니까?')) {
+                                window.location.href = '/Cart';
+                            }
+                        } else {
+                            alert('장바구니 담기에 실패했습니다. 로그인 상태를 확인해주세요.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('서버 오류가 발생했습니다.');
+                    });
+            });
+        }
+
+        // 구매하기 버튼 클릭 시 실행되는 부분
+        const buyNowBtn = document.getElementById('btn-buy-now');
+        if (buyNowBtn) {
+            buyNowBtn.addEventListener('click', function() {
+                // 🌟 [비장의 수] PRODUCT_DATA 대신 버튼에 박힌 데이터 속성을 직접 읽습니다.
+                const pId = this.getAttribute('data-id');
+                const pName = this.getAttribute('data-name');
+                const pPrice = this.getAttribute('data-price');
+                const pImg = this.getAttribute('data-img');
+
+                console.log("실시간 버튼 데이터 확인:", { pId, pName, pPrice, pImg });
+
+                // pId가 없으면 아래로 내려가서 URL을 만들지 못하게 막습니다.
+                if (!pId || pId === 'undefined') {
+                    alert("상품 번호를 찾을 수 없습니다. (ID: " + pId + ")");
+                    return;
+                }
+
+                const url = `/Checkout?mode=direct`
+                    + `&productId=${pId}`
+                    + `&name=${encodeURIComponent(pName)}`
+                    + `&price=${pPrice}`
+                    + `&imgUrl=${encodeURIComponent(pImg)}`
+                    + `&size=${encodeURIComponent(selectedSize)}`
+                    + `&qty=1`;
+
+                location.href = url;
+            });
+        }
+
+        // [스타일 DNA & 퍼스널 컬러 아이콘 적용]
+        const rawDataEl = document.getElementById('rawProductData');
+        if (rawDataEl) {
+            const firstTag = (rawDataEl.getAttribute('data-tags') || '').split(',')[0].trim().toUpperCase();
+            const firstSeason = (rawDataEl.getAttribute('data-seasons') || '').split(',')[0].trim().toUpperCase();
+
+            if (STYLE_ICONS[firstTag]) {
+                document.getElementById('styleIconTarget').innerHTML = STYLE_ICONS[firstTag].icon;
+                document.getElementById('styleLabelTarget').innerText = STYLE_ICONS[firstTag].label;
+            }
+            if (SEASON_ICONS[firstSeason]) {
+                document.getElementById('colorIconTarget').innerHTML = SEASON_ICONS[firstSeason].icon;
+                document.getElementById('colorLabelTarget').innerText = SEASON_ICONS[firstSeason].label;
+            }
+        }
+
+        // [이미지 썸네일 교체]
+        const mainImg = document.getElementById('mainProductImg');
+        document.querySelectorAll('.thumb-item').forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                const newSrc = this.querySelector('img').getAttribute('src');
+                mainImg.setAttribute('src', newSrc);
+                document.querySelectorAll('.thumb-item').forEach(t => t.style.border = '1px solid #eee');
+                this.style.border = '2px solid #111';
+            });
+        });
+
+        // [아코디언 토글]
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => header.parentElement.classList.toggle('active'));
+        });
+    });
+
+    // 최근 본 상품 저장 함수
+    function saveRecentProduct() {
+        let recent = JSON.parse(localStorage.getItem('recentProducts') || '[]');
+        recent = recent.filter(p => String(p.id) !== String(PRODUCT_DATA.id));
+        recent.unshift({
+            id: PRODUCT_DATA.id,
+            name: PRODUCT_DATA.name,
+            price: PRODUCT_DATA.price,
+            imgUrl: PRODUCT_DATA.imgUrl
+        });
+        if (recent.length > 10) recent.pop();
+        localStorage.setItem('recentProducts', JSON.stringify(recent));
+    }
+</script>
+<script src="../js/include.js"></script>
+<script src="../js/main.js"></script>
 </body>
 </html>

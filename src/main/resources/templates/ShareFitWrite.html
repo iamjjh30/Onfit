@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <title>Share Fit — OnFit</title>
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <link rel="stylesheet" th:href="@{/css/Community.css}">
+    <style>
+        .write_wrap { max-width: 720px; margin: 100px auto 80px; padding: 0 24px; }
+        .write_header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px;
+        }
+        .write_header h2 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.03em; color: #111; }
+        .write_back { font-size: 0.82rem; color: #999; text-decoration: none; transition: color 0.2s; }
+        .write_back:hover { color: #111; }
+        .cat_fixed_badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 18px; border-radius: 100px;
+            background: #111; color: #fff; font-size: 0.82rem; font-weight: 700; margin-bottom: 24px;
+        }
+        .write_card { background: #fff; border: 1.5px solid #ebebeb; border-radius: 16px; padding: 32px; }
+        .write_field { margin-bottom: 20px; }
+        .write_field label {
+            display: block; font-size: 0.78rem; font-weight: 700;
+            color: #555; margin-bottom: 8px; letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .write_input {
+            width: 100%; padding: 13px 16px; border: 1.5px solid #e8e8e8;
+            border-radius: 10px; font-size: 0.95rem; color: #111; background: #fafafa;
+            outline: none; transition: border-color 0.2s; box-sizing: border-box; font-family: inherit;
+        }
+        .write_input:focus { border-color: #111; background: #fff; }
+        .write_textarea { min-height: 120px; resize: vertical; line-height: 1.7; }
+        .write_count { text-align: right; font-size: 0.75rem; color: #bbb; margin-top: 6px; }
+
+        /* 이미지 업로드 */
+        .img_upload_zone {
+            border: 2px dashed #ddd; border-radius: 14px; min-height: 120px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; background: #fafafa;
+            transition: border-color 0.2s; overflow: hidden; margin-top: 10px;
+        }
+        .img_upload_zone:hover { border-color: #111; }
+        .img_upload_zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; }
+        .img_upload_placeholder { text-align: center; pointer-events: none; padding: 20px; }
+
+        /* 다중 이미지 미리보기 그리드 */
+        .img_preview_grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        .img_preview_item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1.5px solid #e8e8e8;
+            flex-shrink: 0;
+        }
+        .img_preview_item img {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
+        }
+        .img_preview_item .img_remove_btn {
+            position: absolute; top: 4px; right: 4px;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: rgba(0,0,0,0.6); color: #fff;
+            border: none; cursor: pointer; font-size: 0.75rem;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1;
+        }
+        .img_preview_item .img_order_badge {
+            position: absolute; bottom: 4px; left: 4px;
+            background: rgba(0,0,0,0.5); color: #fff;
+            font-size: 0.65rem; font-weight: 700;
+            padding: 1px 5px; border-radius: 4px;
+        }
+
+        /* 상품 인용 */
+        .product_picker { border: 1.5px solid #e8e8e8; border-radius: 10px; overflow: hidden; }
+        .product_picker_header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; background: #fafafa; border-bottom: 1px solid #f0f0f0;
+            cursor: pointer; user-select: none;
+        }
+        .product_picker_header span { font-size: 0.85rem; font-weight: 600; color: #555; }
+        .product_picker_header .toggle_icon { font-size: 0.75rem; color: #aaa; transition: transform 0.2s; }
+        .product_picker_header.open .toggle_icon { transform: rotate(180deg); }
+        .product_list_wrap { display: none; padding: 12px; }
+        .product_list_wrap.open { display: block; }
+        .product_search_input {
+            width: 100%; padding: 9px 12px; border: 1.5px solid #e8e8e8; border-radius: 8px;
+            font-size: 0.85rem; outline: none; box-sizing: border-box; margin-bottom: 10px; font-family: inherit;
+        }
+        .product_search_input:focus { border-color: #111; }
+        .product_items { max-height: 200px; overflow-y: auto; }
+        .product_item {
+            display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+            border-radius: 8px; cursor: pointer; transition: background 0.15s;
+        }
+        .product_item:hover { background: #f5f5f5; }
+        .product_item img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; }
+        .product_item_name { font-size: 0.83rem; font-weight: 600; color: #333; flex: 1; }
+        .product_item_price { font-size: 0.78rem; color: #999; }
+        .product_item_add {
+            padding: 4px 10px; border-radius: 100px; background: #111; color: #fff;
+            font-size: 0.72rem; font-weight: 700; border: none; cursor: pointer;
+        }
+        .selected_products { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .selected_product_tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px 5px 8px; background: #f0f0f0; border-radius: 100px;
+            font-size: 0.78rem; font-weight: 600; color: #333;
+        }
+        .selected_product_tag img { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
+        .selected_product_tag .remove_tag {
+            background: none; border: none; cursor: pointer; color: #aaa; font-size: 0.8rem; padding: 0;
+        }
+        .selected_product_tag .remove_tag:hover { color: #e74c3c; }
+
+        .write_actions {
+            display: flex; justify-content: flex-end; gap: 10px;
+            margin-top: 28px; padding-top: 24px; border-top: 1px solid #f0f0f0;
+        }
+        .btn_cancel {
+            padding: 11px 24px; border-radius: 100px; border: 1.5px solid #ddd;
+            background: #fff; color: #666; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+        }
+        .btn_cancel:hover { border-color: #999; color: #333; }
+        .btn_submit {
+            padding: 11px 28px; border-radius: 100px; border: none;
+            background: #111; color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+        }
+        .btn_submit:hover { background: #333; }
+        .btn_submit:disabled { background: #ccc; cursor: not-allowed; }
+        .login_required { text-align: center; padding: 60px 20px; color: #999; font-size: 0.9rem; }
+        .login_required a { color: #111; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div id="header-container"></div>
+
+<div id="wrap">
+<div class="write_wrap">
+    <div class="write_header">
+        <h2>👕 Share Fit</h2>
+        <a class="write_back" th:href="@{community}">← 커뮤니티로 돌아가기</a>
+    </div>
+
+    <div id="loginRequired" class="login_required" style="display:none;">
+        로그인이 필요해요. <a href="./login">로그인하기</a>
+    </div>
+
+    <div class="write_card" id="writeCard" th:if="${session.loginMember != null}">
+        <div class="cat_fixed_badge">📸 Share Fit</div>
+
+        <!-- 이미지 업로드 -->
+        <div class="write_field">
+            <label>핏 사진 <span style="color:#e74c3c;font-weight:400;">*필수</span> <span style="font-weight:400;color:#bbb;">(최대 5장)</span></label>
+
+            <!-- 이미지 미리보기 그리드 -->
+            <div class="img_preview_grid" id="imgPreviewGrid"></div>
+
+            <!-- 추가 버튼 (5장 미만일 때만 표시) -->
+            <div class="img_upload_zone" id="imgUploadZone">
+                <input type="file" id="imgFileInput" accept="image/*" multiple>
+                <div class="img_upload_placeholder">
+                    <div style="font-size:2.2rem;margin-bottom:8px;">📷</div>
+                    <div style="font-size:0.95rem;font-weight:700;color:#333;margin-bottom:4px;">핏 사진을 업로드해주세요</div>
+                    <div style="font-size:0.78rem;color:#aaa;">JPG, PNG, WEBP · 최대 10MB · 최대 5장</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 내용 -->
+        <div class="write_field">
+            <label>코디 설명 <span style="font-weight:400;color:#bbb;">(선택)</span></label>
+            <textarea class="write_input write_textarea" id="contentInput"
+                      placeholder="착용 아이템, 코디 포인트 등을 자유롭게 적어주세요" maxlength="1000"></textarea>
+            <div class="write_count"><span id="contentCount">0</span> / 1000</div>
+        </div>
+
+        <!-- 상품 인용 -->
+        <div class="write_field">
+            <label>착용 상품 인용 <span style="font-weight:400;color:#bbb;">(선택)</span></label>
+            <div class="product_picker">
+                <div class="product_picker_header" id="productPickerHeader">
+                    <span>착용한 OnFit 상품을 인용하세요</span>
+                    <span class="toggle_icon">▾</span>
+                </div>
+                <div class="product_list_wrap" id="productListWrap">
+                    <input type="text" class="product_search_input" id="productSearchInput" placeholder="상품 검색...">
+                    <div class="product_items" id="productItems">
+                        <div style="text-align:center;padding:20px;color:#bbb;font-size:0.82rem;">상품 불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="selected_products" id="selectedProducts"></div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="write_actions">
+            <button class="btn_cancel" onclick="history.back()">취소</button>
+            <button class="btn_submit" id="submitBtn">공유하기</button>
+        </div>
+    </div>
+    <div id="footer-mount"></div>
+</div>
+</div>
+<script th:src="@{/js/include.js}"></script>
+<script th:src="@{/js/ShareFitWrite.js}"></script>
+</body>
+</html>

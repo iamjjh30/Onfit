@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <title>OnFit - Community</title>
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <link rel="stylesheet" th:href="@{/css/Community.css}">
+    <style>
+        /* 작성 버튼 드롭다운 */
+        .write_btn_wrap {
+            position: relative;
+        }
+        .write_btn {
+            width: 100%;
+            cursor: pointer;
+        }
+        .write_dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: #fff;
+            border: 1.5px solid #ebebeb;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+            z-index: 100;
+            min-width: 140px;
+        }
+        .write_dropdown.open { display: block; }
+        .write_dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .write_dropdown a:hover { background: #f5f5f5; }
+        .write_dropdown a + a { border-top: 1px solid #f0f0f0; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div id="wrap">
+        <div class="Community_container">
+            <aside class="sidebar">
+                <div class="menu_group">
+                    <h3 class="group_title">CATEGORIES</h3>
+                    <ul id="menu_list">
+                        <li class="menu_item active" data-menu="HOME">HOME</li>
+                        <li class="menu_item" data-menu="Q&A">Q&A</li>
+                        <li class="menu_item" data-menu="잡담">잡담</li>
+                        <li class="menu_item" data-menu="공유">공유</li>
+                    </ul>
+                    <ul id="menu_list2">
+                        <li class="menu_item" data-menu="Share Fit">Share Fit</li>
+                    </ul>
+                </div>
+
+                <div class="content_area">
+                    <div class="header_actions">
+                        <div class="search_wrapper">
+                            <input type="text" placeholder="검색" class="search_input" id="searchInput">
+                            <img th:src="@{/img/community/search.png}" alt="search" class="search_icon">
+                        </div>
+                        <!-- 작성 버튼 드롭다운 -->
+                        <div class="write_btn_wrap">
+                            <button class="write_btn" id="writeBtnToggle">작성 ▾</button>
+                            <div class="write_dropdown" id="writeDropdown">
+                                <a th:href="@{/community/write}">✏️ 글쓰기</a>
+                                <a th:href="@{/community/sharefit_write}">📸 Share Fit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a th:href="${session.loginMember != null ? '/PwdCheck' : '/login'}">
+                        <div class="user_profile">
+                            <div class="profile_img">
+                                <img th:src="@{/img/interface/ProfileDefault.png}" alt="profile" id="userProfileImg">
+                            </div>
+                            <span class="user_name" id="userName"
+                                  th:text="${session.loginMember != null ? session.loginMember.name + ' 님' : '로그인 해주세요'}">
+            동길홍전
+        </span>
+                        </div>
+                    </a>
+                </div>
+            </aside>
+
+            <div class="list_container" id="postListContainer"></div>
+        </div>
+
+        <div id="footer-mount"></div>
+    </div>
+
+    <script th:src="@{/js/include.js}"></script>
+    <script th:src="@{/js/Community.js}"></script>
+
+    <script>
+        var writeBtnToggle = document.getElementById('writeBtnToggle');
+        var writeDropdown  = document.getElementById('writeDropdown');
+        writeBtnToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            writeDropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function() {
+            writeDropdown.classList.remove('open');
+        });
+    </script>
+</body>
+</html>

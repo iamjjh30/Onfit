@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/Login.css}"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>OnFit.com — Login</title>
+
+    <style>
+        .error-message {
+            background-color: #ffeaea;
+            color: #d32f2f;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #ffcdd2;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+
+    <div id="header">
+        <a th:href="@{/}" class="logo-link">
+            <img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit Logo">
+        </a>
+        <span class="header-tag">Member Area</span>
+    </div>
+
+    <div id="main">
+
+        <div class="left-panel">
+            <div class="left-inner">
+                <div class="season-label">2026 S/S Collection</div>
+                <h2 class="editorial-title">Your <em>Style</em><br>Starts Here</h2>
+                <p class="editorial-sub">트렌드를 입고, 감각을 완성하세요.<br>OnFit이 당신의 룩을 큐레이션합니다.</p>
+                <div class="accent-bar"></div>
+                <div class="tag-row">
+                    <span class="tag">#Minimal</span>
+                    <span class="tag">#Urban</span>
+                    <span class="tag">#Dandy</span>
+                    <span class="tag">#Street</span>
+                </div>
+            </div>
+            <div class="deco-circle c1"></div>
+            <div class="deco-circle c2"></div>
+        </div>
+
+        <div class="right-panel">
+            <div class="form-container">
+
+                <div class="form-header">
+                    <h1>Login</h1>
+                    <p class="form-sub">다시 만나 반가워요 👋</p>
+                </div>
+
+                <div th:if="${errorMessage}" class="error-message">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span th:text="${errorMessage}">아이디 또는 비밀번호가 맞지 않습니다.</span>
+                </div>
+
+                <form th:action="@{/login}" method="post">
+
+                    <div class="field-group">
+                        <label class="field-label">아이디</label>
+                        <div class="input-wrap">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            <input type="text" name="loginId" class="field-input" placeholder="ID를 입력해주세요" required>
+                        </div>
+                        <div class="field-confirm">좋은 아이디에요 ✓</div>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">비밀번호</label>
+                        <div class="input-wrap">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                            <input type="password" name="password" class="field-input" placeholder="Password를 입력해주세요" required id="pw-input">
+                            <button type="button" class="pw-toggle" id="pw-toggle" tabindex="-1">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" id="eye-icon"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                        <div class="field-confirm">완벽해요 ✓</div>
+                    </div>
+
+                    <div class="options-row">
+                        <label class="remember-wrap">
+                            <input type="checkbox" id="remember" name="rememberMe">
+                            <span class="custom-check"></span>
+                            <span class="remember-txt">로그인 유지</span>
+                        </label>
+                        <a th:href="@{/find}" class="find-link">아이디 / 비밀번호 찾기</a>
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <span>Login</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </button>
+
+                </form>
+
+                <div class="signup-row">
+                    <span>아직 계정이 없으신가요?</span>
+                    <a th:href="@{/join}" class="signup-link">회원가입 →</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const pwInput = document.getElementById('pw-input');
+    const pwToggle = document.getElementById('pw-toggle');
+    pwToggle.addEventListener('click', () => {
+        const isHidden = pwInput.type === 'password';
+        pwInput.type = isHidden ? 'text' : 'password';
+        pwToggle.style.opacity = isHidden ? '1' : '0.4';
+    });
+</script>
+</body>
+</html>

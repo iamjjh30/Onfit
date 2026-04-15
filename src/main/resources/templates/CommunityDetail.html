@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <title>OnFit.com</title>
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <link rel="stylesheet" th:href="@{/css/CommunityDetail.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div id="header-container"></div>
+
+    <!-- ===================================================
+         일반 모드: 기존 스크롤 레이아웃
+         JS에서 type!=='media'일 때 표시
+    =================================================== -->
+    <div id="wrap">
+        <div class="detail_container" id="normalLayout">
+            <div class="detail_content">
+
+                <div class="post_info_section">
+                    <div class="post_header">
+                        <div class="author_section">
+                            <div class="author_img">
+                                <img src="../img/interface/ProfileDefault.png" alt="author" id="postAuthorImg2"/>
+                            </div>
+                            <div class="author_info">
+                                <span class="author_name" id="postAuthorName2">작성자</span>
+                                <span class="post_date"   id="postDate2"></span>
+                            </div>
+                        </div>
+                        <!-- ⋯ 메뉴는 JS에서 동적으로 삽입 -->
+                        <div id="normalMenuAnchor"></div>
+                    </div>
+
+                    <div class="post_body">
+                        <p class="post_text" id="postText2"></p>
+                    </div>
+
+                    <div id="normalImageBox" style="display:none;">
+                        <img id="normalImage" src="" alt="post">
+                    </div>
+
+                    <div class="product_box" id="normalProductBox" style="display:none;">
+                        <img src="" alt="product" id="normalProductImg"/>
+                        <div class="product_info">
+                            <span class="product_name"  id="normalProductName"></span>
+                            <span class="product_price" id="normalProductPrice"></span>
+                        </div>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stats_left">
+                            <button class="stat_btn" id="postHeartBtn2">
+                                <img src="../img/community/heart.png" alt="heart"/>
+                                <span id="postHeartCount2">0</span>
+                            </button>
+                            <span class="stat_item">
+                                <img src="../img/community/bubble.png" alt="comment"/>
+                                <span id="totalCommentCount2">0</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="divider_line"></div>
+                    <div class="comments_section" id="commentsSection2"></div>
+
+                    <div class="comment_input_section">
+                        <div class="input_wrapper">
+                            <div class="input_user_img">
+                                <img src="../img/interface/ProfileDefault.png" alt="user"/>
+                            </div>
+                            <input type="text" class="comment_input" placeholder="댓글을 남겨보세요." id="commentInput2"/>
+                            <button class="submit_btn" id="submitCommentBtn2">등록</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div id="footer-mount"></div>
+    </div><!-- /#wrap -->
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script th:src="@{/js/include.js}"></script>
+    <script th:src="@{/js/CommunityDetail.js}"></script>
+</body>
+</html>

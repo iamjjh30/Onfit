@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnFit.com</title>
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{css/Main.css}"/>
+    <link rel="stylesheet" th:href="@{css/Ask_question.css}"/>
+</head>
+<body><div th:replace="~{fragments/header :: header}"></div>
+        <div class="container">
+            <h1>Fit BTI 질문지</h1>
+            <h2>나만의 스타일을 찾아보세요</h2>
+
+            <div class="question-card">
+                <h3>1. 길에서 누군가 "저기, 혹시 옷 정보 좀 알수 있을까요?"라고 묻는다면?</h3>
+                <div class="item_box">
+                    <label><input type="radio" name="q1" value="E" data-type="E"><span>내 센스를 인정받은 것 같아 뿌듯하게 알려준다 (E)</span></label>
+                    <label><input type="radio" name="q1" value="I" data-type="I"><span>쑥스러워서 대충 대답하고 서둘러 떠난다 (I)</span></label>
+                </div>
+            </div>
+            <div class="question-card">
+                <h3>2. 주말 아침, 집 앞 브런치 카페에 갈 때 당신의 선택은?</h3>
+                <div class="item_box">
+                    <label><input type="radio" name="q2" value="S" data-type="S"><span>무조건 편한 추리닝이나 원마일웨어. 활동성이 제일 중요해!! (S)</span></label>
+                    <label><input type="radio" name="q2" value="N" data-type="N"><span>그래도 사진은 남겨야지! 셋업이나 꾸민 느낌의 외출복 (N)</span></label>
+                </div>
+            </div>
+            <div class="question-card">
+                <h3>3. "이 스타일 요즘 유행이라는데 너랑은 좀 안어울려"라는 말을 들었을때</h3>
+                <div class="item_box">
+                    <label><input type="radio" name="q3" value="T" data-type="T"><span>왜? 색감이나 핏의 문제를 냉정하게 분석한다 (T)</span></label>
+                    <label><input type="radio" name="q3" value="F" data-type="F"><span>아... 그래? 상처받거나, 그 옷에 대한 애정이 급격히 식는다 (F)</span></label>
+                </div>
+            </div>
+            <div class="question-card">
+                <h3>4. 내일 아침 출근 / 등교 룩 정하는 시점은?</h3>
+                <div class="item_box">
+                    <label><input type="radio" name="q4" value="J" data-type="J"><span>전날 밤 이미 머릿속으로 양말까지 다 세팅 끝 (J)</span></label>
+                    <label><input type="radio" name="q4" value="P" data-type="P"><span>아침에 눈 떠서 그날 날씨, 기분에 따라 옷장을 뒤진다 (P)</span></label>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submitBtn">결과 확인하기</button>
+
+            <div id="result-area" style="display:none;">
+                <h3>당신의 Fit BTI 결과는?</h3>
+                <div class="type-tag" id="mbti-type">----</div>
+
+                <!-- ISTJ -->
+                <div class="mbti-result" id="result-ISTJ" style="display:none;">
+                    <p class="result-desc">깔끔하고 단정한 베이직 스타일을 선호합니다. 유행보다 퀄리티와 실용성을 중시하며, 화이트 셔츠와 슬랙스 같은 타임리스 아이템이 옷장의 중심입니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#클래식</span>
+                        <span class="style-tag">#미니멀</span>
+                        <span class="style-tag">#타임리스</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>화이트 옥스포드 셔츠 + 슬랙스</li><li>베이지 트렌치코트</li><li>모노톤 니트 + 테일러드 팬츠</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>과한 로고 플레이 아이템</li><li>찢어진 데님 (디스트레스드)</li><li>형광 컬러 믹스 코디</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ISFJ -->
+                <div class="mbti-result" id="result-ISFJ" style="display:none;">
+                    <p class="result-desc">편안하면서도 따뜻한 무드의 스타일을 즐깁니다. 플로럴 패턴이나 부드러운 파스텔 톤, 리넨 소재 등 자연스러운 분위기를 좋아합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#내추럴</span>
+                        <span class="style-tag">#로맨틱</span>
+                        <span class="style-tag">#파스텔</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>플로럴 미디 스커트 + 화이트 블라우스</li><li>리넨 셋업 (라벤더, 민트)</li><li>크림 니트 + 와이드 팬츠</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>올블랙 하드 무드 코디</li><li>메탈릭 소재 아우터</li><li>과한 스터드 액세서리</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INFJ -->
+                <div class="mbti-result" id="result-INFJ" style="display:none;">
+                    <p class="result-desc">감각적이고 독창적인 무드를 추구합니다. 과하지 않지만 어딘가 특별한 디테일이 있는 옷을 선호하며, 전체적으로 정제된 무드를 유지합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#아트무드</span>
+                        <span class="style-tag">#미니멀</span>
+                        <span class="style-tag">#감각적</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>비대칭 넥라인 탑 + 와이드 팬츠</li><li>오버사이즈 코트 + 이너 레이어링</li><li>독특한 텍스처 니트 단품 코디</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>화려한 스팽글 파티룩</li><li>스포티한 트레이닝 세트</li><li>빅 로고 스트리트 무드</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INTJ -->
+                <div class="mbti-result" id="result-INTJ" style="display:none;">
+                    <p class="result-desc">라인이 명확하고 구조적인 실루엣을 선호합니다. 블랙, 그레이, 네이비 중심의 절제된 컬러 팔레트와 기능성을 중시합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#구조적</span>
+                        <span class="style-tag">#모던</span>
+                        <span class="style-tag">#모노톤</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>블랙 테일러드 수트</li><li>스트럭처드 숄더 코트</li><li>그레이 터틀넥 + 슬림 팬츠</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>과한 프릴·러플 디테일</li><li>알록달록 컬러 블로킹</li><li>귀여운 캐릭터 프린트</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ISTP -->
+                <div class="mbti-result" id="result-ISTP" style="display:none;">
+                    <p class="result-desc">기능성과 스타일을 동시에 잡는 테크웨어나 워크웨어 계열에 끌립니다. 실용적인 포켓, 유틸리티 디테일을 좋아합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#테크웨어</span>
+                        <span class="style-tag">#유틸리티</span>
+                        <span class="style-tag">#스트리트</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>카고 팬츠 + 테크 재킷</li><li>유틸리티 베스트 레이어링</li><li>워크 부츠 + 와이드 데님</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>과한 레이스·시스루 소재</li><li>미니멀 올화이트 포멀룩</li><li>하이힐 드레시 코디</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ISFP -->
+                <div class="mbti-result" id="result-ISFP" style="display:none;">
+                    <p class="result-desc">그날의 기분과 감성을 옷으로 표현합니다. 빈티지 믹스, 아트워크 프린트, 독특한 컬러 조합을 즐기는 자유로운 스타일리스트입니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#감성</span>
+                        <span class="style-tag">#빈티지믹스</span>
+                        <span class="style-tag">#자유로운</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>빈티지 그래픽 티 + 미디 스커트</li><li>컬러 청재킷 레이어링</li><li>아트워크 프린트 원피스</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>딱딱한 포멀 수트</li><li>무채색 단일 톤 코디</li><li>로고만 가득한 명품 풀세트</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INFP -->
+                <div class="mbti-result" id="result-INFP" style="display:none;">
+                    <p class="result-desc">개성 있는 빈티지 아이템과 감성적인 레이어링을 즐깁니다. 유행보다 자신만의 세계관을 담은 스타일링을 추구합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#빈티지</span>
+                        <span class="style-tag">#드리머</span>
+                        <span class="style-tag">#레이어링</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>플리마켓 빈티지 재킷 + 롱스커트</li><li>보헤미안 레이어드 룩</li><li>독립 아티스트 브랜드 티셔츠</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>트렌디한 패스트패션 풀세트</li><li>과한 비즈니스 포멀</li><li>획일적인 교복형 스타일</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INTP -->
+                <div class="mbti-result" id="result-INTP" style="display:none;">
+                    <p class="result-desc">겉으로는 단순해 보이지만 자세히 보면 독특한 포인트가 숨어있는 스타일입니다. 편안함이 최우선이며 그래픽 티나 오버핏을 즐깁니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#아이러닉</span>
+                        <span class="style-tag">#오버핏</span>
+                        <span class="style-tag">#히든포인트</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>유니크 그래픽 오버사이즈 티</li><li>와이드 팬츠 + 심플 이너</li><li>독특한 문구·아트 프린트 후드</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>빡빡한 타이트 수트</li><li>과한 액세서리 풀코디</li><li>트렌디 하이패션 풀세트</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTP -->
+                <div class="mbti-result" id="result-ESTP" style="display:none;">
+                    <p class="result-desc">최신 트렌드에 민감하고 과감한 스타일링을 즐깁니다. 스니커즈, 볼드한 로고, 힙한 실루엣으로 눈에 띄는 것을 두려워하지 않습니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#트렌디</span>
+                        <span class="style-tag">#스트리트</span>
+                        <span class="style-tag">#볼드</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>빅 로고 후디 + 조거 팬츠</li><li>청키 스니커즈 + 배기 데님</li><li>스타디움 점퍼 레이어링</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>올드머니 조용한 럭셔리 룩</li><li>잔잔한 플로럴 로맨틱 룩</li><li>과한 레이어드 보헤미안</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESFP -->
+                <div class="mbti-result" id="result-ESFP" style="display:none;">
+                    <p class="result-desc">밝고 화려한 컬러와 재미있는 패턴을 즐깁니다. 패션을 즐기고 표현하는 것을 사랑하며, 파티나 이벤트 룩이 특히 빛납니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#컬러풀</span>
+                        <span class="style-tag">#화려함</span>
+                        <span class="style-tag">#파티룩</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>비비드 컬러 미니 드레스</li><li>시퀸 탑 + 사틴 스커트</li><li>컬러 블로킹 세트업</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>무채색 미니멀 코디</li><li>오버사이즈 먹색 후드</li><li>군더더기 없는 올블랙</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENFP -->
+                <div class="mbti-result" id="result-ENFP" style="display:none;">
+                    <p class="result-desc">예상치 못한 조합으로 매번 새로운 무드를 연출합니다. 레이어링과 액세서리 활용이 뛰어나며 패션으로 이야기를 만들어냅니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#크리에이티브</span>
+                        <span class="style-tag">#믹스매치</span>
+                        <span class="style-tag">#스토리텔링</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>패턴 혼합 레이어드 룩</li><li>빈티지 + 모던 믹스매치</li><li>독특한 액세서리 포인트 코디</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>획일적 유니폼 스타일</li><li>변화 없는 단색 베이직만</li><li>딱딱한 비즈니스 포멀</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENTP -->
+                <div class="mbti-result" id="result-ENTP" style="display:none;">
+                    <p class="result-desc">규칙을 깨는 것을 즐기며 독창적인 스타일 실험을 두려워하지 않습니다. 젠더리스 패션이나 아방가르드 브랜드에 관심이 많습니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#아방가르드</span>
+                        <span class="style-tag">#젠더리스</span>
+                        <span class="style-tag">#실험적</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>젠더리스 오버사이즈 수트</li><li>아방가르드 디자이너 피스</li><li>예상 밖의 소재 믹스 코디</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>정형화된 교과서 포멀룩</li><li>트렌드 추종형 패스트패션</li><li>무난한 베이직 반복 코디</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTJ -->
+                <div class="mbti-result" id="result-ESTJ" style="display:none;">
+                    <p class="result-desc">TPO를 철저히 지키는 스타일리스트입니다. 깔끔한 테일러드 룩과 단정한 코디를 선호하며 신뢰감을 주는 패션을 추구합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#샤프</span>
+                        <span class="style-tag">#포멀</span>
+                        <span class="style-tag">#신뢰감</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>네이비 테일러드 블레이저</li><li>스트라이프 셔츠 + 치노 팬츠</li><li>클래식 더블 브레스티드 코트</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>과한 찢김·워싱 데님</li><li>TPO 무시한 슬리퍼 외출</li><li>형광 컬러 스트리트 무드</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESFJ -->
+                <div class="mbti-result" id="result-ESFJ" style="display:none;">
+                    <p class="result-desc">유행하는 아이템을 자신에게 잘 맞게 소화하는 능력이 탁월합니다. 주변 사람들의 반응을 즐기며 상황에 맞는 세련된 룩을 연출합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#트렌디</span>
+                        <span class="style-tag">#스타일리시</span>
+                        <span class="style-tag">#세련된</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>시즌 트렌드 원피스</li><li>잘 맞는 데님 + 트렌디 탑</li><li>시그니처 컬러 백 포인트</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>너무 튀는 아방가르드 룩</li><li>지나치게 캐주얼한 트레이닝</li><li>계절 무시한 코디</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENFJ -->
+                <div class="mbti-result" id="result-ENFJ" style="display:none;">
+                    <p class="result-desc">세련되고 영향력 있는 스타일을 지향합니다. 전체적인 무드와 조화를 중시하며 자신만의 시그니처 룩이 명확합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#우아함</span>
+                        <span class="style-tag">#인플루언서</span>
+                        <span class="style-tag">#시그니처</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>드레이프 원피스 + 힐</li><li>세미포멀 블레이저 세트</li><li>시그니처 컬러 코트 코디</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>과한 유틸리티 워크웨어</li><li>지저분한 레이어드 믹스</li><li>스포티 트레이닝 데일리</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENTJ -->
+                <div class="mbti-result" id="result-ENTJ" style="display:none;">
+                    <p class="result-desc">존재감 있고 카리스마 넘치는 스타일을 추구합니다. 하이엔드 브랜드와 파워숄더, 강렬한 컬러로 리더십을 패션으로 표현합니다.</p>
+                    <div class="tag-row">
+                        <span class="style-tag">#파워</span>
+                        <span class="style-tag">#럭셔리</span>
+                        <span class="style-tag">#카리스마</span>
+                    </div>
+                    <div class="rec-grid">
+                        <div class="rec-card good">
+                            <div class="rec-title">✅ 추천 패션</div>
+                            <ul><li>파워숄더 블레이저 + 부츠</li><li>올블랙 하이엔드 세트업</li><li>강렬한 레드·버건디 코트</li></ul>
+                        </div>
+                        <div class="rec-card bad">
+                            <div class="rec-title">❌ 피해야 할 패션</div>
+                            <ul><li>지나치게 귀여운 파스텔 룩</li><li>헐렁한 후드 트레이닝</li><li>존재감 없는 무채색 베이직</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-buttons">
+                    <button id="btn-shop">🛍️ 쇼핑하러 가기</button>
+                    <button id="btn-retry">🔄 재검사</button>
+                </div>
+            </div>
+        </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/Ask_question.js}"></script>
+</body>
+</html>

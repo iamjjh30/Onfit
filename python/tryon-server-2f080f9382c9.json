@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "tryon-server",
+  "private_key_id": "2f080f9382c9f17b77de18229949f3f826c184a0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCyD4GK7cYCB7pU\nijmnHqS/I7CFPYQttoa7H//ttHQ6Q7109y5MEEAx/SNZ+f/wE/VV290tuc4pFyIw\n+M5nqqWpcu+JqiRelHICiN1ibIR5AnfsX8BbLrqfgUZq+fEDQpmgegtYTm6ipl1x\n/OixWmyHeGqdo1y/Eb7kaz0lsvZSzjSbQCcf/wzAADxZdDPx47ZmPQuCjgiddAsi\na+v0QS3ceB5n+aGvpQVQ0OLTpfOQdaICc0nZaE8F/+cEII/lNfgozMKl6oKsEhml\nREeXeMyq3McftxPrTtUTk8YQW5BfSLDJ9J2RAfh6gXKqKYIIzP0c+IusFvHxhgQb\nKlrJiogjAgMBAAECggEAAihGR02VESGrRtMVajkzlBQyi247vOK7LN2QXMBCJpTP\nYP25reWcBQO2KFnrO7FuTvRcuFEU12ged7YPg07Bz4ItQEAzcoHPPJc10cpDO6WP\nmE17tbNmYga8uKBNYx1iHU9P9ishMua/sP0nIY5fXxO8+XvqjSQ6BX1ucgHG5t5A\n8tLx5Aewq//NfzOryeiA5X5WSZLIMxJ9e4ZltUxtt2BoIrfueLxZYC1PTbZvBlWR\niWOjIdbXvlhI6IPuBbBTBlRoYAENyyAVcyVcm6U9vU4TL9spKTZsQJOPaeivvFba\nxRy8j9VdQp1Qz0w0eqk6SLFKUCQd8wKnQfab8aEImQKBgQDdN0WHF69oPW6gh6wA\njnPpMRH6GRvPTmNZ5jkdG5lFM5nPm/1W0uZ7b/639ciTseG0MJebbVeiWIN3L61L\nlAXJKZBZ+NQPvC3ogNRyBhD+YNWFRbs7zuZX1H7Pbhh8gKrkr7BgM7EUE9U4yvxv\nqA7pRtKnkUVgfM3c90XGs2tcvQKBgQDODxQVylLcTuSzaKmBFTmxLsdJVdnsfzI7\njyKs4RKzJcwagLF+znd6fhOkakqZKPEHU8Wa7o/ik8tcaITxpuhpDjfhWiE7eumY\n+mNQ6hG3d0PALdrl4rabHtq2gxb9pYZkMhRUXNgp0e17rGFVparQSkoR2ZG5z22v\nPc6fKQR2XwKBgHlIY2M0liPFgpCasa/AakZQc/W1rGyVIp1YPrn5tqedKdgMQvJG\nQL0uYu3C4Ewxe3hKJ+S8Jw7IDpPa3N0R87Ydhpn9dW6HEnhloZQ+RTTiLE6cM5IP\n1nQS+c+KIfyoooks1bt4u74xPXacu5gQANTe0oGygOHsqwVZwLS3C8bVAoGAeF1i\ndCANKteCzDHU4awOWStkCbh2ZakfJJ9FuAp5K+BmSwzloZblP84plx7nmHPL52XN\nxeSYc9e1MLN1BNtkYwmFJsPJKb9weIW6QeeYlby6/KVMeoBl/lKVm4sTgPKRgDGo\nombhdfxEZruY17jAAI+EmMyoTQuXnIfUDDCfhK0CgYBzL6cInF9MF+Ds24HYQuDD\nnxlHX07LGErw88oN7DmkmxRMlevSDX13X7FaNVRr3XCIx4t0w4G9uEbyFRTeOlAV\n6KUIdLsqu0t3F88LWzAfSse2cDYHOcDRFKJfNmnPR5zlUluEFmUAn6MOtwvdSUj1\nbTDi3THAiKwzQOyXoGiueg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "tryon-server@tryon-server.iam.gserviceaccount.com",
+  "client_id": "113742047320369013776",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/tryon-server%40tryon-server.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

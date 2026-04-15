@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com</title>
+    <link rel="stylesheet" href="css/Community_Editor.css"/>
+</head>
+<body>
+    <div id="wrap">
+        <div th:replace="~{fragments/header :: header}"></div>
+        <!--본문-->
+        <div id="Editor">
+            <form id="content">
+                <textarea placeholder="내용을 작성해주세요."></textarea>
+                <button type='submit' id="btn">작성하기</button>
+            </form>
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script>
+        
+    </script>
+</body>
+</html>

@@ -3,70 +3,56 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!headerContainer) return;
 
     headerContainer.innerHTML = `
+    <div id="header-outer">
     <div id="header">
-        <div class="header_left_group">
-        <a href="/">
+        <a href="../">
             <div id="logo">
-                <img src="../img/interface/logo.png" alt="OnFit Logo">
+                <img src="../img/interface/LOGO_B.png">
             </div>
         </a>
         <nav>
             <ul>
-                <a href="../diagnosis"><li>AI진단</li></a>
-                <a href="../virtualFitting"><li>가상피팅</li></a>
-                <a href="../storeMain"><li>스토어</li></a>
-                <li>커뮤니티</li>
-                <li>내 팔레트</li>
+                <a href="/AIStyler"><li>AI진단</li></a>
+                <a href="/store"><li>스토어</li></a>
+                <a href="/Community"><li>커뮤니티</li></a>
+                <a href="/MyPalette"><li>내 팔레트</li></a>
             </ul>
         </nav>
-    </div>
-        <div class="header_icon_wrap">
-            <div class="header_icon">
-                <img src="../img/Main/icon_profile.png">
-                    <div class="header_icon_hover1">
-                        <nav>
-                            <ul>
-                                <a href="../login"><li>로그인</li></a>
-                                <a href="../signIn"><li>회원가입</li></a>
-                                <a href="../find"><li>ID 찾기</li></a>
-                            </ul>
-                        </nav>
-                    </div>
-            </div>
 
-            <div class="header_icon">
-                <img src="../img/Main/icon_cart (1).png">
-                    <div class="header_icon_hover2">
-                        <nav>
-                            <ul>
-                                <li>장바구니</li>
-                                <li>주문내역</li>
-                                <li>스토어</li>
-                            </ul>
-                        </nav>
-                    </div>
+        <!-- 검색창 — 항상 노출, 좌측 돋보기 아이콘 포함 -->
+        <div id="header-search-inline">
+            <div id="header-search-box">
+                <svg id="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="search" id="header-search-input" placeholder="Mens Fashion Solution" autocomplete="off">
             </div>
+        </div>
 
-            <div class="header_icon">
-                <img src="../img/Main/icon_search.png">
-                    <div class="header_icon_hover3">
-                        <div class="header_search">
-                            <form><input class="header_search_main" type="search" placeholder="검색어를 입력해주세요"></form>
-                        </div>
-                        <div class="header_main">
-                            <p>실시간 검색 결과</p>
-                            <div class="header_main_search">
-                                <div class="header_main_s"></div>
-                                <div class="header_main_s"></div>
-                                <div class="header_main_s"></div>
-                                <div class="header_main_s"></div>
-                                <div class="header_main_s"></div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- 프로필 아이콘 -->
+        <div class="header_icon">
+            <img src="../img/Main/icon_profile.png">
+            <div class="header_icon_hover1">
+                <nav><ul>
+                    <li><a href="/login">로그인</a></li>
+                    <li><a href="/signIn">회원가입</a></li>
+                    <li><a href="/find">ID 찾기</a></li>
+                </ul></nav>
+            </div>
+        </div>
+        <!-- 장바구니 아이콘 -->
+        <div class="header_icon">
+            <img src="../img/Main/icon_cart (1).png">
+            <div class="header_icon_hover2">
+                <nav><ul>
+                    <li><a href="/Cart">장바구니</a></li>
+                    <li><a href="/OrderInfo">주문내역</a></li>
+                    <li><a href="/store">스토어</a></li>
+                </ul></nav>
             </div>
         </div>
     </div>
+</div>
 `;
     const header = document.querySelector('#header');
     const tabLinks = document.querySelectorAll('[data-tab]');

@@ -1,0 +1,445 @@
+/* =============================================
+   OnFit — Login Page CSS (Renewal)
+   Palette: #FFB834 amber accent, #1A1A1A dark,
+            #F4F2EE warm off-white bg
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500;600&display=swap');
+
+@keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-12px); }
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input  { font-family: inherit; }
+
+/* ── Root Variables ── */
+:root {
+    --accent:    #FFB834;
+    --accent-dk: #E5A020;
+    --dark:      #1A1A1A;
+    --mid:       #555555;
+    --light:     #AAAAAA;
+    --bg:        #F4F2EE;
+    --white:     #FFFFFF;
+    --border:    #E0DDD8;
+    --font-serif: 'DM Serif Display', serif;
+    --font-sans:  'Noto Sans KR', sans-serif;
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg);
+    color: var(--dark);
+}
+
+/* ── Wrap ── */
+#wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    animation: fadeInPage 0.5s ease-out 0.05s forwards;
+}
+
+/* ── Header ── */
+#header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+#header .logo-link img {
+    width: 110px;
+    height: 36px;
+    object-fit: contain;
+    margin: 0;
+    display: block;
+}
+.header-tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--light);
+}
+
+/* ── Main: split layout ── */
+#main {
+    flex: 1;
+    display: flex;
+    min-height: calc(100vh - 56px);
+}
+
+/* ── Left Panel ── */
+.left-panel {
+    flex: 1;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideInLeft 0.6s ease-out 0.2s both;
+}
+.left-inner {
+    position: relative;
+    z-index: 2;
+    padding: 60px 56px;
+}
+.season-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+}
+.editorial-title {
+    font-family: var(--font-serif);
+    font-size: clamp(42px, 4.5vw, 64px);
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 24px;
+}
+.editorial-title em {
+    color: var(--accent);
+    font-style: italic;
+}
+.editorial-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.9;
+    margin-bottom: 40px;
+}
+.accent-bar {
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+    margin-bottom: 32px;
+    border-radius: 2px;
+}
+.tag-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 5px 14px;
+    border-radius: 100px;
+    transition: all 0.25s ease;
+}
+.tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Decorative circles */
+.deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.c1 {
+    width: 340px;
+    height: 340px;
+    border: 1px solid rgba(255,184,52,0.12);
+    bottom: -80px;
+    right: -80px;
+    animation: floatUp 7s ease-in-out infinite;
+}
+.c2 {
+    width: 180px;
+    height: 180px;
+    border: 1px solid rgba(255,184,52,0.08);
+    top: 60px;
+    right: 60px;
+    animation: floatUp 9s ease-in-out 2s infinite;
+}
+
+/* ── Right Panel ── */
+.right-panel {
+    width: 480px;
+    min-width: 420px;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    animation: slideInRight 0.6s ease-out 0.25s both;
+}
+.form-container {
+    width: 100%;
+    max-width: 360px;
+}
+
+/* Form header */
+.form-header {
+    margin-bottom: 40px;
+}
+.form-header h1 {
+    font-family: var(--font-serif);
+    font-size: 46px;
+    color: var(--dark);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+.form-sub {
+    font-size: 14px;
+    color: var(--light);
+    font-weight: 400;
+}
+
+/* ── Field Group ── */
+.field-group {
+    margin-bottom: 22px;
+}
+.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--mid);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+.input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,184,52,0.12);
+    background: var(--white);
+}
+.field-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--light);
+    margin-left: 16px;
+    flex-shrink: 0;
+    transition: color 0.25s ease;
+}
+.input-wrap:focus-within .field-icon {
+    color: var(--accent);
+}
+.field-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--dark);
+    padding: 14px 14px 14px 10px;
+    line-height: 1;
+}
+.field-input::placeholder {
+    color: #C8C5C0;
+}
+.field-input:focus { outline: none; }
+
+.pw-toggle {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+.pw-toggle:hover { opacity: 0.8; }
+.pw-toggle svg { width: 17px; height: 17px; color: var(--mid); }
+
+.field-confirm {
+    font-size: 12px;
+    color: #3BAD6A;
+    font-weight: 500;
+    margin-top: 6px;
+    padding-left: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.field-group:has(.field-input:not(:placeholder-shown)) .field-confirm {
+    opacity: 1;
+}
+
+/* ── Options row ── */
+.options-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+.remember-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+.remember-wrap input[type="checkbox"] {
+    display: none;
+}
+.custom-check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+}
+.remember-wrap input:checked + .custom-check {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.remember-wrap input:checked + .custom-check::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+.remember-txt {
+    font-size: 13px;
+    color: var(--mid);
+    font-weight: 400;
+}
+.find-link {
+    font-size: 12px;
+    color: var(--light);
+    font-weight: 400;
+    transition: color 0.2s ease;
+}
+.find-link:hover {
+    color: var(--accent);
+}
+
+/* ── Login Button ── */
+.login-btn {
+    width: 100%;
+    height: 52px;
+    background: var(--dark);
+    color: var(--white);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+.login-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.25s ease;
+}
+.login-btn:hover {
+    background: var(--accent);
+    color: var(--dark);
+    box-shadow: 0 8px 24px rgba(255,184,52,0.3);
+    transform: translateY(-1px);
+}
+.login-btn:hover svg {
+    transform: translateX(4px);
+}
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* login → signup 간격 */
+.login-btn + * ,
+form + .signup-row {
+    margin-top: 28px;
+}
+
+/* ── Signup Row ── */
+.signup-row {
+    text-align: center;
+    font-size: 13px;
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.signup-link {
+    font-weight: 600;
+    color: var(--dark);
+    transition: color 0.2s ease;
+}
+.signup-link:hover {
+    color: var(--accent);
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+    #main { flex-direction: column; }
+    .left-panel {
+        min-height: 280px;
+        flex: none;
+    }
+    .right-panel {
+        width: 100%;
+        min-width: unset;
+    }
+}
+@media (max-width: 480px) {
+    .right-panel { padding: 40px 24px; }
+    .left-inner  { padding: 40px 28px; }
+}

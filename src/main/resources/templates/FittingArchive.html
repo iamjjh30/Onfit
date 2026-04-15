@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <title>피팅 아카이브 — OnFit</title>
+    <style>
+    :root {
+        --accent: #b5830a; --accent-light: #fdf3dc;
+        --black: #111; --gray: #888; --card-bg: #f7f7f5;
+        scroll-behavior: smooth;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+    * { padding:0; margin:0; box-sizing:border-box; }
+    nav ul li { float:left; list-style-type:none; }
+    a { text-decoration:none; color:black; }
+    a:hover { color:#FFB834; }
+    a:visited { color:black; }
+    body { background:#fff; font-family:-apple-system,'Apple SD Gothic Neo',sans-serif; }
+
+    #wrap {
+        padding:0 25px; max-width:1440px; width:90%; margin:0 auto;
+        opacity:0; animation:fadeUp 0.6s ease-out 0.3s forwards;
+    }
+
+    /* ── GNB fixed 대응 ── */
+    body { padding-top: 74px; }
+
+    #header-outer {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+        width: 100%; padding: 12px 5vw 0; box-sizing: border-box;
+    }
+    #header {
+        width: 100%; height: 50px; border-radius: 25px;
+        background: rgba(255,255,255,0.25);
+        backdrop-filter: blur(30px) saturate(220%);
+        -webkit-backdrop-filter: blur(30px) saturate(220%);
+        border: 1px solid rgba(255,255,255,0.45);
+        box-shadow: 0 10px 50px -10px rgba(0,0,0,0.1);
+        display: flex; align-items: center; overflow: visible;
+        transition: background 0.6s cubic-bezier(0.16,1,0.3,1),
+                    border-color 0.6s cubic-bezier(0.16,1,0.3,1),
+                    box-shadow 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    #logo { width: auto; flex-shrink: 0; }
+    #logo img {
+        width: 40px; height: 40px; margin: 0 20px; display: block;
+        transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
+    }
+    #logo img:hover { transform: rotate(45deg); }
+    #header nav { flex-shrink: 0; }
+    #header nav ul { display: flex; margin: 0; padding: 0; list-style: none; }
+    #header nav ul li { float: none; margin-left: 30px; line-height: 50px; cursor: pointer; white-space: nowrap; }
+    #header nav ul li:hover { color: #FFB834; font-weight: bold; transition: 0.3s ease; }
+    .gnb-active { color: #FFB834 !important; font-weight: 800 !important; }
+    #header-search-inline {
+        flex: 1; display: flex; justify-content: flex-end;
+        align-items: center; padding-right: 12px; min-width: 0;
+    }
+    #header-search-box {
+        display: flex; align-items: center; gap: 8px;
+        width: 260px; height: 36px; border-radius: 50px; padding: 0 16px;
+        background: rgba(255,255,255,0.5);
+        backdrop-filter: blur(40px) saturate(250%);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.07);
+        transition: width 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s, background 0.3s;
+    }
+    #header-search-box:focus-within {
+        width: 340px; background: rgba(255,255,255,0.75);
+        box-shadow: inset 0 0 0 1.5px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.1);
+    }
+    #search-icon { flex-shrink: 0; pointer-events: none; }
+    #header-search-input {
+        flex: 1; height: 100%; border: none; outline: none;
+        background: transparent; font-size: 13px; color: #111;
+        letter-spacing: 0.01em; font-weight: 500; min-width: 0;
+    }
+    #header-search-input::placeholder { color: #999; font-weight: 400; }
+    .header_icon {
+        flex-shrink: 0; width: auto; height: 100%; padding: 0 16px;
+        position: relative; display: flex; align-items: center; cursor: pointer;
+    }
+    .header_icon img { width: 30px; height: 30px; display: block; object-fit: contain; }
+    .header_icon:hover > .header_icon_hover1 { display: block !important; }
+    .header_icon:hover > .header_icon_hover2 { display: block !important; }
+    .header_icon_hover1, .header_icon_hover2 {
+        display: none; position: fixed; width: 160px; border-radius: 14px;
+        background-color: white; border: 1px solid rgba(0,0,0,0.10);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.13); z-index: 99999;
+        top: 54px; right: calc(5vw + -76px); overflow: hidden;
+    }
+    .header_icon_hover1 nav ul,
+    .header_icon_hover2 nav ul {
+        display: flex !important; flex-direction: column !important;
+        list-style: none; margin: 0; padding: 6px 0; width: 100%;
+    }
+    .header_icon_hover1 nav ul li,
+    .header_icon_hover2 nav ul li {
+        float: none !important; display: block !important;
+        width: 100%; line-height: 1; padding: 0; box-sizing: border-box;
+    }
+    .header_icon_hover1 nav ul li:hover,
+    .header_icon_hover2 nav ul li:hover { background: #f5f5f5; }
+    .header_icon_hover1 nav ul a,
+    .header_icon_hover2 nav ul a {
+        display: block !important; float: none !important;
+        padding: 11px 18px; font-size: 13px; font-weight: 500;
+        color: #111 !important; text-decoration: none;
+        white-space: nowrap; box-sizing: border-box; width: 100%;
+    }
+
+    /* ── footer ── */
+    footer {
+        min-height: 320px; background-color: #0a0a0a;
+        border-radius: 24px 24px 0 0; overflow: hidden;
+        margin-top: 80px; padding: 60px 60px 50px;
+        display: flex; gap: 60px; align-items: flex-start;
+    }
+    #f_left { flex-shrink: 0; width: 220px; display: flex; flex-direction: column; gap: 14px; }
+    #f_left img {
+        width: 44px; height: 44px;
+        transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
+    }
+    #f_left img:hover { transform: rotate(45deg); }
+    #f_tagline { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.6; margin-top: 4px; }
+    #f_copy { font-size: 0.72rem; color: rgba(255,255,255,0.2); margin-top: auto; padding-top: 40px; }
+    #f_right { flex: 1; display: flex; gap: 48px; justify-content: flex-end; }
+    .f_nav_group { display: flex; flex-direction: column; gap: 10px; min-width: 100px; }
+    .f_nav_title {
+        font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.16em; text-transform: uppercase;
+        color: rgba(255,255,255,0.35); margin-bottom: 4px;
+    }
+    .f_nav_group a { text-decoration: none; }
+    .f_nav_group a span {
+        font-size: 0.88rem; color: rgba(255,255,255,0.6);
+        transition: color 0.2s ease; cursor: pointer; display: block;
+    }
+    .f_nav_group a span:hover { color: white; }
+    .f_nav_group a:visited span { color: rgba(255,255,255,0.6); }
+
+    /* ── PAGE HERO ── */
+    .archive-hero {
+        margin-top:60px; display:flex; align-items:flex-end;
+        justify-content:space-between; gap:24px;
+        padding-bottom:36px; border-bottom:1px solid #f0f0f0;
+    }
+    .archive-eyebrow {
+        display:block; font-size:0.68rem; font-weight:800;
+        letter-spacing:0.2em; color:var(--gray); text-transform:uppercase; margin-bottom:12px;
+    }
+    .archive-title {
+        font-size:clamp(2rem,4vw,2.8rem); font-weight:900;
+        color:var(--black); letter-spacing:-0.04em; line-height:1.1; margin-bottom:10px;
+    }
+    .archive-sub { font-size:0.9rem; color:var(--gray); line-height:1.6; }
+    .archive-back {
+        display:inline-flex; align-items:center; gap:6px;
+        padding:10px 20px; border-radius:100px;
+        border:1.5px solid #e0e0e0; background:white;
+        font-size:0.82rem; font-weight:600; color:#555; flex-shrink:0;
+        transition:border-color 0.2s,color 0.2s,transform 0.25s;
+    }
+    .archive-back:hover { border-color:var(--black); color:var(--black); transform:translateY(-2px); }
+    .archive-back:visited { color:#555; }
+
+    /* ── 필터 바 ── */
+    .filter-bar {
+        display:flex; align-items:center; gap:10px;
+        padding:24px 0; flex-wrap:wrap;
+    }
+    .filter-label { font-size:0.78rem; font-weight:700; color:var(--gray); margin-right:4px; }
+    .filter-btn {
+        padding:7px 18px; border-radius:100px;
+        border:1.5px solid #e0e0e0; background:white;
+        font-size:0.78rem; font-weight:600; color:#555; cursor:pointer;
+        transition:border-color 0.2s,background 0.2s,color 0.2s;
+    }
+    .filter-btn:hover { border-color:var(--black); color:var(--black); }
+    .filter-btn.active { background:var(--black); border-color:var(--black); color:white; }
+    .filter-count { margin-left:auto; font-size:0.78rem; color:var(--gray); }
+    .filter-count span { font-weight:800; color:var(--black); }
+
+    /* ── 월별 섹션 ── */
+    .fitting-timeline { display:flex; flex-direction:column; }
+    .ft-month-group { margin-bottom:44px; }
+    .ft-month-label {
+        font-size:0.68rem; font-weight:800; letter-spacing:0.15em;
+        color:var(--gray); text-transform:uppercase;
+        padding:20px 0 16px; border-top:1px solid #f0f0f0;
+    }
+
+    /* 가로 스크롤 행 */
+    .ft-scroll-row {
+        display:flex;
+        flex-direction:row;
+        flex-wrap:nowrap;
+        gap:16px;
+        overflow-x:auto;
+        padding-bottom:12px;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+        scroll-behavior: smooth;
+    }
+    .ft-scroll-row::-webkit-scrollbar { display:none; }
+
+    /* ── Dot 내비게이션 ── */
+    .ft-scroll-wrap { position: relative; }
+    .ft-scroll-dots {
+        display: flex; justify-content: center; align-items: center;
+        gap: 8px; margin-top: 14px; min-height: 12px;
+    }
+    .ft-scroll-dot {
+        width: 7px; height: 7px; border-radius: 100px;
+        background: #d0d0d0; border: 0; padding: 0;
+        cursor: pointer; flex-shrink: 0;
+        transition: background 0.3s ease, width 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .ft-scroll-dot.active { background: var(--accent); width: 22px; }
+
+    /* ── 카드 — MyPalette fg-card 동일 구조 ── */
+    .ft-card {
+        flex-shrink:0;
+        width:320px;
+        background:white;
+        border-radius:18px;
+        overflow:hidden;
+        box-shadow:0 2px 16px rgba(0,0,0,0.06);
+        transition:box-shadow 0.3s,transform 0.3s;
+        display:flex;
+        flex-direction:column;
+    }
+    .ft-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.12); transform:translateY(-4px); }
+    .ft-card .product-card:hover { transform: none; box-shadow: none; }
+    .ft-card .product-card:hover img.prod-img { transform: none; }
+
+    /* 날짜 */
+    .ft-date {
+        font-size:0.65rem; font-weight:800;
+        letter-spacing:0.12em; color:var(--gray);
+        padding:14px 16px 8px;
+    }
+
+    /* ── 상품 이미지 — 호버 시 위로 올라가는 효과만 ── */
+    .product-card {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        background: #f0f0f0;
+        transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 48px rgba(0,0,0,0.16);
+    }
+    .product-card img.prod-img {
+        width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .product-card:hover img.prod-img { transform: none; }
+
+    /* 카드 정보 */
+    .ft-info {
+        padding:14px 16px 18px;
+        display:flex; flex-direction:column; gap:8px; flex:1;
+    }
+    .ft-product { font-size:0.9rem; font-weight:700; color:var(--black); }
+    .ft-comment { font-size:0.78rem; color:var(--gray); font-style:italic; line-height:1.5; }
+    .ft-tags { display:flex; gap:6px; flex-wrap:wrap; }
+    .ft-tag {
+        padding:3px 10px; border-radius:100px;
+        background:var(--accent-light); color:var(--accent);
+        font-size:0.68rem; font-weight:700;
+    }
+    .ft-actions { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
+    .ft-btn {
+        background:var(--black); color:white;
+        border:1.5px solid var(--black); border-radius:50px;
+        padding:8px 18px; font-size:0.78rem; font-weight:600; cursor:pointer;
+        transition:background 0.25s,color 0.25s,transform 0.2s;
+    }
+    .ft-btn:hover { background:white; color:var(--black); transform:translateY(-2px); }
+    .ft-btn-outline {
+        background:white; color:#555;
+        border:1.5px solid #ddd; border-radius:50px;
+        padding:8px 18px; font-size:0.78rem; font-weight:600; cursor:pointer;
+        transition:border-color 0.2s,color 0.2s,transform 0.2s;
+    }
+    .ft-btn-outline:hover { border-color:var(--black); color:var(--black); transform:translateY(-2px); }
+
+    /* ── 빈 상태 ── */
+    .empty-archive {
+        text-align:center; padding:80px 20px;
+    }
+    .empty-archive svg { opacity:0.18; margin-bottom:20px; display:block; margin-left:auto; margin-right:auto; }
+    .empty-archive p { font-size:1rem; font-weight:700; margin-bottom:8px; color:var(--black); }
+    .empty-archive span { font-size:0.85rem; color:var(--gray); display:block; margin-bottom:24px; }
+    .empty-archive a {
+        display:inline-block;
+        padding:12px 32px; background:var(--black); color:white;
+        border-radius:100px; font-size:0.85rem; font-weight:700;
+        transition:background 0.2s;
+    }
+    .empty-archive a:hover { background:#333; color:white; }
+
+    /* ── FLOATING ── */
+    #floating_button {
+        width:48px; height:48px; border-radius:50%;
+        background:#111; border:none; color:white;
+        position:fixed; bottom:32px; right:32px; z-index:1000;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; outline:none;
+        box-shadow:0 2px 16px rgba(0,0,0,0.18);
+        transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.3s;
+    }
+    #floating_button:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(0,0,0,0.26); }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<div id="wrap">
+
+    <!-- PAGE HERO -->
+    <div class="archive-hero">
+        <div>
+            <span class="archive-eyebrow">FITTING HISTORY</span>
+            <h1 class="archive-title">나의 피팅 아카이브</h1>
+            <p class="archive-sub">가상피팅을 통해 시도한 모든 스타일 기록이에요.</p>
+        </div>
+        <a href="./MyPalette.html" class="archive-back">← 내 팔레트로</a>
+    </div>
+
+    <!-- 필터 바 -->
+    <div class="filter-bar">
+        <span class="filter-label">필터</span>
+        <button class="filter-btn active" onclick="filterItems(this,'all')">전체</button>
+        <button class="filter-btn" onclick="filterItems(this,'03')">3월</button>
+        <button class="filter-btn" onclick="filterItems(this,'02')">2월</button>
+        <button class="filter-btn" onclick="filterItems(this,'01')">1월</button>
+        <span class="filter-count">총 <span id="visibleCount" th:text="${totalCount}">0</span>개</span>
+    </div>
+
+    <!-- 아카이브 -->
+    <div class="fitting-timeline" id="archiveTimeline">
+
+        <!-- ── 3월 (5개 — 스크롤 확인용) ── -->
+        <div class="ft-month-group" th:each="entry : ${groupedFittings}"
+             th:with="monthLabel=${entry.key}, monthList=${entry.value},
+                  monthCode=${#temporals.format(monthList[0].createdAt, 'MM')}">
+
+            <p class="ft-month-label" th:text="${monthLabel}">MARCH 2026</p>
+
+            <div class="ft-scroll-wrap" th:data-month="${monthCode}">
+                <div class="ft-scroll-row">
+
+                    <div class="ft-card" th:each="fit : ${monthList}">
+                        <div class="ft-date" th:text="${#temporals.format(fit.createdAt, 'MMM dd').toUpperCase()}">MAR 15</div>
+
+                        <div class="product-card" th:onclick="|location.href='/itemDetail?id=${fit.product.id}'|">
+                            <img th:src="@{${fit.product.imageUrl}}" class="prod-img" th:alt="${fit.product.name}">
+                        </div>
+
+                        <div class="ft-info">
+                            <p class="ft-product" th:text="${fit.product.name}">상품명</p>
+                            <p class="ft-comment" th:text="${fit.comment != null ? fit.comment : '피팅 완료!'}">"한줄평"</p>
+                            <div class="ft-tags">
+                                <span class="ft-tag" th:if="${fit.product.styleTags.contains('MINIMAL')}">미니멀 DNA</span>
+                                <span class="ft-tag" th:if="${session.loginMember.personalColor != null && fit.product.recommendedSeasons.contains(session.loginMember.personalColor)}">베스트 컬러</span>
+                            </div>
+                            <div class="ft-actions">
+                                <button class="ft-btn" th:onclick="|addCartDirect(${fit.product.id})|">장바구니 담기</button>
+                                <button class="ft-btn-outline" th:onclick="|location.href='/itemDetail?id=${fit.product.id}'|">상품 보기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ft-scroll-dots"></div>
+            </div>
+        </div>
+
+        <!-- 빈 상태 -->
+        <div id="emptyState" th:if="${totalCount == 0}">
+            <div class="empty-archive">
+                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <path d="M9 9h6M9 13h4"/>
+                </svg>
+                <p>아직 피팅 기록이 없어요</p>
+                <span>가상 피팅을 시도하면 여기에 기록이 쌓여요.</span>
+                <a href="/AIStyler">가상 피팅 하러 가기 →</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+<button id="floating_button" aria-label="FAQ 열기">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+
+<div id="toast_wrap"><div id="toast_msg"></div></div>
+
+<script>
+/* 퍼스널컬러 테마 동기화 */
+(function() {
+    var S = {
+        spring_warm:{accent:'#b84d00',light:'#fff3ec'},
+        summer_cool:{accent:'#006d82',light:'#e0f7fa'},
+        autumn_warm:{accent:'#7d2000',light:'#fff0e8'},
+        winter_cool:{accent:'#1a237e',light:'#eef0ff'},
+        neutral:    {accent:'#555555',light:'#f5f5f5'}
+    };
+    try {
+        var s = localStorage.getItem('onfit_season');
+        if (s && S[s]) {
+            document.documentElement.style.setProperty('--accent', S[s].accent);
+            document.documentElement.style.setProperty('--accent-light', S[s].light);
+        }
+    } catch(e) {}
+})();
+
+/* 필터 */
+function filterItems(btn, filter) {
+    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var groups = document.querySelectorAll('.ft-month-group');
+    var cards  = document.querySelectorAll('.ft-card');
+    var visible = 0;
+
+    if (filter === 'all') {
+        groups.forEach(function(g){ g.style.display = ''; });
+        cards.forEach(function(c){ c.style.display = ''; visible++; });
+    } else {
+        groups.forEach(function(g){
+            g.style.display = (g.dataset.month === filter) ? '' : 'none';
+        });
+        cards.forEach(function(c){
+            if (c.dataset.tags === filter) { c.style.display = ''; visible++; }
+            else c.style.display = 'none';
+        });
+    }
+
+    document.getElementById('visibleCount').textContent = visible;
+    var empty = document.getElementById('emptyState');
+    if (empty) empty.style.display = (visible === 0) ? '' : 'none';
+}
+
+/* 클릭 드래그 스크롤 + 초기 카운트 */
+window.addEventListener('DOMContentLoaded', function() {
+
+    /* 드래그 스크롤 + 관성 + Dot 내비게이션 (페이지 단위) */
+    document.querySelectorAll('.ft-scroll-row').forEach(function(row) {
+        var isDragging = false;
+        var startX, scrollLeft, velX = 0, lastX = 0;
+        var dragRafId;
+
+        var dotsContainer = row.closest('.ft-scroll-wrap').querySelector('.ft-scroll-dots');
+        var cards = row.querySelectorAll('.ft-card');
+        var dotEls = [];
+        var pageCount = 0;
+
+        function calcPageCount() {
+            if (!cards.length) return 1;
+            var cardW = cards[0].offsetWidth + 16;
+            var perPage = Math.max(1, Math.floor(row.clientWidth / cardW));
+            return Math.ceil(cards.length / perPage);
+        }
+
+        function buildDots() {
+            if (!dotsContainer) return;
+            pageCount = calcPageCount();
+            if (pageCount <= 1) { dotsContainer.innerHTML = ''; dotEls = []; return; }
+            dotsContainer.innerHTML = '';
+            dotEls = [];
+            for (var i = 0; i < pageCount; i++) {
+                (function(idx) {
+                    var d = document.createElement('button');
+                    d.className = 'ft-scroll-dot' + (idx === 0 ? ' active' : '');
+                    d.setAttribute('aria-label', (idx + 1) + '번째 그룹으로 이동');
+                    d.addEventListener('click', function() {
+                        var cardW = cards[0].offsetWidth + 16;
+                        var perPage = Math.max(1, Math.floor(row.clientWidth / cardW));
+                        var card = cards[Math.min(idx * perPage, cards.length - 1)];
+                        row.scrollTo({ left: card.offsetLeft - row.offsetLeft, behavior: 'smooth' });
+                    });
+                    dotsContainer.appendChild(d);
+                    dotEls.push(d);
+                })(i);
+            }
+        }
+
+        function updateActiveDot() {
+            if (!dotEls.length || pageCount <= 1) return;
+            var maxScroll = row.scrollWidth - row.clientWidth;
+            var ratio = maxScroll > 0 ? row.scrollLeft / maxScroll : 0;
+            var activePage = Math.min(pageCount - 1, Math.round(ratio * (pageCount - 1)));
+            dotEls.forEach(function(d, i) { d.classList.toggle('active', i === activePage); });
+        }
+
+        row.addEventListener('scroll', updateActiveDot, { passive: true });
+        window.addEventListener('resize', function() { buildDots(); updateActiveDot(); });
+
+        row.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            row.style.cursor = 'grabbing';
+            row.style.scrollBehavior = 'auto';
+            startX = e.pageX - row.offsetLeft;
+            scrollLeft = row.scrollLeft;
+            velX = 0; lastX = e.pageX;
+            cancelAnimationFrame(dragRafId);
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            var x = e.pageX - row.offsetLeft;
+            velX = e.pageX - lastX;
+            lastX = e.pageX;
+            row.scrollLeft = scrollLeft - (x - startX);
+            updateActiveDot();
+        });
+        document.addEventListener('mouseup', function() {
+            if (!isDragging) return;
+            isDragging = false;
+            row.style.cursor = 'grab';
+            (function momentum() {
+                if (Math.abs(velX) < 0.5) {
+                    row.style.scrollBehavior = '';
+                    return;
+                }
+                velX *= 0.92;
+                row.scrollLeft -= velX;
+                updateActiveDot();
+                dragRafId = requestAnimationFrame(momentum);
+            })();
+        });
+
+        row.style.cursor = 'grab';
+        buildDots();
+        updateActiveDot();
+    });
+
+    /* 초기 카운트 */
+    var total = document.querySelectorAll('.ft-card').length;
+    document.getElementById('visibleCount').textContent = total;
+    var empty = document.getElementById('emptyState');
+    if (empty && total === 0) empty.style.display = '';
+});
+</script>
+</body>
+</html>

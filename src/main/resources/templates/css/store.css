@@ -1,0 +1,248 @@
+*{
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    background-color: #fff;
+    margin: 0;
+}
+
+#wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.store-header {
+    padding: 60px 0 30px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 10px;
+}
+.tone-section {
+    margin-bottom: 10px;
+}
+
+.tone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+    transition: color 0.2s;
+}
+
+.tone-header:hover {
+    color: #000;
+}
+
+.arrow-icon {
+    font-size: 10px;
+    transition: transform 0.3s;
+}
+
+.tone-content {
+    display: none;
+    padding: 10px 0;
+}
+
+.tone-section.active .tone-content {
+    display: block;
+}
+
+.tone-section.active .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.color-circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-circle:hover {
+    transform: scale(1.2);
+}
+h1 {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 30px;
+}
+
+.store-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-tabs a {
+    margin-right: 25px;
+    text-decoration: none;
+    color: #aaa;
+    font-size: 15px;
+}
+
+.category-tabs a.active {
+    color: #000;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    padding-bottom: 5px;
+}
+
+.filter-wrapper {
+    position: relative;
+}
+
+.filter-toggle {
+    padding: 10px 20px;
+    border: 1px solid #000;
+    background: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.filter-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 280px;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 0;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.filter-dropdown-menu.active {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.filter-inner {
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+    overflow-y: auto;
+}
+.filter-column {
+    padding: 20px 25px;
+    border-bottom: 1px solid #eee;
+}
+.filter-column:last-child {
+    border-bottom: none;
+}
+.filter-column h4 {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #000;
+    font-weight: bold;
+}
+
+.filter-column label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    color: #666;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.color-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.size-chips span {
+    display: inline-block;
+    padding: 5px 8px;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    margin: 2px;
+    cursor: pointer;
+}
+
+.price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.price-inputs input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.filter-actions {
+    padding: 15px 25px;
+    background: #f9f9f9;
+    border-top: 1px solid #000;
+}
+
+.apply-btn {
+    width: 100%;
+    padding: 12px 0;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 35px;
+    padding: 50px 0;
+}
+
+.product-thumb {
+    background: #f4f4f4;
+    aspect-ratio: 3 / 4;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.product-info .price {
+    font-weight: bold;
+    font-size: 16px;
+}
+.product-info .name {
+    font-size: 14px;
+    color: #333;
+}
+.product-info .category {
+    font-size: 12px;
+    color: #999;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

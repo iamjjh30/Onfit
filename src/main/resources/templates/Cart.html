@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <title>OnFit - 장바구니</title>
+    <link rel="stylesheet" th:href="@{/css/Main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/Cart.css}"/>
+    <link rel="stylesheet" th:href="@{/css/Cart_Modal.css}">
+</head>
+<body>
+<div id="cart-toast"></div>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div id="wrap">
+
+    <div id="Cart">
+        <h2 id="title">장바구니</h2>
+        <div id="Cart_container"></div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+<script th:src="@{/js/Cart_Modal.js}"></script>
+<script th:src="@{/js/Cart.js}"></script>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:inline="javascript">
+    // 🌟 1. 결제창으로 이동하는 함수
+    function goToCheckout() {
+        // 장바구니에 담긴 상품이 있는지 확인 (Cart.js에서 화면에 렌더링한 아이템 개수로 유추)
+        const cartItems = document.querySelectorAll('.cart-item-class'); // (주의: 실제 Cart.js에서 사용하는 클래스명으로 변경 필요)
+
+        // 장바구니 모드로 결제창 진입
+        // Checkout.js의 fetchCartAndInit() 함수가 발동하여 백엔드에서 장바구니 데이터를 알아서 가져옵니다.
+        location.href = '/Checkout?mode=cart';
+    }
+
+    // 🌟 2. (참고용) 총 결제 금액 계산 및 렌더링 함수
+    // 이 함수는 Cart.js 파일 내부에서 "장바구니 데이터를 불러온 직후"에 실행되도록 넣어주시면 좋습니다.
+    function updateCartSummary(sumPrice) {
+        const deliPrice = (sumPrice === 0 || sumPrice >= 50000) ? 0 : 5000;
+        const totalPrice = sumPrice + deliPrice;
+
+        document.getElementById('summary-item-price').innerText = sumPrice.toLocaleString();
+        document.getElementById('summary-deli-price').innerText = deliPrice === 0 ? '무료' : deliPrice.toLocaleString();
+        document.getElementById('summary-total-price').innerText = totalPrice.toLocaleString();
+
+        // 장바구니가 비어있으면 구매 버튼 비활성화
+        const btnCheckout = document.getElementById('btn-checkout');
+        if (sumPrice === 0) {
+            btnCheckout.disabled = true;
+            btnCheckout.style.backgroundColor = '#ccc';
+            btnCheckout.innerText = '장바구니가 비어있습니다';
+        } else {
+            btnCheckout.disabled = false;
+            btnCheckout.style.backgroundColor = '#000';
+            btnCheckout.innerText = '구매하기';
+        }
+    }
+</script>
+</body>
+</html>

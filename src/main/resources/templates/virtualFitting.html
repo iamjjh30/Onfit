@@ -5,9 +5,34 @@
     <title>OnFit - 가상 피팅</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/virtualFitting.css}">
+    <style>
+        /* 로딩 스피너 스타일 (간단 추가) */
+        #loading-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 999;
+            justify-content: center; align-items: center; flex-direction: column; color: white;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3; border-top: 4px solid #3498db;
+            border-radius: 50%; width: 50px; height: 50px;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 미리보기 이미지 스타일 */
+        .preview-active { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        .upload-box { cursor: pointer; overflow: hidden; position: relative;}
+    </style>
 </head>
-<body>
-<div id="header-container"></div>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>AI가 옷을 입혀보고 있습니다...</p>
+</div>
+
 <div id="wrap">
     <div class="v-header">
         <h1 class="logo"><span>Fit.</span> 내 몸처럼</h1>
@@ -17,13 +42,13 @@
     <main class="v-container">
         <section class="v-section">
             <h2 class="section-title">당신의 실루엣</h2>
-            <p class="upload-guide">내 사진 올리기</p>
+            <p class="upload-guide">내 사진 올리기 (클릭)</p>
             <p class="ai-notice"><span>AI</span> 인식을 위해 정면 <span>상반신</span> 사진을 권장합니다</p>
 
-            <div class="upload-box" id="user-upload">
+            <div class="upload-box" id="user-upload-area" onclick="document.getElementById('user-file').click()">
                 <input type="file" id="user-file" accept="image/*" hidden>
                 <div class="icon-placeholder">
-                    <img th:src="@{/img/Main/icon_profile.png}" alt="user icon">
+                    <img id="user-preview" th:src="@{/img/Main/icon_profile.png}" alt="user icon">
                 </div>
             </div>
         </section>
@@ -31,26 +56,29 @@
         <section class="v-section">
             <h2 class="section-title">옷장 미리보기</h2>
             <div class="button-group">
-                <button class="btn-dark">옷 사진 올리기</button>
-                <button class="btn-light">장바구니</button>
+                <button class="btn-dark" onclick="document.getElementById('cloth-file').click()">옷 사진 올리기</button>
             </div>
 
-            <div class="upload-box" id="cloth-upload">
+            <div class="upload-box" id="cloth-upload-area" onclick="document.getElementById('cloth-file').click()">
                 <input type="file" id="cloth-file" accept="image/*" hidden>
                 <div class="icon-placeholder">
-                    <img th:src="@{/img/Main/icon_cart.png}" alt="cloth icon">
+                    <img id="cloth-preview" th:src="@{/img/Main/icon_cart.png}" alt="cloth icon">
                 </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-light" id="btn-try-on" style="background-color: #ff7b7b; color: white; border:none; padding: 15px 40px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer;">✨ AI 피팅 시작하기</button>
             </div>
         </section>
 
-        <section class="v-section result-section">
+        <section class="v-section result-section" id="result-section" style="display:none;">
             <div class="result-header">
-                <h2 class="result-title">Result</h2>
-                <p class="result-desc">추천 컬러 맞춤 의상으로 입어볼 수 있음</p>
+                <h2 class="result-title">Fitting Result</h2>
+                <p class="result-desc">가상 피팅 결과입니다.</p>
             </div>
 
             <div class="result-display">
-                <img th:src="@{/img/Main/test.jpg}" alt="Fitting Result" class="result-img">
+                <img id="result-img" src="" alt="Fitting Result" class="result-img">
             </div>
 
             <div class="action-buttons">
@@ -58,10 +86,10 @@
                 <button class="btn-light">구매하기</button>
             </div>
         </section>
-    </main>
+    </main><div th:replace="~{fragments/footer :: footer}"></div>
 </div>
-<script th:src="@{/js/include.js}"></script>
-<script th:src="@{/js/virtual_fitting.js}"></script>
-<script th:src="@{/js/main.js}"></script>
+
+
+<script th:src="@{/js/virtualFitting.js}"></script>
 </body>
 </html>

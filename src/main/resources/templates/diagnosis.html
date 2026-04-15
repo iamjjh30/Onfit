@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>AI 퍼스널 컬러 진단 - 입력</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{css/Diagnosis.css}">
+    <link rel="stylesheet" th:href="@{css/diagnosis.css}">
 </head>
-<body>
-<div id="header-container"></div>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
 <div class="container">
     <h1 style="display:inline;">AI 퍼스널 컬러 진단</h1>
     <div class="help-container">
@@ -27,17 +27,107 @@
             </ul>
         </div>
     </div>
-    <p style="color:#888; font-size:14px; margin-top:10px;">얼굴 사진을 업로드하면, AI가 당신의 퍼스널 컬러를 분석합니다.</p>
-    <div class="upload-box">
+    <p style="color:#888; font-size:14px; margin-top:10px; margin-bottom:20px;">얼굴 사진을 업로드하면, AI가 당신의 퍼스널 컬러를 분석합니다.</p>
+    <form class="upload-box" id="drop-zone" enctype="multipart/form-data">
+        <input type="file" id="image-upload" accept="image/*" style="display: none;">
 
-        <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" class="upload-icon">
-    </div>
-
-    <button class="start-btn" onclick="location.href='AI_diagnosis_result.html'">
+        <div id="upload-placeholder">
+            <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" class="upload-icon">
+            <p class="upload-text">클릭하여 사진 업로드</p>
+        </div>
+        <img id="image-preview" src="" style="display:none; width: 100%; height: 100%; object-fit: cover; border-radius:10px;">
+    </form>
+    <button class="start-btn" type="button">
         진단 시작
     </button>
 </div>
-<script th:src="@{/js/include.js}"></script>
+<script>
+    document.querySelector('.start-btn').addEventListener('click', async () => {
+        const fileInput = document.getElementById('image-upload');
+
+        if (!fileInput.files.length) {
+            alert("사진을 먼저 업로드해주세요!");
+            return;
+        }
+
+        showLoadingScreen();
+
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+
+        try {
+            const response = await fetch('/api/diagnosis/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                window.location.href = `/diagnosis/result?type=${result.personalColorType}`;
+            } else {
+                const errorResult = await response.json();
+
+                if (response.status === 400) {
+                    alert(errorResult.message); // "얼굴을 인식하지 못했습니다..." 출력
+                } else {
+                    alert("시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                }
+
+                hideLoadingScreen();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    function showLoadingScreen() {
+        const loader = document.createElement('div');
+        loader.id = 'ai-loader';
+        loader.innerHTML = `
+        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;">
+            <div class="spinner" style="width:50px; height:50px; border:5px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;"></div>
+            <p style="margin-top:20px; font-size:18px;">AI가 퍼스널 컬러를 분석 중입니다...</p>
+        </div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    `;
+        document.body.appendChild(loader);
+    }
+
+    function hideLoadingScreen() {
+        const loader = document.getElementById('ai-loader');
+        if(loader) loader.remove();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadBox = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('image-upload');
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+        const startBtn = document.querySelector('.start-btn');
+
+        uploadBox.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+
+                    placeholder.style.display = 'none';
+
+                    startBtn.disabled = false;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

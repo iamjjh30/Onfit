@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 진단 결과 - OnFit</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/diagnosisResult.css}">
+</head>
+<body><div th:replace="~{fragments/header :: header}"></div>
+
+
+<div class="result-container" th:classappend="${type}">
+    <header class="result-header">
+        <p class="header-intro">당신의 퍼스널 컬러는</p>
+        <h1 class="personal-type" th:text="${title}">퍼스널 컬러 타입</h1>
+        <p class="type-desc" th:utext="${description}">
+            진단 결과 설명이 들어갑니다.
+        </p>
+    </header>
+
+    <main class="result-main">
+        <div class="profile-card">
+            <div class="profile-image-wrapper">
+                <img th:src="@{/img/diagnosis/{imgName}.png(imgName=${type})}"
+                     alt="진단 결과 이미지" class="profile-img">
+            </div>
+            <div class="recommend-colors">
+                <p>추천 컬러 팔레트</p>
+                <div class="color-dots">
+                    <span class="dot" th:each="color : ${palette}"
+                          th:style="'background-color:' + ${color}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-aside">
+            <div class="feature-card">
+                <h3>주요 특징</h3>
+                <ul>
+                    <li th:each="feat : ${features}" th:text="${feat}">특징 내용</li>
+                </ul>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-retry" onclick="location.href='/diagnosis'">
+                    <i class="icon-retry"></i> 다시 진단하기
+                </button>
+                <button class="btn-share"><i class="icon-share"></i> 공유하기</button>
+            </div>
+        </div>
+    </main><div th:replace="~{fragments/footer :: footer}"></div>
+
+    <section class="recommend-outfits">
+        <h2 class="outfit-title">
+            <span th:text="${title}">톤 이름</span> 추천 스타일링
+        </h2>
+
+        <div class="outfit-grid">
+            <div class="outfit-item" th:each="num : ${#numbers.sequence(1,3)}">
+                <div class="item-placeholder">
+                    <span th:text="|추천 아이템 ${num}|">아이템</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+</body>
+</html>

@@ -1,3 +1,147 @@
+:root { scroll-behavior: smooth; }
+
+@keyframes contentLoadIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+nav ul li { float: left; list-style-type: none; }
+
+a { text-decoration: none; color: black; }
+a:hover { color: #FFB834; }
+a:visited { color: black; }
+#header-outer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    width: 100%;
+    padding: 12px 5vw 0;
+    box-sizing: border-box;
+}
+
+#header {
+    width: 100%; height: 50px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(30px) saturate(220%);
+    -webkit-backdrop-filter: blur(30px) saturate(220%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 10px 50px -10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    overflow: visible;
+    transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#logo { width: auto; flex-shrink: 0; }
+#logo img {
+    width: 40px; height: 40px;
+    margin: 0 20px;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+#logo img:hover { transform: rotate(45deg); }
+
+#header nav { flex-shrink: 0; }
+#header nav ul { display: flex; margin: 0; padding: 0; }
+#header nav ul li {
+    float: none;
+    margin-left: 30px;
+    line-height: 50px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+#header nav ul li:hover {
+    color: #FFB834;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+/* 검색창 — 인라인 아이콘 포함 */
+#header-search-inline {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 12px;
+    min-width: 0;
+}
+#header-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 260px; height: 36px;
+    border-radius: 50px;
+    padding: 0 16px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(40px) saturate(250%);
+    -webkit-backdrop-filter: blur(40px) saturate(250%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.8), 0 2px 12px rgba(0, 0, 0, 0.07);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+#header-search-box:focus-within {
+    width: 340px;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+#search-icon { flex-shrink: 0; pointer-events: none; }
+#header-search-input {
+    flex: 1; height: 100%;
+    border: none; outline: none;
+    background: transparent;
+    font-size: 13px; color: #111;
+    letter-spacing: 0.01em; font-weight: 500;
+    min-width: 0;
+}
+#header-search-input::placeholder { color: #999; font-weight: 400; }
+
+/* 아이콘 드롭다운 */
+.header_icon {
+    flex-shrink: 0;
+    width: auto; height: 100%;
+    padding: 0 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.header_icon img { width: 25px; height: 25px; display: block; }
+.header_icon:hover > .header_icon_hover1 { display: block !important; }
+.header_icon:hover > .header_icon_hover2 { display: block !important; }
+
+.header_icon_hover1 {
+    display: none; position: absolute; width: 160px;
+    border-radius: 12px; background-color: white;
+    border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    right: 0; left: auto; z-index: 10; top: 48px;
+    overflow: hidden;
+}
+.header_icon_hover1 nav ul { display: flex; flex-direction: column; margin: 0; padding: 0; }
+.header_icon_hover1 nav ul li { float: none; line-height: 40px; padding: 0 16px; }
+
+.header_icon_hover2 {
+    display: none; position: absolute; width: 160px;
+    border-radius: 12px; background-color: white;
+    border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    right: 0; left: auto; z-index: 10; top: 48px;
+    overflow: hidden;
+}
+.header_icon_hover2 nav ul { display: flex; flex-direction: column; margin: 0; padding: 0; }
+.header_icon_hover2 nav ul li { float: none; line-height: 40px; padding: 0 16px; }
+
+/* 구버전 검색 호버 — 완전 숨김 */
+.header_icon_hover3,
+.header_search,
+.header_search_main,
+.header_search_btn,
+.header_main { display: none !important; }
+
 .detail-wrap {
     max-width: 1300px;
     margin: 0 auto;
@@ -14,11 +158,15 @@
     align-items: flex-start;
     gap: 80px;
     margin-bottom: 100px;
+    position: relative;
 }
 
 .image-gallery {
     display: flex;
     gap: 20px;
+    position: sticky;        /* 스크롤 시 고정 */
+    top: 50px;              /* 상단에서 얼마나 떨어진 위치에 고정될지 설정 */
+    height: fit-content;    /* 이미지 높이만큼만 차지하도록 설정 */
 }
 
 .thumbnails {
@@ -87,12 +235,123 @@
 .nav-btn.next {
     right: 20px;
 }
-
+.product-info{
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding: 10px;
+}
 .product-info-box {
     width: 450px;
     padding-top: 10px;
 }
+.product-info-container {
+    margin-top: 40px;
+    border-top: 1px solid #ddd;
+}
 
+.info-accordion {
+    border-bottom: 1px solid #ddd;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+    background: #fdfdfd;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+}
+
+.info-accordion.active .accordion-content {
+    max-height: 1000px;
+    padding: 20px 0;
+}
+
+.review-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.summary-stars {
+    font-size: 18px;
+    color: #000;
+    font-weight: bold;
+}
+
+.btn-write-review {
+    width: fit-content;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #000;
+    padding: 2px 0;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.review-item-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+}
+
+.review-item-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+.review-item-text {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    margin-top: 5px;
+}
+
+.review-more, .view-all-reviews {
+    font-size: 13px;
+    font-weight: bold;
+    color: #000;
+    text-decoration: underline;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.review-footer {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.info-accordion.active .arrow-icon {
+    transform: rotate(180deg);
+}
+.product-description,.shipping-container,.review-container {
+    margin-top: 40px;
+}
 .product-title {
     font-size: 32px;
     margin: 10px 0 20px;
@@ -161,12 +420,14 @@
     border: none;
     height: 55px;
     font-size: 16px;
+    border-radius: 40px;
 }
 
 .btn-light.outline {
     background: #fff;
     color: #000;
     border: 1px solid #000;
+    border-radius: 40px;
 }
 
 .virtual-fitting-btn {
@@ -197,4 +458,157 @@
     font-size: 18px;
     color: #888;
     font-weight: bold;
+}
+.feature-highlight-section {
+    width: 100%; /* 하단 레이아웃과 너비 맞춤 */
+    margin: 60px 0 40px 0; /* 중앙 정렬(auto) 해제 및 위아래 여백 조정 */
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    color: #111;
+}
+
+.feature-main-title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+    text-align: left; /* 좌측 정렬 확실히 적용 */
+}
+
+.feature-grid-container {
+    display: flex;
+    align-items: center;
+    background-color: #f6f6f6;
+    border-radius: 8px;
+    padding: 32px 0;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    width: 100%; /* 부모 너비 100% 사용 */
+}
+
+.feature-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.feature-divider {
+    width: 1px;
+    height: 60px;
+    background-color: #e5e5e5;
+}
+
+.feature-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 12px;
+}
+
+.feature-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: #111;
+    stroke-width: 1.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.feature-label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.info-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    background-color: #888;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: bold;
+    font-family: serif;
+}
+
+.feature-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+}
+
+.feature-accordion-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f6f6f6;
+    border-radius: 6px;
+    padding: 20px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+    width: 100%;
+    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+}
+
+.feature-accordion-bar:hover {
+    background-color: #eeeeee;
+}
+
+.accordion-arrow {
+    font-size: 18px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.info-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    background-color: #888;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: bold;
+    font-family: serif;
+}
+
+.feature-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+}
+
+.feature-accordion-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f6f6f6;
+    border-radius: 6px;
+    padding: 20px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+}
+
+.feature-accordion-bar:hover {
+    background-color: #eeeeee;
+}
+
+.accordion-arrow {
+    font-size: 18px;
+    color: #333;
+    transition: transform 0.3s ease;
 }

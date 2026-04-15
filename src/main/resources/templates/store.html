@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>OnFit - Color Store</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/store.css}">
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
 </head>
 <body>
-<div id="header-container"></div>
+<div th:replace="~{fragments/header :: header}"></div>
 <div id="wrap">
     <div class="store-header">
-        <p class="breadcrumb">여름 쿨톤 / 남성 / 신발</p>
+        <p class="breadcrumb">여름 쿨톤 / 남성 </p>
         <h1>COLOR STORE</h1>
 
         <div class="store-nav">
             <nav class="category-tabs">
-                <a href="#">남성 전체 제품</a>
-                <a href="#" class="active">신발</a>
-                <a href="#">의류</a>
-                <a href="#">티셔츠</a>
-                <a href="#">자켓</a>
-                <a href="#">슬리퍼/샌들</a>
-                <a href="#">후드</a>
+                <a href="#" class="active" data-target="ALL">전체</a>
+                <a href="#" data-target="SHIRT">셔츠</a>
+                <a href="#" data-target="HOODIE">후드티</a>
+                <a href="#" data-target="JACKET">자켓</a>
+                <a href="#" data-target="PANTS">팬츠</a>
+                <a href="#" data-target="CAP">모자</a>
             </nav>
 
             <div class="filter-wrapper">
@@ -33,108 +33,67 @@
                     <div class="filter-inner">
                         <div class="filter-column">
                             <h4>정렬기준</h4>
-                            <label><input type="radio" name="sort"> 가격 낮은순</label>
-                            <label><input type="radio" name="sort"> 최신순</label>
-                            <label><input type="radio" name="sort"> 인기순</label>
-                        </div>
-
-                        <div class="filter-column">
-                            <h4>사이즈</h4>
-                            <div class="size-chips">
-                                <span>250</span><span>260</span><span>270</span><span>280</span>
-                            </div>
+                            <label><input type="radio" name="sort" value="price_low"> 가격 낮은순</label>
+                            <label><input type="radio" name="sort" value="newest"> 최신순</label>
+                            <label><input type="radio" name="sort" value="popular"> 인기순</label>
                         </div>
 
                         <div class="filter-column color-filter-group">
-                            <h4>컬러</h4>
-                            <div class="tone-section">
-                                <div class="tone-header">
-                                    <span>뉴트럴 톤</span>
-                                    <span class="arrow-icon">▼</span>
-                                </div>
-                                <div class="tone-content">
-                                    <div class="color-grid">
-                                        <span class="color-circle" style="background: #ffffff; border: 1px solid #ddd;" title="화이트"></span>
-                                        <span class="color-circle" style="background: #000000;" title="블랙"></span>
-                                        <span class="color-circle" style="background: #adb5bd;" title="그레이"></span>
-                                        <span class="color-circle" style="background: #f5f5dc;" title="베이지"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tone-section">
-                                <div class="tone-header">
-                                    <span>쿨톤</span>
-                                    <span class="arrow-icon">▼</span>
-                                </div>
-                                <div class="tone-content">
-                                    <div class="color-grid">
-                                        <span class="color-circle" style="background: #e2d1f9;" title="라벤더"></span>
-                                        <span class="color-circle" style="background: #a0d2eb;" title="스카이블루"></span>
-                                        <span class="color-circle" style="background: #000080;" title="네이비"></span>
-                                        <span class="color-circle" style="background: #95d5b2;" title="민트"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tone-section">
-                                <div class="tone-header">
-                                    <span>웜톤</span>
-                                    <span class="arrow-icon">▼</span>
-                                </div>
-                                <div class="tone-content">
-                                    <div class="color-grid">
-                                        <span class="color-circle" style="background: #ffdab9;" title="피치"></span>
-                                        <span class="color-circle" style="background: #ff7f50;" title="코랄"></span>
-                                        <span class="color-circle" style="background: #808000;" title="올리브"></span>
-                                        <span class="color-circle" style="background: #ffdb58;" title="머스터드"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tone-section">
-                                <div class="tone-header">
-                                    <span>비비드 톤</span>
-                                    <span class="arrow-icon">▼</span>
-                                </div>
-                                <div class="tone-content">
-                                    <div class="color-grid">
-                                        <span class="color-circle" style="background: #ff0000;" title="레드"></span>
-                                        <span class="color-circle" style="background: #0000ff;" title="블루"></span>
-                                        <span class="color-circle" style="background: #ffff00;" title="옐로우"></span>
-                                        <span class="color-circle" style="background: #ff00ff;" title="마젠타"></span>
-                                    </div>
-                                </div>
+                            <h4>퍼스널 컬러 톤</h4>
+                            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem; padding-top: 5px;">
+                                <label><input type="checkbox" name="tone" value="NEUTRAL"> 🤍 뉴트럴 톤 (기본/무채색)</label>
+                                <label><input type="checkbox" name="tone" value="SPRING_WARM"> 🌸 봄 웜톤 (Spring Warm)</label>
+                                <label><input type="checkbox" name="tone" value="SUMMER_COOL"> 🌊 여름 쿨톤 (Summer Cool)</label>
+                                <label><input type="checkbox" name="tone" value="AUTUMN_WARM"> 🍂 가을 웜톤 (Autumn Warm)</label>
+                                <label><input type="checkbox" name="tone" value="WINTER_COOL"> ❄️ 겨울 쿨톤 (Winter Cool)</label>
                             </div>
                         </div>
 
                         <div class="filter-column">
                             <h4>가격</h4>
                             <div class="price-inputs">
-                                <input type="number" placeholder="최소">
+                                <input type="number" id="min-price" placeholder="최소">
                                 <span>~</span>
-                                <input type="number" placeholder="최대">
+                                <input type="number" id="max-price" placeholder="최대">
                             </div>
                         </div>
-                    </div> <div class="filter-actions">
-                    <button type="button" class="apply-btn">적용하기</button>
-                </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="button" class="apply-btn">적용하기</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <main class="product-grid">
-        <div class="product-item" th:each="i : ${#numbers.sequence(1, 8)}">
-            <a href="../itemDetail">
-            <div class="product-thumb"></div>
-            <div class="product-info">
-                <p class="price">63,200원</p>
-                <p class="name">product name</p>
-                <p class="category">category</p>
-            </div>
+        <div class="product-item" th:each="product : ${products}"
+             th:data-price="${product.price}"
+             th:data-tone="${product.recommendedSeasons}"
+             th:data-category="${product.category}">
+
+            <a th:href="@{/itemDetail(id=${product.id})}">
+                <div class="product-thumb">
+                    <img th:src="@{${product.imageUrl}}" th:alt="${product.name}">
+                </div>
+                <div class="product-info">
+                    <p class="price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">가격</p>
+
+                    <p class="name" th:text="${product.name}">상품명</p>
+
+                    <p class="category"
+                       th:text="${product.category == 'SHIRT' ? '셔츠' :
+                                (product.category == 'JACKET' ? '자켓' :
+                                (product.category == 'PANTS' ? '팬츠' :
+                                (product.category == 'CAP' ? '모자' : '후드티')))}">
+                        카테고리
+                    </p>
+                </div>
             </a>
         </div>
     </main>
 </div>
-<script th:src="@{/js/include.js}"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/store.js}"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>

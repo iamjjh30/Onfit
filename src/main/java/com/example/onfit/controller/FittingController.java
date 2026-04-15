@@ -1,40 +1,68 @@
 package com.example.onfit.controller;
 
-import com.example.onfit.service.FittingService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.ByteArrayResource;
 
-import java.util.Map;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/fitting")
-@CrossOrigin(origins = "*") // 프론트엔드와의 통신을 위해 허용
 public class FittingController {
 
-    @Autowired
-    private FittingService fittingService;
+    private static final String AI_SERVER_URL = "http://localhost:5000/try-on";
 
-    /**
-     * 사용자의 상체 사진을 받아 AI 좌표를 분석합니다.
-     * [POST] http://localhost:8080/api/fitting/analyze
-     */
-    @PostMapping("/analyze")
-    public ResponseEntity<?> analyzeFitting(
-            @RequestParam("photo") MultipartFile photo,
-            @RequestParam("height") double height) {
+    // 리턴 타입을 ResponseEntity<?> (와일드카드)로 변경해야
+    // 성공 시엔 이미지(byte[]), 실패 시엔 에러 메시지(String/JSON)를 모두 보낼 수 있습니다.
+    @PostMapping("/try-on")
+    public ResponseEntity<?> tryOnClothes(
+            @RequestParam("userImage") MultipartFile userImage,
+            @RequestParam("clothImage") MultipartFile clothImage) {
+
         try {
-            if (photo.isEmpty()) return ResponseEntity.badRequest().body("사진이 없습니다.");
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // [수정] analyzePhoto 대신 analyzeAndSave를 호출합니다!
-            String analysisResult = fittingService.analyzeAndSave(photo, height);
+            ByteArrayResource userResource = new ByteArrayResource(userImage.getBytes()) {
+                @Override public String getFilename() { return userImage.getOriginalFilename(); }
+            };
+            ByteArrayResource clothResource = new ByteArrayResource(clothImage.getBytes()) {
+                @Override public String getFilename() { return clothImage.getOriginalFilename(); }
+            };
 
-            return ResponseEntity.ok(analysisResult);
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("user_image", userResource);
+            body.add("cloth_image", clothResource);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // 정상 호출 시도
+            ResponseEntity<byte[]> response = restTemplate.postForEntity(AI_SERVER_URL, requestEntity, byte[].class);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(response.getBody());
+
+        } catch (HttpClientErrorException e) {
+            // ★ 핵심: Python이 보낸 400 에러 메시지("사람을 찾을 수 없습니다")를 그대로 꺼냄
+            String errorJson = e.getResponseBodyAsString();
+            System.err.println("Python Server Error: " + errorJson);
+
+            // 프론트엔드에 400 상태코드와 에러 메시지 전달
+            return ResponseEntity.status(e.getStatusCode())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(errorJson);
 
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("오류: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Server Error\"}");
         }
     }
+
 }

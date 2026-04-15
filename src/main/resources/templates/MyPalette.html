@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>내 팔레트 — OnFit</title>
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <link rel="stylesheet" th:href="@{/css/MyPalette.css}">
+    <style>
+        /* 🌟 최근 본 상품 슬라이드 화살표 버튼 스타일 */
+        .scroll-gallery-wrap {
+            position: relative; /* 화살표 버튼의 기준점 */
+        }
+        .recent-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid #eee;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        .recent-nav-btn:hover {
+            background-color: #111;
+            color: #fff;
+            border-color: #111;
+        }
+        .recent-nav-btn.prev {
+            left: -20px; /* 왼쪽으로 살짝 빼기 */
+        }
+        .recent-nav-btn.next {
+            right: -20px; /* 오른쪽으로 살짝 빼기 */
+        }
+        /* 스크롤바 숨기면서 기능은 유지 */
+        .scroll-gallery {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            scroll-behavior: smooth; /* 부드러운 스크롤 */
+        }
+        .scroll-gallery::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div id="wrap">
+
+    <section class="palette-hero">
+        <div class="hero-left">
+            <span class="hero-eyebrow">MY PALETTE</span>
+            <h1 class="hero-name">안녕하세요, <span id="userName" th:text="${session.loginMember?.name}">스타일리스트</span>님</h1>
+            <p class="hero-desc">당신의 패션 DNA를 분석했습니다.</p>
+
+            <div class="color-type-badge" id="colorTypeBadge">
+                <span class="badge-dot" id="badgeDot"></span>
+                <span class="badge-label" id="badgeLabel">결과 분석 중...</span>
+                <span class="badge-sub" id="badgeSub">Personal Color</span>
+            </div>
+
+            <div class="hero-palette-chips" id="heroPaletteChips"></div>
+        </div>
+        <div class="hero-right">
+            <div class="hero-card" id="heroCard">
+                <div class="hero-card-bg" id="heroCardBg"></div>
+                <div class="hero-card-content">
+                    <p class="hc-season" id="hcSeason">RESULT</p>
+                    <p class="hc-keyword" id="hcKeyword">"나만의 컬러를 찾아보세요"</p>
+                    <div class="hc-colors" id="hcColors"></div>
+                    <p class="hc-tip" id="hcTip">AI 진단을 통해 나에게 딱 맞는 컬러와 스타일을 추천받을 수 있습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-card dna-section">
+        <div class="section-header">
+            <span class="section-eyebrow">STYLE DNA</span>
+            <div class="dna-title-row">
+                <h2 class="section-title">나의 스타일 DNA</h2>
+                <div class="dna-help-wrap">
+                    <button class="dna-help-btn" aria-label="스타일 DNA 안내">?</button>
+                    <div class="dna-help-popover">
+                        <p class="dna-help-title">Style DNA란?</p>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">01</span>
+                            <div>
+                                <p class="dna-help-q">스타일 DNA가 뭔가요?</p>
+                                <p class="dna-help-a">상품 탐색, 가상 피팅, 찜하기 등 <strong>OnFit 이용 기록</strong>을 분석해 나만의 패션 성향을 수치로 나타낸 차트예요.</p>
+                            </div>
+                        </div>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">02</span>
+                            <div>
+                                <p class="dna-help-q">어떻게 만들어지나요?</p>
+                                <p class="dna-help-a">활동 데이터가 쌓일수록 자동으로 업데이트돼요. <strong>활동이 많을수록</strong> 더 정확한 차트가 완성됩니다.</p>
+                            </div>
+                        </div>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">03</span>
+                            <div>
+                                <p class="dna-help-q">차트의 각 항목은 무엇인가요?</p>
+                                <p class="dna-help-a"><strong>미니멀·캐주얼·스트릿·포멀·아웃도어·빈티지</strong> 6가지 스타일 축으로 구성돼요. 수치가 높을수록 해당 성향이 강한 것이에요.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-sub">OnFit 활동을 기반으로 분석한 나만의 패션 성향이에요.</p>
+        </div>
+        <div class="dna-wrap">
+            <div class="radar-wrap">
+                <canvas id="radarChart" width="340" height="340"></canvas>
+            </div>
+            <div class="dna-stats"></div>
+        </div>
+        <div class="dna-badge-row"></div>
+    </section>
+
+    <section class="section-card curation-section">
+        <div class="section-header">
+            <span class="section-eyebrow">AI CURATION</span>
+            <div class="dna-title-row">
+                <h2 class="section-title">이번 달 맞춤 코디</h2>
+                <div class="dna-help-wrap">
+                    <button class="dna-help-btn" aria-label="AI 큐레이션 안내">?</button>
+                    <div class="dna-help-popover">
+                        <p class="dna-help-title">AI Curation이란?</p>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">01</span>
+                            <div>
+                                <p class="dna-help-q">어떻게 추천하나요?</p>
+                                <p class="dna-help-a">내 <strong>퍼스널컬러</strong>와 <strong>스타일 DNA</strong>를 함께 분석해서 이번 달 가장 잘 어울리는 코디를 자동으로 골라줘요.</p>
+                            </div>
+                        </div>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">02</span>
+                            <div>
+                                <p class="dna-help-q">추천 정확도는 어떻게 올라가나요?</p>
+                                <p class="dna-help-a">OnFit 활동이 쌓일수록 스타일 DNA가 정교해져 <strong>추천 정확도</strong>도 함께 높아져요.</p>
+                            </div>
+                        </div>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">03</span>
+                            <div>
+                                <p class="dna-help-q">매달 바뀌나요?</p>
+                                <p class="dna-help-a">시즌과 트렌드를 반영해 <strong>매달 새로운 코디</strong>로 업데이트돼요.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-sub" id="curationSub">당신의 퍼스널컬러와 스타일 DNA를 분석한 추천이에요.</p>
+        </div>
+        <div class="curation-grid">
+            <div class="curation-card" th:each="prod : ${recommendations}">
+                <div class="cc-img-wrap">
+                    <div class="product-card">
+                        <img th:src="@{${prod.imgUrl}}" th:alt="${prod.name}" class="prod-img" style="border-radius:12px;">
+                        <div class="prod-info">
+                            <span class="cc-tag" th:text="${prod.matchScore >= 80 ? 'BEST 매칭' : 'AI 추천'}">추천 태그</span>
+                            <span class="prod-name" th:text="${prod.name}">상품명</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cc-info">
+                    <div class="cc-reasons">
+                        <p class="cc-reason" th:each="reason : ${prod.reasons}"
+                           th:text="${reason}" style="font-size:0.8rem; margin-bottom:4px;">추천 사유</p>
+                    </div>
+                    <div class="cc-footer" style="margin-top:15px;">
+                        <span class="cc-price" th:text="${#numbers.formatInteger(prod.price, 3, 'COMMA')} + '원'">0원</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="recent-section">
+        <div class="section-header">
+            <span class="section-eyebrow">RECENTLY VIEWED PRODUCT</span>
+            <h2 class="section-title">최근 본 상품</h2>
+        </div>
+
+        <div class="scroll-gallery-wrap">
+            <button id="btnPrevRecent" class="recent-nav-btn prev" aria-label="이전 상품">&lt;</button>
+            <button id="btnNextRecent" class="recent-nav-btn next" aria-label="다음 상품">&gt;</button>
+
+            <div class="scroll-gallery">
+                <div class="recent-card product-card">
+                    <img src="../img/product/jacket/fit_j100_black.jpg" class="prod-img" alt="Fit J100 블랙 재킷">
+                    <div class="prod-info">
+                        <span class="prod-name">Fit J100 블랙 재킷</span>
+                        <span class="prod-price">₩89,000</span>
+                        <button class="prod-cart-btn">장바구니 담기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-card fitting-section">
+        <div class="section-header">
+            <span class="section-eyebrow">FITTING ARCHIVE</span>
+            <div class="dna-title-row">
+                <h2 class="section-title">홍길동님의 피팅 아카이브</h2>
+                <div class="dna-help-wrap">
+                    <button class="dna-help-btn" aria-label="피팅 아카이브 안내">?</button>
+                    <div class="dna-help-popover">
+                        <p class="dna-help-title">Fitting Archive란?</p>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">01</span>
+                            <div>
+                                <p class="dna-help-q">피팅 아카이브가 뭔가요?</p>
+                                <p class="dna-help-a">가상 피팅을 시도한 모든 기록이 <strong>날짜별</strong>로 자동 저장돼요.</p>
+                            </div>
+                        </div>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">02</span>
+                            <div>
+                                <p class="dna-help-q">피팅 기록을 어디에 활용하나요?</p>
+                                <p class="dna-help-a">마음에 드는 스타일은 <strong>바로 장바구니</strong>에 담을 수 있고, 스타일 DNA 분석에도 반영돼요.</p>
+                            </div>
+                        </div>
+                        <div class="dna-help-item">
+                            <span class="dna-help-num">03</span>
+                            <div>
+                                <p class="dna-help-q">기록은 얼마나 보관되나요?</p>
+                                <p class="dna-help-a">모든 피팅 기록은 <strong>영구 보관</strong>돼요. 언제든지 돌아와서 확인하고 다시 시도할 수 있어요.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-sub">가상피팅을 통해 시도한 스타일이 여기에 쌓여요.</p>
+        </div>
+        <div class="fitting-grid">
+            <p th:if="${#lists.isEmpty(fittings)}" style="grid-column: 1/-1; text-align: center; padding: 50px; color: #999;">
+                아직 피팅 기록이 없습니다. <a th:href="@{/AIStyler}"><span>가상피팅</span></a> 을 체험해 보세요!
+            </p>
+
+            <div class="fg-card" th:each="fit : ${fittings}">
+                <div class="fg-date" th:text="${#temporals.format(fit.createdAt, 'MMM dd').toUpperCase()}">MAR 11</div>
+
+                <div class="product-card" style="border-radius:0;">
+                    <img th:src="@{${fit.product.imageUrl}}" class="prod-img" th:alt="${fit.product.name}">
+                    <div class="prod-info">
+                        <span class="prod-name" th:text="${fit.product.name}">상품명</span>
+                        <span class="prod-price" th:text="'₩' + ${#numbers.formatInteger(fit.product.price, 3, 'COMMA')}">₩0</span>
+                        <button class="prod-cart-btn" th:onclick="|addCartDirect(${fit.product.id})|">장바구니 담기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a th:href="@{/FittingArchive}"
+           style="display:block;text-align:right;margin-top:24px;font-size:0.85rem;font-weight:700;color:var(--gray);">
+            전체 피팅 아카이브 보기 &gt;
+        </a>
+    </section>
+
+    <section class="section-card level-section">
+
+        <div class="lv-header">
+            <div class="lv-header-left">
+                <span class="section-eyebrow">STYLE LEVEL</span>
+                <h2 class="level-title">나의 스타일 등급</h2>
+                <div class="lv-title-row">
+                    <span class="lv-current-badge">Lv.3 스타일 익스플로러</span>
+                    <div class="lv-demotion-wrap">
+                        <span class="lv-demotion-badge" id="lvDemotionBadge" style="display:none" tabindex="0" role="button" aria-label="강등 위험 상세 보기">⚠ 강등 예정!</span>
+                        <div class="lv-demotion-tip" id="lvDemotionTip">
+                            <p class="lv-dtip-title">⚠️ 강등 위험 이유</p>
+                            <div id="lvDtipReasons"></div>
+                            <div class="lv-dtip-divider"></div>
+                            <div class="lv-dtip-note">반기 내 달성 시 레벨 유지!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-bar-wrap">
+                    <div class="lv-bar-trigger" id="lvBarTrigger" tabindex="0" role="button" aria-label="다음 레벨까지 남은 조건 보기">
+                        <div class="level-bar"><div class="level-fill"></div></div>
+                        <div class="lv-bar-tooltip" id="lvBarTooltip">
+                            <p class="lv-btip-title">🎯 다음 레벨까지 남은 것</p>
+                            <div id="lvBtipList"></div>
+                        </div>
+                    </div>
+                    <span class="level-pct">60%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lv-roadmap">
+            <div class="lv-step done">
+                <div class="lv-step-dot"
+                     data-tip-title="Lv.1 뉴비"
+                     data-tip-cond="가입 즉시 달성">✓</div>
+                <div class="lv-step-line"></div>
+                <span class="lv-step-num">Lv.1</span>
+                <span class="lv-step-name">뉴비</span>
+                <span class="lv-step-benefit">5% 쿠폰</span>
+            </div>
+            <div class="lv-step done">
+                <div class="lv-step-dot"
+                     data-tip-title="Lv.2 스타일 탐색가"
+                     data-tip-cond="피팅 3회 · 게시글 1건">✓</div>
+                <div class="lv-step-line"></div>
+                <span class="lv-step-num">Lv.2</span>
+                <span class="lv-step-name">스타일 탐색가</span>
+                <span class="lv-step-benefit">7% 쿠폰</span>
+            </div>
+            <div class="lv-step current">
+                <div class="lv-step-dot"
+                     data-tip-title="Lv.3 스타일 익스플로러"
+                     data-tip-cond="피팅 10회 · 구매 1건 · 게시글 3건">3</div>
+                <div class="lv-step-line"></div>
+                <span class="lv-step-num">Lv.3</span>
+                <span class="lv-step-name">스타일 익스플로러</span>
+                <span class="lv-step-benefit">10% 쿠폰</span>
+            </div>
+            <div class="lv-step">
+                <div class="lv-step-dot"
+                     data-tip-title="Lv.4 트렌드 세터"
+                     data-tip-cond="피팅 25회 · 구매 3건 · 게시글 10건">4</div>
+                <div class="lv-step-line"></div>
+                <span class="lv-step-num">Lv.4</span>
+                <span class="lv-step-name">트렌드 세터</span>
+                <span class="lv-step-benefit">15% 쿠폰</span>
+            </div>
+            <div class="lv-step last">
+                <div class="lv-step-dot"
+                     data-tip-title="Lv.5 OnFit 마스터"
+                     data-tip-cond="피팅 50회 · 구매 10건 · 게시글 20건">5</div>
+                <div class="lv-step-line"></div>
+                <span class="lv-step-num">Lv.5</span>
+                <span class="lv-step-name">OnFit 마스터</span>
+                <span class="lv-step-benefit">20% 쿠폰+</span>
+            </div>
+        </div>
+        <div class="lv-tooltip" id="lvTooltip"></div>
+
+    </section>
+</div><div th:replace="~{fragments/footer :: footer}"></div>
+<div id="toast_wrap"><div id="toast_msg"></div></div>
+
+<div id="floating_bubble_window" tabindex="0">
+</div>
+
+<script th:inline="javascript">
+    // 백엔드에서 넘겨준 데이터(JSON 문자열)를 자바스크립트 전역 변수에 저장!
+    window.USER_NAME = /*[[${session.loginMember != null ? session.loginMember.name : '고객'}]]*/ '고객';
+    window.DB_RECOMMENDATIONS = /*[[${recommendations}]]*/ [];
+    window.DB_SEASON  = /*[[${session.loginMember?.personalColor}]]*/ null;
+    window.DB_DNA     = /*[[${dnaJson}]]*/ null;
+    window.DB_DNA_TOP = /*[[${dnaTop}]]*/ '미니멀';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:src="@{/js/MyPalette.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const gallery = document.querySelector('.scroll-gallery');
+        const btnPrev = document.getElementById('btnPrevRecent');
+        const btnNext = document.getElementById('btnNextRecent');
+
+        if(btnPrev && btnNext && gallery) {
+            // 버튼 클릭 시 한 칸(약 260px)씩 부드럽게 좌우로 스크롤
+            btnPrev.addEventListener('click', () => {
+                gallery.scrollBy({ left: -260, behavior: 'smooth' });
+            });
+            btnNext.addEventListener('click', () => {
+                gallery.scrollBy({ left: 260, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
+</body>
+</html>

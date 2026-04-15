@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
+    <title>OnFit.com — 결제 실패</title>
+    <link rel="stylesheet" href="./css/Checkout.css"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+    <div id="wrap">
+        <div id="result-page">
+            <div id="result-card">
+                <div class="result-icon fail-icon">✕</div>
+                <h2 class="result-title">결제에 실패했어요</h2>
+                <p class="result-desc" id="fail-desc">결제 처리 중 문제가 발생했습니다.</p>
+
+                <div class="result-info" id="result-info"></div>
+
+                <div class="result-actions">
+                    <a href="./Cart.html"><button class="btn-primary">장바구니로 돌아가기</button></a>
+                    <a href="../index/Main.html"><button class="btn-secondary">홈으로 가기</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var params    = new URLSearchParams(window.location.search);
+        var code      = params.get('code');
+        var message   = params.get('message');
+        var orderId   = params.get('orderId');
+
+        if (message) {
+            document.getElementById('fail-desc').textContent = message;
+        }
+        if (code || orderId) {
+            document.getElementById('result-info').innerHTML =
+                (orderId ? '<div class="info-row"><span>주문번호</span><span>' + orderId + '</span></div>' : '') +
+                (code    ? '<div class="info-row"><span>오류 코드</span><span>' + code + '</span></div>' : '');
+        }
+    });
+    </script>
+</body>
+</html>

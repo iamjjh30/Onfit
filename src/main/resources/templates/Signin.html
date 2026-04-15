@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/Signin.css}"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>OnFit.com — Sign up</title>
+</head>
+<body>
+<div id="wrap">
+
+    <div id="header">
+        <a th:href="@{/Main}" class="logo-link">
+            <img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit Logo">
+        </a>
+        <span class="header-tag">Create Account</span>
+    </div>
+
+    <div id="main">
+        <div class="card">
+
+            <div class="card-header">
+                <h1>Sign <em>up</em></h1>
+                <p class="card-sub">OnFit 멤버가 되어보세요</p>
+            </div>
+
+            <form th:action="@{/join}" method="post">
+
+                <div class="field-row two-col">
+                    <div class="field-group">
+                        <label class="field-label">아이디</label>
+                        <div class="input-wrap">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            <input type="text" name="loginId" class="field-input" placeholder="아이디" autofocus required>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">실명</label>
+                        <div class="input-wrap">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-3-3.87M4 21v-2a4 4 0 0 1 3-3.87M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+                            <input type="text" name="name" class="field-input" placeholder="실명" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">비밀번호</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <input type="password" name="password" class="field-input" placeholder="비밀번호" required id="pw-input">
+                        <button type="button" class="pw-toggle" id="pw-toggle" tabindex="-1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="field-row two-col">
+                    <div class="field-group">
+                        <label class="field-label">전화번호</label>
+                        <div class="input-wrap">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3.1 5.18 2 2 0 0 1 5.09 3h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L9.09 10.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <input type="text" name="phone" class="field-input" placeholder="010-0000-0000" required>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">이메일</label>
+                        <div class="input-wrap">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <input type="email" name="email" class="field-input" placeholder="이메일" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">생년월일</label>
+                    <div class="input-wrap date-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <input type="text" name="birthYear" class="field-input date-part" placeholder="YYYY" maxlength="4" inputmode="numeric">
+                        <span class="date-sep">—</span>
+                        <input type="text" name="birthMonth" class="field-input date-part sm" placeholder="MM" maxlength="2" inputmode="numeric">
+                        <span class="date-sep">—</span>
+                        <input type="text" name="birthDay" class="field-input date-part sm" placeholder="DD" maxlength="2" inputmode="numeric">
+                    </div>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    <span>가입하기</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+
+            </form>
+
+            <div class="bottom-row">
+                <span>이미 계정이 있으신가요?</span>
+                <a th:href="@{/Login}" class="login-link">로그인 →</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+<script>
+    const pwInput  = document.getElementById('pw-input');
+    const pwToggle = document.getElementById('pw-toggle');
+    pwToggle.addEventListener('click', () => {
+        const hide = pwInput.type === 'password';
+        pwInput.type = hide ? 'text' : 'password';
+        pwToggle.style.opacity = hide ? '1' : '0.4';
+    });
+</script>
+</body>
+</html>

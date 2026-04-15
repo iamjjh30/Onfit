@@ -1,0 +1,175 @@
+/* AI 진단 섹션 스타일 */
+.ai-analysis-section {
+    padding: 50px 20px;
+    text-align: center;
+    background: #fff;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.v-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 업로드 영역 */
+.upload-box {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.upload-label {
+    width: 250px;
+    height: 300px;
+    border: 2px dashed #ccc;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background: #f9f9f9;
+    overflow: hidden;
+    position: relative;
+}
+
+.upload-label img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 버튼 */
+.btn-primary, .btn-dark {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #ff7b7b;
+    color: white;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-dark {
+    background: #333;
+    color: white;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* 로딩 스피너 */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #ff7b7b;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 결과 카드 */
+.result-card {
+    background: #fafafa;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+    text-align: left;
+}
+
+.tone-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.highlight-text {
+    color: #ff7b7b;
+    font-size: 28px;
+    margin-top: 5px;
+}
+
+.analysis-item {
+    margin-bottom: 25px;
+}
+
+.analysis-item h4 {
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.analysis-item p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* 컬러 팔레트 */
+.color-match {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 20px;
+}
+
+.color-group {
+    flex: 1;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.palette {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.color-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+/* 해시태그 */
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.style-tag {
+    background: #eef2f5;
+    color: #556270;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
