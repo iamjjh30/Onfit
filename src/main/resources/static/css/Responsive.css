@@ -187,7 +187,7 @@
     .pc-intro-desc { font-size: 13px; line-height: 1.7; margin-bottom: 12px; max-width: 100%; }
     .pc-intro-palette { width: 100%; }
     .pc-color-circles { grid-template-columns: repeat(6, 1fr); gap: 8px; }
-    .pc-circle { width: 34px; height: 34px; }
+    .pc-circle { width: 50px; height: 50px; }
     .pc-circle-wrap span { font-size: 10px !important; }
     .pc-tip { font-size: 12px; }
 

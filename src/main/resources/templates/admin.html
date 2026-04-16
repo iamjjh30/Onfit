@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OnFit Admin System</title>
+    <style>
+        /* [기본 레이아웃 및 초기화] */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; background-color: #f4f7f6; font-family: 'Pretendard', sans-serif; overflow-x: hidden; }
+
+        /* [사이드바] */
+        #header_left { width: 250px; height: 100vh; background: #fff; border-right: 1px solid #ddd; position: fixed; z-index: 1000; }
+        #header_left img { width: 150px; margin: 30px 40px; cursor: pointer; }
+        nav ul li { padding: 15px 50px; cursor: pointer; list-style: none; transition: 0.2s; color: #555; }
+        nav ul li:hover { background: #f0f0f0; color: #FFB834; font-weight: bold; }
+        h3 { margin: 25px 0 10px 30px; font-size: 13px; color: #999; text-transform: uppercase; }
+
+        /* [메인 콘텐츠 영역] */
+        #main_content { margin-left: 250px; width: calc(100% - 250px); display: flex; flex-direction: column; }
+        #header { height: 80px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; position: sticky; top: 0; z-index: 900; }
+        #header p { font-size: 18px; color: #333; }
+        #header p span { color: #FFB834; font-weight: bold; }
+
+        /* [공통 섹션 디자인] */
+        .admin-section { display: none; padding: 40px; }
+        .admin-section.active { display: block; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-card { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; }
+
+        /* [대시보드 통계 카드] */
+        .stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .stat-title { font-size: 14px; color: #888; margin-bottom: 10px; }
+        .stat-value { font-size: 26px; font-weight: bold; color: #222; }
+
+        /* [테이블 디자인] */
+        .recent-table { background: #fff; padding: 30px; border-radius: 15px; margin-top: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid #f4f4f4; color: #777; font-size: 13px; background: #fafafa; }
+        td { padding: 12px 15px; border-bottom: 1px solid #f4f4f4; font-size: 14px; }
+
+        .btn { border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+        .btn-add { background: #FFB834; color: white; }
+        .btn-del { background: #e74c3c; color: white; }
+
+        .tag { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .tag.cool { background: #e3f2fd; color: #1e88e5; }
+        .tag.warm { background: #fff3e0; color: #fb8c00; }
+
+        #logout_btn { background: #333; color: #fff; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="header_left">
+    <a th:href="@{/}"><img th:src="@{/img/interface/text_logo.png}"></a>
+    <nav>
+        <ul>
+            <li onclick="showSection('dashboard')">대시보드</li>
+            <h3>사이트 관리</h3>
+            <li onclick="showSection('shopping')">Shopping</li>
+            <li onclick="showSection('crm')">CRM</li>
+            <h3>관리자 페이지</h3>
+            <li onclick="showSection('project')">Project</li>
+            <li onclick="showSection('access')">Access</li>
+        </ul>
+    </nav>
+</div>
+
+<div id="main_content">
+    <div id="header">
+        <p><span th:text="${session.loginMember?.name}">관리자</span>님, 어서오세요. (ADMIN SYSTEM)</p>
+        <a th:href="@{/logout}"><button id="logout_btn">로그아웃</button></a>
+    </div>
+
+    <div id="dashboard" class="admin-section active">
+        <div class="section-header">
+            <h2>Dashboard</h2>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-title">누적 가입 회원</div>
+                <div class="stat-value"><span th:text="${totalMembers}">0</span>명</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">누적 컬러 진단</div>
+                <div class="stat-value"><span th:text="${totalDiagnosed}">0</span>건</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">오늘 신규 가입</div>
+                <div class="stat-value"><span th:text="${todayMembers}">0</span>명</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">미답변 문의</div>
+                <div class="stat-value" style="color: #e74c3c;">
+                    <span th:text="${pendingInquiries}">0</span>건
+                </div>
+            </div>
+        </div>
+
+        <div class="recent-table">
+            <h3 style="margin-left: 0; margin-bottom: 10px;">최근 가입 유저</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>아이디</th>
+                    <th>진단결과</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${recentMembers}">
+                    <td th:text="${m.name}">이름</td>
+                    <td th:text="${m.loginId}">아이디</td>
+                    <td>
+                                <span class="tag"
+                                      th:classappend="${m.personalColor == 'SUMMER_COOL' || m.personalColor == 'WINTER_COOL' ? 'cool' : 'warm'}"
+                                      th:text="${m.personalColor != null ? m.personalColor : '미진단'}">결과</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="shopping" class="admin-section">
+        <div class="section-header">
+            <h2>Shopping Management</h2>
+            <button class="btn btn-add"> + 신규 상품 등록</button>
+        </div>
+        <div class="content-card">
+            <table>
+                <thead>
+                <tr>
+                    <th>카테고리</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>재고</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${products}">
+                    <td th:text="${p.category}">카테고리</td>
+                    <td th:text="${p.name}">상품명</td>
+                    <td th:text="${p.price} + '원'">가격</td>
+                    <td th:text="${p.stockQuantity}">재고</td>
+                    <td>
+                        <button class="btn btn-del" style="background:#3498db">수정</button>
+                        <button class="btn btn-del">삭제</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="crm" class="admin-section">
+        <div class="section-header"><h2>CRM (고객 관리)</h2></div>
+        <div class="content-card">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>아이디</th>
+                    <th>진단 결과</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${members}">
+                    <td th:text="${m.id}">1</td>
+                    <td th:text="${m.name}">이름</td>
+                    <td th:text="${m.loginId}">아이디</td>
+                    <td th:text="${m.personalColor ?: '미진단'}">진단결과</td>
+                    <td><button class="btn btn-del">삭제</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="project" class="admin-section"><h2>Project 관리 준비중</h2></div>
+    <div id="access" class="admin-section"><h2>Access 관리 준비중</h2></div>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+    }
+</script>
+</body>
+</html>

@@ -9,11 +9,11 @@
        from { opacity: 0; transform: translateY(20px); }
        to   { opacity: 1; transform: translateY(0); }
    }
-   
+
    * { padding: 0; margin: 0; box-sizing: border-box; }
    html, body { overflow-x: hidden; }
    nav ul li { float: left; list-style-type: none; }
-   
+
    #wrap {
        max-width: 1440px; width: 90%;
        margin-left: auto; margin-right: auto;
@@ -33,13 +33,13 @@
    a { text-decoration: none; color: black; }
    a:hover { color: #FFB834; }
    a:visited { color: black; }
-   
+
    /* 상품카드 내부 링크/텍스트는 노란색 hover 제외 */
    .prod-info .prod-name,
    .prod-info .prod-price,
    .prod-name, .prod-price { color: white !important; }
    .prod-name:hover, .prod-price:hover { color: white !important; }
-   
+
    /* ====================================================
       GNB — body 기준 sticky, wrap 완전 독립
       ==================================================== */
@@ -84,12 +84,12 @@
        transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
    }
    #logo img:hover { transform: rotate(45deg); }
-   
+
    #header nav { flex-shrink: 0; }
    #header nav ul { display: flex; margin: 0; padding: 0; }
    #header nav ul li { float: none; margin-left: 30px; line-height: 50px; cursor: pointer; white-space: nowrap; }
    #header nav ul li:hover { color: #FFB834; font-weight: bold; transition: 0.3s ease; }
-   
+
    /* 검색창 — 아이콘 포함 */
    #header-search-inline {
        flex: 1;
@@ -125,7 +125,7 @@
        letter-spacing: 0.01em; font-weight: 500; min-width: 0;
    }
    #header-search-input::placeholder { color: #999; font-weight: 400; }
-   
+
    .header_icon {
        flex-shrink: 0;
        width: auto; height: 100%;
@@ -136,7 +136,7 @@
    .header_icon img { width: 25px; height: 25px; display: block; }
    .header_icon:hover > .header_icon_hover1 { display: block !important; }
    .header_icon:hover > .header_icon_hover2 { display: block !important; }
-   
+
    .header_icon_hover1 {
        display: none; position: absolute; width: 160px; height: 160px;
        border-radius: 12px; background-color: white;
@@ -153,14 +153,14 @@
    }
    .header_icon_hover2 nav ul { display: block; }
    .header_icon_hover2 nav ul li { float: none; line-height: 40px; padding: 0 16px; }
-   
+
    /* 이전 hover 검색 관련 — 전부 숨김 */
    .header_icon_hover3,
    .header_search,
    .header_search_main,
    .header_search_btn,
    .header_main { display: none !important; }
-   
+
    /* ====================================================
       BANNER — full-width cinematic
       ==================================================== */
@@ -181,7 +181,7 @@
        transition: opacity 1s ease-in-out;
    }
    #banner:hover .slide { transform: scale(1.03); transition: opacity 1s ease-in-out, transform 8s ease; }
-   
+
    /* 배너 위 텍스트 오버레이 */
    #banner_button {
        position: absolute;
@@ -228,7 +228,7 @@
        background: white; color: black; border-color: white;
    }
    #banner_button_right:hover { background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.7); }
-   
+
    /* 배너 페이지 닷 인디케이터 */
    #banner-dots {
        position: absolute; bottom: 28px; right: 80px;
@@ -243,13 +243,13 @@
        width: 22px; border-radius: 3px;
        background: white;
    }
-   
+
    /* ===== BANNER BUTTONS (content 내부용) ===== */
    #banner_button_wrap_sw, #banner_button_wrap_sc,
    #banner_button_wrap_aw, #banner_button_wrap_wc {
        width: 400px; margin: 50px auto 0; display: flex; justify-content: center; align-items: center; gap: 12px;
    }
-   
+
    /* neutral 탭 하단 버튼 — 배너 오버레이 스타일 덮어쓰기 */
    .style-section #banner_button_wrap #banner_button_left,
    .style-section #banner_button_wrap #banner_button_right,
@@ -257,7 +257,7 @@
    #banner_button_wrap.content-btns #banner_button_right {
        backdrop-filter: none;
    }
-   
+
    /* content 내부 버튼 공통 재정의 */
    .content #banner_button_wrap {
        display: flex; gap: 12px; justify-content: center; width: auto;
@@ -302,7 +302,7 @@
    #banner_button_right_aw:hover, #banner_button_right_wc:hover {
        background-color: black; color: white;
    }
-   
+
    @keyframes text-fade-out {
        from { opacity: 1; transform: translateY(0); }
        to   { opacity: 0; transform: translateY(-10px); }
@@ -313,7 +313,7 @@
    }
    .fade-out { animation: text-fade-out 0.3s ease-in forwards; }
    .fade-in  { animation: text-fade-in  0.4s ease-out forwards; }
-   
+
    /* ====================================================
       TAB — 5개 / 각 톤별 컬러
       ==================================================== */
@@ -322,14 +322,14 @@
    #search nav { position: static; display: inline-block; margin: 0 auto; }
    #search nav ul { padding: 0; margin: 0; display: flex; justify-content: center; gap: 4px; }
    #search nav ul li { float: none; font-size: 15px; }
-   
+
    #tab_button li {
        cursor: pointer; padding: 9px 18px;
        border-radius: 100px; border: 1.5px solid transparent;
        transition: background 0.25s, color 0.25s, border-color 0.25s;
    }
    #tab_button li:hover { background: #f3f3f3; }
-   
+
    /* 뉴트럴 — 무채색 */
    #tab_button li:nth-child(1).active {
        color: #555; background: #f5f5f5; border-color: #bbb; font-weight: 700;
@@ -350,21 +350,21 @@
    #tab_button li:nth-child(5).active {
        color: #1a237e; background: #eef0ff; border-color: #3f51b5; font-weight: 700;
    }
-   
+
    /* ====================================================
       CONTENT
       ==================================================== */
    .content { display: none; }
    .content.active { display: block; }
    #content_area { margin-top: 50px; }
-   
+
    #p1, #p1_sw, #p1_sc, #p1_aw, #p1_wc {
        text-align: center; font-size: 50px; font-weight: bold;
    }
    #p2, #p2_sw, #p2_sc, #p2_aw, #p2_wc {
        text-align: center; margin-bottom: 70px; color: #888;
    }
-   
+
    /* ====================================================
       IMAGE HOVER WRAPPER
       ==================================================== */
@@ -373,7 +373,7 @@
        /* 카드 4개가 wrap 안에 들어오도록 */
        max-width: 100%; overflow: hidden;
    }
-   
+
    .image-hover-wrapper {
        border-radius: 18px; overflow: hidden; cursor: pointer; position: relative;
        background-color: #f0f0f0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -394,7 +394,7 @@
    .hover-image { opacity: 0; }
    .image-hover-wrapper:hover .hover-image   { opacity: 1; }
    .image-hover-wrapper:hover .default-image { opacity: 0; }
-   
+
    .image-hover-wrapper2 {
        border-radius: 18px; overflow: hidden; cursor: pointer; position: relative;
        background-color: #f0f0f0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -422,7 +422,7 @@
        display: flex; flex-direction: column; gap: 3px;
    }
    .image-hover-wrapper2:hover .prod-info { transform: translateY(0); }
-   
+
    /* ====================================================
       PERSONAL COLOR HERO — Apple-style (요청 3)
       ==================================================== */
@@ -493,7 +493,7 @@
        background: white; color: #111;
        border-color: white; font-weight: 700;
    }
-   
+
    /* ====================================================
       BEST PRODUCTS 섹션 (둘째 단) — 요청 7
       ==================================================== */
@@ -515,6 +515,86 @@
    .best-products-section {
        padding: 100px 0 60px;
    }
+   /* ====================================================
+      BEST PICKS 헤더 — bp-count + section-main-title 인라인
+      ==================================================== */
+   .bp-header {
+       display: flex;
+       justify-content: space-between;
+       align-items: flex-end;
+       margin-bottom: 36px;
+   }
+   .bp-header-left {
+       display: flex;
+       flex-direction: column;
+       gap: 4px;
+   }
+   /* bp-count + h2 인라인 row */
+   .bp-title-row {
+       display: flex;
+       align-items: baseline;
+       gap: 10px;
+   }
+   .bp-title-row .section-main-title {
+       text-align: left;
+       margin-bottom: 0;
+   }
+   /* bp-count: 타이틀 앞 달 표기 */
+   .bp-count {
+       display: inline-block;
+       font-size: 0.72rem;
+       font-weight: 700;
+       letter-spacing: 0.18em;
+       text-transform: uppercase;
+       color: #aaa;
+       background: #f5f5f5;
+       border: 1px solid #e8e8e8;
+       border-radius: 20px;
+       padding: 3px 10px;
+       white-space: nowrap;
+       flex-shrink: 0;
+   }
+   .bp-header-right {
+       display: flex;
+       align-items: center;
+       gap: 16px;
+       padding-bottom: 8px;
+   }
+   .bp-view-all {
+       font-size: 0.82rem;
+       font-weight: 600;
+       color: #888;
+       text-decoration: none;
+       letter-spacing: 0.03em;
+       transition: color 0.2s;
+   }
+   .bp-view-all:hover { color: #111; }
+   /* section-main-title — bp-title-row 밖에서도 왼쪽 정렬 유지 */
+   .bp-header-left > .section-main-title {
+       text-align: left;
+       margin-bottom: 0;
+   }
+   .bp-header-left > .section-label {
+       text-align: left;
+       margin-bottom: 4px;
+   }
+   .bp-header-left > .section-sub-title {
+       text-align: left;
+       margin-bottom: 0;
+   }
+
+   /* ====================================================
+      컬러 트렌드 팝업 — 컬러피커 2배 레이아웃 조정
+      ==================================================== */
+   /* 스와치 5개 × 72px = 360px + gap — info-col 넓이 충분 */
+   /* 팝업 전체 폭을 약간 넓혀서 overflow 방지 */
+   .color-trend-popup {
+       max-width: 940px !important;
+   }
+   .ctpopup-info-col {
+       gap: 20px !important;
+   }
+
    .best-products-grid {
        display: grid;
        grid-template-columns: repeat(4, 1fr);
@@ -547,7 +627,7 @@
        transition: transform 0.38s cubic-bezier(0.16,1,0.3,1);
    }
    .best-card:hover .prod-info { transform: translateY(0); }
-   
+
    /* ====================================================
       STYLE SECTION (셋째 단 — 패션 코디 추천) 요청 7
       ==================================================== */
@@ -560,7 +640,7 @@
    .style-grid .product-card {
        aspect-ratio: 2/3;
    }
-   
+
    /* 스타일 세컨드 로우 (4컬럼) */
    .style-grid-row2 {
        display: grid;
@@ -568,7 +648,7 @@
        gap: 16px;
        margin-top: 16px;
    }
-   
+
    /* ====================================================
       TREND SECTION (넷째 단) 요청 7
       ==================================================== */
@@ -619,7 +699,7 @@
    .trend-img-card:first-child { margin-top: 30px; }
    .trend-img-card:hover { transform: translateY(-8px); }
    .trend-img-card img { width: 100%; height: 100%; object-fit: cover; }
-   
+
    /* one_button → 더보기 형태로 */
    #one_button_wrap, #one_button_wrap_sw, #one_button_wrap_sc,
    #one_button_wrap_aw, #one_button_wrap_wc {
@@ -636,21 +716,21 @@
    .one_button:hover { background-color: #111; color: white; border-color: #111; transform: translateY(-2px); }
    .one_button.primary { background: #111; color: white; border-color: #111; }
    .one_button.primary:hover { background: white; color: #111; }
-   
+
    /* ====================================================
       GALLERY SECTION — 그리드 (2~3행) + hover 상품정보
       ==================================================== */
    .gallery-section { width: 100%; padding: 50px 0; margin-bottom: 30px; }
    .gallery-section h1 { font-size: 3em; margin-bottom: 5px; text-align: center; }
    .gallery-section p  { font-size: 1.1em; margin-bottom: 40px; color: #555; text-align: center; }
-   
+
    .scroll-gallery {
        display: grid;
        grid-template-columns: repeat(4, 1fr);
        gap: 16px;
        width: 100%;
    }
-   
+
    /* 5번째 이후 아이템은 grid-column span 조절로 2행 처리 */
    .scroll-gallery .product-card {
        position: relative;
@@ -674,7 +754,7 @@
    .scroll-gallery .product-card:hover img.prod-img {
        transform: scale(1.06);
    }
-   
+
    /* Hover 오버레이 — 상품명 + 가격 */
    .product-card .prod-info {
        position: absolute;
@@ -715,7 +795,7 @@
        transition: background 0.2s, color 0.2s;
    }
    .prod-cart-btn:hover { background: #111; color: white; }
-   
+
    /* content_dv wrapper에도 동일한 hover 오버레이 */
    .image-hover-wrapper .prod-info {
        position: absolute;
@@ -728,7 +808,7 @@
        flex-direction: column;
        gap: 3px;
    }
-   
+
    /* ====================================================
       CONTAINERX / HALF IMG
       ==================================================== */
@@ -757,7 +837,7 @@
    .half_img_button1:hover, .half_img_button2:hover {
        background-color: black; color: white; transform: translateY(-2px);
    }
-   
+
    /* ====================================================
       AI 섹션 — 좌우 2분할
       ==================================================== */
@@ -797,7 +877,7 @@
        transition: background-color 0.3s, color 0.3s, transform 0.2s;
    }
    .chat-button:hover { background-color: white; color: black; transform: translateY(-3px); }
-   
+
    /* ====================================================
       DAILY CARD — 날짜 기반 코디 추천 (다크 테마)
       ==================================================== */
@@ -854,7 +934,7 @@
    }
    .dc-tip-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
    .dc-tip p { font-size: 0.8rem; color: rgba(255,255,255,0.55); line-height: 1.55; letter-spacing: 0.01em; }
-   
+
    /* ====================================================
       SUMMER 섹션
       ==================================================== */
@@ -885,7 +965,7 @@
    #summer_wc .summer-img:hover {
        transform: scale(1.02); box-shadow: 0 50px 120px rgba(255,51,102,0.45);
    }
-   
+
    /* ====================================================
       FOOTER — GNB 스타일 서브메뉴 그룹
       ==================================================== */
@@ -932,7 +1012,7 @@
    }
    .f_nav_group a span:hover { color: white; }
    .f_nav_group a:visited span { color: rgba(255,255,255,0.6); }
-   
+
    /* ====================================================
       FLOATING BUTTON & FAQ
       ==================================================== */
@@ -951,7 +1031,7 @@
    }
    #floating_button svg { transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
    #floating_button:hover svg { transform: scale(1.15) rotate(-8deg); }
-   
+
    /* 툴팁 */
    #floating_text {
        visibility: hidden; opacity: 0; transform: translateX(6px);
@@ -970,7 +1050,7 @@
        width: 8px; height: 8px; background: #111;
    }
    #floating_button:hover ~ #floating_text { visibility: visible; opacity: 1; transform: translateX(0); }
-   
+
    /* 버블 창 */
    #floating_bubble_window {
        visibility: hidden; opacity: 0;
@@ -989,10 +1069,10 @@
        visibility: visible; opacity: 1; transform: translateY(0) scale(1);
    }
    #floating_button:focus ~ #floating_text { visibility: hidden !important; opacity: 0 !important; }
-   
+
    /* 내부 래퍼 */
    .faq-wrap { display: flex; flex-direction: column; }
-   
+
    /* 헤더 */
    .faq-header {
        display: flex; justify-content: space-between; align-items: center;
@@ -1012,12 +1092,12 @@
        transition: color 0.2s, background 0.2s;
    }
    .faq-close:hover { color: #111; background: #f5f5f5; }
-   
+
    /* FAQ 리스트 */
    .faq-list { padding: 6px 0; }
    .faq-item { border-bottom: 1px solid #f5f5f5; }
    .faq-item:last-child { border-bottom: none; }
-   
+
    .faq-q {
        width: 100%; background: none; border: none; cursor: pointer;
        padding: 13px 20px;
@@ -1026,7 +1106,7 @@
        transition: background 0.18s ease;
    }
    .faq-q:hover { background: #fafafa; }
-   
+
    .faq-num {
        font-size: 0.62rem; font-weight: 700; color: #ccc;
        letter-spacing: 0.08em; flex-shrink: 0;
@@ -1042,7 +1122,7 @@
        line-height: 1;
    }
    .faq-item.open .faq-icon { transform: rotate(45deg); color: #111; }
-   
+
    /* 답변 — 슬라이드다운 */
    .faq-a {
        max-height: 0; overflow: hidden;
@@ -1052,7 +1132,7 @@
    }
    .faq-a strong { color: #111; font-weight: 700; }
    .faq-item.open .faq-a { max-height: 100px; padding: 2px 20px 14px 44px; }
-   
+
    /* 하단 */
    .faq-footer {
        padding: 12px 20px 16px;

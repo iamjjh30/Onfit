@@ -75,12 +75,19 @@ public class MemberController {
         }
 
         System.out.println("✅ 로그인 성공! 회원 이름: " + loginMember.getName());
-        // 💡 로그인 성공 처리: 세션(Session)에 로그인 정보 저장
-        // 세션을 생성하고, "loginMember"라는 이름으로 회원의 모든 정보를 서버에 담아둡니다.
+
+        // 💡 세션(Session)에 로그인 정보 저장
         HttpSession session = request.getSession();
         session.setAttribute("loginMember", loginMember);
 
-        // 로그인 성공 시 메인 화면(또는 원하는 곳)으로 이동
+        // 🛡️ [추가된 로직] 관리자 여부 확인
+        // memberService에 아까 만든 isAdmin 메서드가 있어야 작동함!
+        if (memberService.isAdmin(loginMember.getLoginId())) {
+            System.out.println("👑 관리자 권한 확인됨: " + loginMember.getLoginId());
+            return "redirect:/admin"; // 관리자면 /admin으로 쏴줌
+        }
+
+        // 일반 유저면 원래대로 메인 화면으로 이동
         return "redirect:/";
     }
 
