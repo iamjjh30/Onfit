@@ -73,13 +73,19 @@
                 <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">0원</p>
 
                 <div class="ai-curation-badges" th:if="${session.loginMember != null}">
-                    <div class="ai-badge color-match" th:if="${session.loginMember.personalColor != null and #strings.contains(product.recommendedSeasons, session.loginMember.personalColor)}">
+                    <!-- 1. 퍼스널 컬러 매칭 (null 체크 추가) -->
+                    <div class="ai-badge color-match"
+                         th:if="${session.loginMember.personalColor != null and product.recommendedSeasons != null and #strings.contains(product.recommendedSeasons, session.loginMember.personalColor)}">
                         ✨ <strong>[[${session.loginMember.name}]]</strong>님의 피부톤을 완벽하게 밝혀줄 베스트 컬러!
                     </div>
-                    <div class="ai-badge dna-match" th:if="${session.loginMember.styleDna != null and #strings.contains(product.styleTags, session.loginMember.styleDna)}">
+
+                    <!-- 2. 스타일 DNA 매칭 (null 체크 추가) -->
+                    <div class="ai-badge dna-match"
+                         th:if="${session.loginMember.styleDna != null and product.styleTags != null and #strings.contains(product.styleTags, session.loginMember.styleDna)}">
                         🧬 <strong>[[${session.loginMember.styleDna == 'MINIMAL' ? '미니멀' : (session.loginMember.styleDna == 'CASUAL' ? '캐주얼' : (session.loginMember.styleDna == 'STREET' ? '스트릿' : (session.loginMember.styleDna == 'FORMAL' ? '포멀' : '빈티지')))}]]</strong> 취향 저격! 스타일 DNA 매칭 완료
                     </div>
                 </div>
+
 
                 <div class="option-group" id="size">
                     <div class="size-buttons">

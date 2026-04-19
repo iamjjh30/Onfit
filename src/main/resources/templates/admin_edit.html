@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 수정 - OnFit</title>
+    <style>
+        body { padding: 50px; font-family: sans-serif; background: #f4f7f6; }
+        .edit-container { background: white; padding: 30px; border-radius: 15px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn-save { background: #FFB834; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="edit-container">
+    <h2>상품 정보 수정</h2>
+    <form th:action="@{/admin/shopping/update/{id}(id=${product.id})}" method="post">
+        <label>상품명</label>
+        <input type="text" name="name" th:value="${product.name}" required>
+
+        <label>카테고리</label>
+        <select name="category">
+            <option value="SHIRT" th:selected="${product.category == 'SHIRT'}">셔츠</option>
+            <option value="JACKET" th:selected="${product.category == 'JACKET'}">자켓</option>
+            <option value="HOODIE" th:selected="${product.category == 'HOODIE'}">후드티</option>
+        </select>
+
+        <label>가격</label>
+        <input type="number" name="price" th:value="${product.price}" required>
+
+        <label>재고</label>
+        <input type="number" name="stockQuantity" th:value="${product.stockQuantity}" required>
+
+        <label>스타일 태그</label>
+        <input type="text" name="styleTags" th:value="${product.styleTags}">
+
+        <label>상세 설명</label>
+        <textarea name="description" rows="5">[[${product.description}]]</textarea>
+
+        <button type="submit" class="btn-save">수정 완료</button>
+        <button type="button" onclick="history.back()" style="background:#ccc; margin-top:10px;" class="btn-save">취소</button>
+    </form>
+</div>
+</body>
+</html>

@@ -125,10 +125,86 @@
     </div>
 
     <div id="shopping" class="admin-section">
+        <div id="product_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+            <div class="content-card" style="width: 600px; max-height: 80vh; overflow-y: auto; position: relative; border: none;">
+                <span onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
+                <h2 style="margin-bottom: 25px; color: #333;">신규 상품 등록</h2>
+
+                <form th:action="@{/admin/shopping/add}" method="post" enctype="multipart/form-data">
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">상품명</label>
+                            <input type="text" name="name" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">카테고리</label>
+                            <select name="category" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="SHIRT">셔츠 (SHIRT)</option>
+                                <option value="JACKET">자켓 (JACKET)</option>
+                                <option value="HOODIE">후드티 (HOODIE)</option>
+                                <option value="OUTER">아우터 (OUTER)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">스타일 DNA (아이콘 연동)</label>
+                            <select name="styleTags" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="MINIMAL">미니멀</option>
+                                <option value="CASUAL">캐주얼</option>
+                                <option value="STREET">스트릿</option>
+                                <option value="FORMAL">포멀</option>
+                                <option value="VINTAGE">빈티지</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">퍼스널 컬러 (아이콘 연동)</label>
+                            <select name="recommendedSeasons" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="SPRING_WARM">봄 웜톤</option>
+                                <option value="SUMMER_COOL">여름 쿨톤</option>
+                                <option value="AUTUMN_WARM">가을 웜톤</option>
+                                <option value="WINTER_COOL">겨울 쿨톤</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">가격</label>
+                            <input type="number" name="price" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">재고 수량</label>
+                            <input type="number" name="stockQuantity" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">대표 이미지 업로드 (Main)</label>
+                        <input type="file" name="imageFile" accept="image/*" required style="font-size: 13px;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">호버 이미지 업로드 (Hover)</label>
+                        <input type="file" name="hoverFile" accept="image/*" style="font-size: 13px;">
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">상품 상세 설명</label>
+                        <textarea name="description" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; resize: none;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-add" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;">상품 등록 완료</button>
+                </form>
+            </div>
+        </div>
+
         <div class="section-header">
             <h2>Shopping Management</h2>
-            <button class="btn btn-add"> + 신규 상품 등록</button>
+            <button class="btn btn-add" onclick="openModal()"> + 신규 상품 등록</button>
         </div>
+
         <div class="content-card">
             <table>
                 <thead>
@@ -144,11 +220,14 @@
                 <tr th:each="p : ${products}">
                     <td th:text="${p.category}">카테고리</td>
                     <td th:text="${p.name}">상품명</td>
-                    <td th:text="${p.price} + '원'">가격</td>
+                    <td th:text="${#numbers.formatInteger(p.price, 3, 'COMMA')} + '원'">가격</td>
                     <td th:text="${p.stockQuantity}">재고</td>
                     <td>
-                        <button class="btn btn-del" style="background:#3498db">수정</button>
-                        <button class="btn btn-del">삭제</button>
+                        <button class="btn btn-del" style="background:#3498db"
+                                th:onclick="|location.href='/admin/shopping/edit/' + ${p.id}|">수정</button>
+
+                        <button class="btn btn-del"
+                                th:onclick="'if(confirm(\'정말 삭제하시겠습니까?\')){ location.href=\'/admin/shopping/delete/' + ${p.id} + '\'; }'">삭제</button>
                     </td>
                 </tr>
                 </tbody>
@@ -182,14 +261,29 @@
         </div>
     </div>
 
-    <div id="project" class="admin-section"><h2>Project 관리 준비중</h2></div>
-    <div id="access" class="admin-section"><h2>Access 관리 준비중</h2></div>
-</div>
+        <div id="project" class="admin-section"><h2>Project 관리 준비중</h2></div>
+        <div id="access" class="admin-section"><h2>Access 관리 준비중</h2></div>
+    </div>
 
 <script>
     function showSection(sectionId) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
+    }
+    function openModal() {
+    document.getElementById('product_modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('product_modal').style.display = 'none';
+    }
+
+    // 모달 바깥쪽 클릭 시 닫기
+    window.onclick = function(event) {
+        let modal = document.getElementById('product_modal');
+        if (event.target == modal) {
+            closeModal();
+        }
     }
 </script>
 </body>
