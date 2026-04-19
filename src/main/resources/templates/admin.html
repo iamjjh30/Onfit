@@ -12,7 +12,7 @@
         #header_left { width: 250px; height: 100vh; background: #fff; border-right: 1px solid #ddd; position: fixed; z-index: 1000; }
         #header_left img { width: 150px; margin: 30px 40px; cursor: pointer; }
         nav ul li { padding: 15px 50px; cursor: pointer; list-style: none; transition: 0.2s; color: #555; }
-        nav ul li:hover { background: #f0f0f0; color: #FFB834; font-weight: bold; }
+        nav ul li:hover, nav ul li.active-menu { background: #f0f0f0; color: #FFB834; font-weight: bold; }
         h3 { margin: 25px 0 10px 30px; font-size: 13px; color: #999; text-transform: uppercase; }
 
         /* [메인 콘텐츠 영역] */
@@ -39,15 +39,25 @@
         th { text-align: left; padding: 15px; border-bottom: 2px solid #f4f4f4; color: #777; font-size: 13px; background: #fafafa; }
         td { padding: 12px 15px; border-bottom: 1px solid #f4f4f4; font-size: 14px; }
 
+        /* [버튼 및 태그] */
         .btn { border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; transition: 0.3s; }
         .btn-add { background: #FFB834; color: white; }
         .btn-del { background: #e74c3c; color: white; }
+        .btn-blue { background: #3498db; color: white; }
+        .btn-detail { background: #4a90e2; color: white; padding: 5px 15px; }
 
         .tag { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
         .tag.cool { background: #e3f2fd; color: #1e88e5; }
         .tag.warm { background: #fff3e0; color: #fb8c00; }
 
         #logout_btn { background: #333; color: #fff; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; }
+
+        /* [입력 폼 스타일] */
+        label { display: block; font-size: 13px; margin-bottom: 5px; color: #666; }
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; outline: none;
+        }
+        input:focus, textarea:focus { border-color: #FFB834; }
     </style>
 </head>
 <body>
@@ -56,13 +66,14 @@
     <a th:href="@{/}"><img th:src="@{/img/interface/text_logo.png}"></a>
     <nav>
         <ul>
-            <li onclick="showSection('dashboard')">대시보드</li>
+            <li onclick="showSection('dashboard', this)" class="menu-item active-menu">대시보드</li>
             <h3>사이트 관리</h3>
-            <li onclick="showSection('shopping')">Shopping</li>
-            <li onclick="showSection('crm')">CRM</li>
+            <li onclick="showSection('shopping', this)" class="menu-item">Shopping</li>
+            <li onclick="showSection('crm', this)" class="menu-item">CRM</li>
             <h3>관리자 페이지</h3>
-            <li onclick="showSection('project')">Project</li>
-            <li onclick="showSection('access')">Access</li>
+            <li onclick="showSection('project', this)" class="menu-item">Project</li>
+            <li th:if="${session.loginMember?.loginId == 'kdoryul'}"
+                onclick="showSection('access', this)" class="menu-item" style="color: #FFB834; font-weight: bold;">🔑 Access</li>
         </ul>
     </nav>
 </div>
@@ -74,10 +85,7 @@
     </div>
 
     <div id="dashboard" class="admin-section active">
-        <div class="section-header">
-            <h2>Dashboard</h2>
-        </div>
-
+        <div class="section-header"><h2>Dashboard</h2></div>
         <div class="stats-container">
             <div class="stat-card">
                 <div class="stat-title">누적 가입 회원</div>
@@ -93,30 +101,22 @@
             </div>
             <div class="stat-card">
                 <div class="stat-title">미답변 문의</div>
-                <div class="stat-value" style="color: #e74c3c;">
-                    <span th:text="${pendingInquiries}">0</span>건
-                </div>
+                <div class="stat-value" style="color: #e74c3c;"><span th:text="${pendingInquiries}">0</span>건</div>
             </div>
         </div>
-
         <div class="recent-table">
-            <h3 style="margin-left: 0; margin-bottom: 10px;">최근 가입 유저</h3>
+            <h3 style="margin-bottom: 15px;">최근 가입 유저</h3>
             <table>
                 <thead>
-                <tr>
-                    <th>이름</th>
-                    <th>아이디</th>
-                    <th>진단결과</th>
-                </tr>
+                <tr><th>이름</th><th>아이디</th><th>진단결과</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="m : ${recentMembers}">
                     <td th:text="${m.name}">이름</td>
                     <td th:text="${m.loginId}">아이디</td>
                     <td>
-                                <span class="tag"
-                                      th:classappend="${m.personalColor == 'SUMMER_COOL' || m.personalColor == 'WINTER_COOL' ? 'cool' : 'warm'}"
-                                      th:text="${m.personalColor != null ? m.personalColor : '미진단'}">결과</span>
+                            <span class="tag" th:classappend="${m.personalColor == 'SUMMER_COOL' || m.personalColor == 'WINTER_COOL' ? 'cool' : 'warm'}"
+                                  th:text="${m.personalColor != null ? m.personalColor : '미진단'}">결과</span>
                     </td>
                 </tr>
                 </tbody>
@@ -126,19 +126,15 @@
 
     <div id="shopping" class="admin-section">
         <div id="product_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-            <div class="content-card" style="width: 600px; max-height: 80vh; overflow-y: auto; position: relative; border: none;">
+            <div class="content-card" style="width: 600px; max-height: 85vh; overflow-y: auto; position: relative; border: none;">
                 <span onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
                 <h2 style="margin-bottom: 25px; color: #333;">신규 상품 등록</h2>
-
                 <form th:action="@{/admin/shopping/add}" method="post" enctype="multipart/form-data">
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1;"><label>상품명</label><input type="text" name="name" required></div>
                         <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">상품명</label>
-                            <input type="text" name="name" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">카테고리</label>
-                            <select name="category" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                            <label>카테고리</label>
+                            <select name="category">
                                 <option value="SHIRT">셔츠 (SHIRT)</option>
                                 <option value="JACKET">자켓 (JACKET)</option>
                                 <option value="HOODIE">후드티 (HOODIE)</option>
@@ -146,11 +142,10 @@
                             </select>
                         </div>
                     </div>
-
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                         <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">스타일 DNA (아이콘 연동)</label>
-                            <select name="styleTags" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                            <label>스타일 DNA (아이콘 연동)</label>
+                            <select name="styleTags">
                                 <option value="MINIMAL">미니멀</option>
                                 <option value="CASUAL">캐주얼</option>
                                 <option value="STREET">스트릿</option>
@@ -159,8 +154,8 @@
                             </select>
                         </div>
                         <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">퍼스널 컬러 (아이콘 연동)</label>
-                            <select name="recommendedSeasons" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                            <label>퍼스널 컬러 (아이콘 연동)</label>
+                            <select name="recommendedSeasons">
                                 <option value="SPRING_WARM">봄 웜톤</option>
                                 <option value="SUMMER_COOL">여름 쿨톤</option>
                                 <option value="AUTUMN_WARM">가을 웜톤</option>
@@ -168,33 +163,22 @@
                             </select>
                         </div>
                     </div>
-
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">가격</label>
-                            <input type="number" name="price" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">재고 수량</label>
-                            <input type="number" name="stockQuantity" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                        </div>
+                        <div style="flex: 1;"><label>가격</label><input type="number" name="price" required></div>
+                        <div style="flex: 1;"><label>재고 수량</label><input type="number" name="stockQuantity" required></div>
                     </div>
-
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">대표 이미지 업로드 (Main)</label>
+                        <label>대표 이미지 업로드 (Main)</label>
                         <input type="file" name="imageFile" accept="image/*" required style="font-size: 13px;">
                     </div>
-
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">호버 이미지 업로드 (Hover)</label>
+                        <label>호버 이미지 업로드 (Hover)</label>
                         <input type="file" name="hoverFile" accept="image/*" style="font-size: 13px;">
                     </div>
-
                     <div style="margin-bottom: 25px;">
-                        <label style="display: block; font-size: 13px; margin-bottom: 5px; color: #666;">상품 상세 설명</label>
-                        <textarea name="description" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; resize: none;"></textarea>
+                        <label>상품 상세 설명</label>
+                        <textarea name="description" rows="3" style="resize: none;"></textarea>
                     </div>
-
                     <button type="submit" class="btn btn-add" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;">상품 등록 완료</button>
                 </form>
             </div>
@@ -204,17 +188,10 @@
             <h2>Shopping Management</h2>
             <button class="btn btn-add" onclick="openModal()"> + 신규 상품 등록</button>
         </div>
-
         <div class="content-card">
             <table>
                 <thead>
-                <tr>
-                    <th>카테고리</th>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>재고</th>
-                    <th>관리</th>
-                </tr>
+                <tr><th>카테고리</th><th>상품명</th><th>가격</th><th>재고</th><th>관리</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="p : ${products}">
@@ -223,11 +200,8 @@
                     <td th:text="${#numbers.formatInteger(p.price, 3, 'COMMA')} + '원'">가격</td>
                     <td th:text="${p.stockQuantity}">재고</td>
                     <td>
-                        <button class="btn btn-del" style="background:#3498db"
-                                th:onclick="|location.href='/admin/shopping/edit/' + ${p.id}|">수정</button>
-
-                        <button class="btn btn-del"
-                                th:onclick="'if(confirm(\'정말 삭제하시겠습니까?\')){ location.href=\'/admin/shopping/delete/' + ${p.id} + '\'; }'">삭제</button>
+                        <button class="btn btn-blue" th:onclick="|location.href='/admin/shopping/edit/' + ${p.id}|">수정</button>
+                        <button class="btn btn-del" th:onclick="'if(confirm(\'정말 삭제하시겠습니까?\')){ location.href=\'/admin/shopping/delete/' + ${p.id} + '\'; }'">삭제</button>
                     </td>
                 </tr>
                 </tbody>
@@ -236,55 +210,123 @@
     </div>
 
     <div id="crm" class="admin-section">
-        <div class="section-header"><h2>CRM (고객 관리)</h2></div>
+        <div class="section-header"><h2>CRM (Customer Relationship Management)</h2></div>
         <div class="content-card">
             <table>
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>이름</th>
-                    <th>아이디</th>
-                    <th>진단 결과</th>
-                    <th>관리</th>
-                </tr>
+                <tr><th>사용자 번호</th><th>이름(ID)</th><th>퍼스널 컬러</th><th>스타일 DNA</th><th>구매 횟수</th><th>가상 피팅</th><th>게시글</th><th>관리</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="m : ${members}">
-                    <td th:text="${m.id}">1</td>
-                    <td th:text="${m.name}">이름</td>
-                    <td th:text="${m.loginId}">아이디</td>
-                    <td th:text="${m.personalColor ?: '미진단'}">진단결과</td>
-                    <td><button class="btn btn-del">삭제</button></td>
+                    <td th:text="${m.userId}">1</td>
+                    <td><strong th:text="${m.name}">이름</strong><br><span style="font-size: 11px; color: #999;" th:text="${m.loginId}">아이디</span></td>
+                    <td th:text="${m.personalColor}">진단결과</td>
+                    <td th:text="${m.styleDna}">-</td>
+                    <td th:text="${m.buyCount} + '회'">0</td>
+                    <td th:text="${m.fittingCount} + '회'">0</td>
+                    <td th:text="${m.postCount}">0</td>
+                    <td>
+                        <button class="btn btn-detail" th:onclick="|location.href='/admin/member/detail/' + ${m.userId}|">상세보기</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-        <div id="project" class="admin-section"><h2>Project 관리 준비중</h2></div>
-        <div id="access" class="admin-section"><h2>Access 관리 준비중</h2></div>
+    <div id="project" class="admin-section">
+        <div class="section-header"><h2>Project 관리</h2></div>
+        <div class="content-card"><h3>서비스 준비 중입니다.</h3></div>
     </div>
 
+    <div id="access" class="admin-section">
+        <div class="section-header"><h2>Access Control (Master)</h2></div>
+        <div class="content-card">
+            <table>
+                <thead>
+                <tr><th>아이디</th><th>이름</th><th>현재 권한</th><th>설정</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${members}">
+                    <td th:text="${m.loginId}">id</td>
+                    <td th:text="${m.name}">이름</td>
+                    <td>
+                            <span th:text="${m.styleDna == 'ADMIN' ? '관리자(ADMIN)' : '일반유저'}"
+                                  th:style="${m.styleDna == 'ADMIN' ? 'color:#e74c3c; font-weight:bold;' : 'color:#999;'}"></span>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/access/toggle/{id}(id=${m.userId})}" method="post" th:if="${m.loginId != 'kdoryul'}">
+                            <button type="submit" class="btn" th:classappend="${m.styleDna == 'ADMIN' ? 'btn-del' : 'btn-blue'}"
+                                    th:text="${m.styleDna == 'ADMIN' ? '권한 박탈' : '권한 부여'}"></button>
+                        </form>
+                        <span th:if="${m.loginId == 'kdoryul'}" style="font-size: 12px; color: #aaa;">(Master)</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script>
-    function showSection(sectionId) {
-        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
+    /**
+     * 섹션 전환 함수
+     * @param {string} sectionId - 보여줄 섹션의 ID
+     * @param {HTMLElement} el - 클릭된 메뉴 <li> 요소 (this로 전달)
+     */
+    function showSection(sectionId, el) {
+        // 1. 모든 섹션에서 active 클래스 제거
+        document.querySelectorAll('.admin-section').forEach(s => {
+            s.classList.remove('active');
+        });
+
+        // 2. 선택한 섹션에 active 클래스 추가
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.classList.add('active');
+        } else {
+            console.error("해당 섹션을 찾을 수 없습니다: " + sectionId);
+        }
+
+        // 3. 메뉴 하이라이트 효과 처리
+        document.querySelectorAll('.menu-item').forEach(li => {
+            li.classList.remove('active-menu');
+        });
+
+        // el은 항상 안정적으로 참조 가능 (this로 넘겨받기 때문)
+        if (el) {
+            el.classList.add('active-menu');
+        }
     }
+
+    // [쇼핑 관리] 상품 등록 모달 열기
     function openModal() {
-    document.getElementById('product_modal').style.display = 'flex';
+        const modal = document.getElementById('product_modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
     }
 
+    // [쇼핑 관리] 상품 등록 모달 닫기
     function closeModal() {
-        document.getElementById('product_modal').style.display = 'none';
+        const modal = document.getElementById('product_modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 
-    // 모달 바깥쪽 클릭 시 닫기
+    // 모달 바깥쪽 클릭 시 자동 닫기
     window.onclick = function(event) {
-        let modal = document.getElementById('product_modal');
+        const modal = document.getElementById('product_modal');
         if (event.target == modal) {
             closeModal();
         }
     }
+
+    // 페이지 로드 시 첫 번째 메뉴(대시보드) 활성화 유지
+    window.onload = function() {
+        console.log("Admin System Loaded");
+    };
 </script>
 </body>
 </html>

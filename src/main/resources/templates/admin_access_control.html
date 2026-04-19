@@ -1,0 +1,31 @@
+<div class="content-card">
+    <h3>Master Access Control (Super Admin: kdoryul)</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>이름</th>
+            <th>현재 권한</th>
+            <th>설정</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${members}">
+            <td th:text="${m.loginId}">id</td>
+            <td th:text="${m.name}">이름</td>
+            <td>
+                    <span th:text="${m.styleDna == 'ADMIN' ? '관리자(ADMIN)' : '일반유저'}"
+                          th:style="${m.styleDna == 'ADMIN' ? 'color:red; font-weight:bold;' : 'color:gray;'}"></span>
+            </td>
+            <td>
+                <form th:action="@{/admin/access/toggle/{id}(id=${m.id})}" method="post">
+                    <button type="submit"
+                            th:text="${m.styleDna == 'ADMIN' ? '권한 박탈' : '권한 부여'}"
+                            th:class="${m.styleDna == 'ADMIN' ? 'btn-red' : 'btn-blue'}">
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
