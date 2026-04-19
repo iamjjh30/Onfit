@@ -25,7 +25,7 @@ function loadCartItems() {
                         <div style="width: 64px; height: 64px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 20px;">🛒</div>
                         <p style="font-size: 1.1rem; font-weight: 600; color: #111; margin-bottom: 10px;">장바구니가 비어 있습니다.</p>
                         <p style="font-size: 0.9rem; color: #888; margin-bottom: 30px;">당신의 스타일을 채워줄 새로운 아이템을 만나보세요.</p>
-                        <button onclick="location.href='/storeMain'" style="padding: 14px 32px; background: #111; color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; transition: background 0.2s;">
+                        <button onclick="location.href='/store'" style="padding: 14px 32px; background: #111; color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; transition: background 0.2s;">
                             쇼핑하러 가기
                         </button>
                     </div>`;
