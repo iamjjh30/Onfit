@@ -81,3 +81,24 @@ nav ul{
     margin-bottom: 25px;
     margin-left: 55px
 }
+/* 검색바 스타일 */
+.search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+#productSearch {
+    width: 300px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+#categoryFilter {
+    width: 150px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+}

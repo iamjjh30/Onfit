@@ -56,7 +56,7 @@ public class MemberService {
                 .orElse(null);
     }
     public boolean isAdmin(String loginId) {
-        java.util.List<String> adminIds = java.util.Arrays.asList("kdoryul", "exx", "ID3"); // 여기에 진짜 ID 3개 넣어
+        java.util.List<String> adminIds = java.util.Arrays.asList("kdoryul", "ad1", "ad2"); // 여기에 진짜 ID 3개 넣어
         return adminIds.contains(loginId);
     }
 }
