@@ -1,9 +1,10 @@
 /* ============================================================
    AIStyler.js — 퍼스널 컬러 & 가상 피팅 통합 솔루션
+   상의/하의 동시 피팅 기능 추가
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const AI_SERVER_URL = "http://localhost:5000"; // 파이썬 Flask 서버
+    const AI_SERVER_URL = "http://localhost:5000";
 
     // 1. 탭 네비게이션 로직
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -19,9 +20,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // 2. 파일 변수 관리
-    let faceFile = null;  // 퍼스널 컬러용 얼굴 사진
-    let bodyFile = null;  // 가상 피팅용 전신 사진
-    let clothFile = null; // 가상 피팅용 옷 사진 (Blob으로 변환 예정)
+    let faceFile   = null;  // 퍼스널 컬러용 얼굴 사진
+    let bodyFile   = null;  // 가상 피팅용 전신 사진
+    let topFile    = null;  // 🌟 상의 이미지
+    let bottomFile = null;  // 🌟 하의 이미지
 
     // 미리보기 설정 유틸리티
     function setupPreview(inputId, previewId, placeholderId, fileVariableSetter) {
@@ -40,13 +42,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (placeholderId) document.getElementById(placeholderId).style.display = 'none';
                 };
                 reader.readAsDataURL(file);
+                updateTryOnBtn(); // 🌟 파일 변경 시 버튼 상태 업데이트
             }
         });
     }
 
     // 사진 업로드 설정
     setupPreview('face-input', 'face-preview', null, (f) => faceFile = f);
-    setupPreview('body-input', 'body-preview', 'body-placeholder', (f) => bodyFile = f);
+    setupPreview('body-input', 'body-preview', 'body-placeholder', (f) => { bodyFile = f; updateTryOnBtn(); });
+
+    // ==============================================================
+    // 🌟 상의/하의 버튼 상태 업데이트
+    // ==============================================================
+    function updateTryOnBtn() {
+        const tryOnBtn = document.getElementById('try-on-btn');
+        if (!tryOnBtn) return;
+        // 전신 사진 + 상의 또는 하의 중 하나라도 있으면 활성화
+        tryOnBtn.disabled = !(bodyFile && (topFile || bottomFile));
+    }
 
     // ==============================================================
     // [A] 퍼스널 컬러 진단 로직
@@ -68,12 +81,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             formData.append('image', faceFile);
 
             try {
-                // 1. 파이썬 AI 서버 호출
                 const response = await fetch(`${AI_SERVER_URL}/api/analyze-face`, {method: 'POST', body: formData});
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
 
-                // 2. 화면 렌더링
                 renderDiagnosisResult(data);
                 loadRealRecommendedProducts(data.tone);
 
@@ -105,31 +116,27 @@ document.addEventListener('DOMContentLoaded', async function () {
             warningEl.style.display = 'none';
         }
 
-        // 1. 결과 텍스트 넣기
         const resultToneEl = document.getElementById('result-tone');
         resultToneEl.innerText = data.tone;
         document.getElementById('result-features').innerText = data.features;
 
-        // 🌟 2. 톤 이름에 따른 글자 색상 변경 로직
-        let toneColor = "#111"; // 기본 검정색
+        let toneColor = "#111";
         const toneName = data.tone;
 
         if (toneName.includes('봄') || toneName.includes('Spring')) {
-            toneColor = "#ef6c00"; // 봄 웜톤: 따뜻한 오렌지/핑크
+            toneColor = "#ef6c00";
         } else if (toneName.includes('여름') || toneName.includes('Summer')) {
-            toneColor = "#00acc1"; // 여름 쿨톤: 시원한 하늘/청록
+            toneColor = "#00acc1";
         } else if (toneName.includes('가을') || toneName.includes('Autumn')) {
-            toneColor = "#8d6e63"; // 가을 웜톤: 차분한 브라운/머스터드
+            toneColor = "#8d6e63";
         } else if (toneName.includes('겨울') || toneName.includes('Winter')) {
-            toneColor = "#311b92"; // 겨울 쿨톤: 선명한 네이비/퍼플
+            toneColor = "#311b92";
         }
 
-        // 색상 적용 및 강조 효과
         resultToneEl.style.color = toneColor;
-        resultToneEl.style.fontWeight = "900"; // 더 두껍게
-        resultToneEl.style.textShadow = `0 0 10px ${toneColor}33`; // 미세한 광택 효과 추가
+        resultToneEl.style.fontWeight = "900";
+        resultToneEl.style.textShadow = `0 0 10px ${toneColor}33`;
 
-        // 3. 컬러 팔레트 그리기
         renderPalette('best-colors-container', data.best_colors);
         renderPalette('worst-colors-container', data.worst_colors);
 
@@ -163,10 +170,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
 
-            if (!response.ok) {
-                throw new Error(`서버 응답 오류: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`서버 응답 오류: ${response.status}`);
             console.log("🎉 내 팔레트에 퍼스널 컬러 저장 완료!");
 
         } catch (error) {
@@ -187,10 +191,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             const products = await res.json();
 
             const grid = document.getElementById('recommendation-grid');
-            if(grid) grid.innerHTML = '';
+            if (grid) grid.innerHTML = '';
 
             if (products.length === 0) {
-                if(grid) grid.innerHTML = '<p style="color:#888; font-size:0.9rem; grid-column:1/-1; text-align:center;">해당 톤에 추천할 상품이 아직 없습니다.</p>';
+                if (grid) grid.innerHTML = '<p style="color:#888; font-size:0.9rem; grid-column:1/-1; text-align:center;">해당 톤에 추천할 상품이 아직 없습니다.</p>';
                 return;
             }
 
@@ -200,11 +204,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 div.innerHTML = `
                     <img src="${prod.imageUrl}" alt="${prod.name}">
                     <div class="cloth-label">${prod.name}</div>
+                    <div class="cloth-category" style="font-size:0.75rem; color:#aaa;">${prod.category || ''}</div>
                 `;
-
-                div.addEventListener('click', () => setProductForFitting(prod.imageUrl, prod.name, prod.id));
-
-                if(grid) grid.appendChild(div);
+                div.addEventListener('click', () => setProductForFitting(prod.imageUrl, prod.name, prod.id, prod.category));
+                if (grid) grid.appendChild(div);
             });
 
         } catch (e) {
@@ -212,57 +215,65 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    async function setProductForFitting(url, name, productId) {
+    // ==============================================================
+    // 🌟 상의/하의 구분해서 피팅룸에 세팅
+    // ==============================================================
+    function isBottomCategory(category) {
+        if (!category) return false;
+        return category.toLowerCase() === 'pants';
+    }
 
+    function isTopCategory(category) {
+        if (!category) return false;
+        const lower = category.toLowerCase();
+        return lower === 'cap' || lower === 'hoodie' || lower === 'jacket' || lower === 'shirt';
+    }
+    async function setProductForFitting(url, name, productId, category, price = '') {
+        const formattedPrice = price ? Number(price).toLocaleString() + '원' : '';
         // 1. 피팅 탭으로 이동
         const fittingTabBtn = document.querySelector('[data-target="tab-fitting"]');
         if (fittingTabBtn) fittingTabBtn.click();
 
-        // 2. 상품 ID 세팅
-        let targetInput = document.getElementById('target-product-id');
-        if (!targetInput) {
-            targetInput = document.createElement('input');
-            targetInput.type = 'hidden';
-            targetInput.id = 'target-product-id';
-            document.body.appendChild(targetInput);
-        }
-        targetInput.value = productId;
-
-        // 3. 화면 업데이트
-        const displayWrap = document.getElementById('product-display-wrap');
-        const preview = document.getElementById('cloth-preview-fixed');
-        const nameText = document.getElementById('cloth-name-fixed');
-        const placeholder = document.getElementById('cloth-placeholder');
-        const tryOnBtn = document.getElementById('try-on-btn');
-
-        if (displayWrap) displayWrap.style.display = 'block';
-        if (preview) preview.src = url;
-        if (nameText) nameText.innerText = name;
-        if (placeholder) placeholder.style.display = 'none';
-        if (tryOnBtn) tryOnBtn.disabled = false;
-
-        // 4. 이미지 변환 로직
         try {
-            const res = await fetch(url);
+            const res  = await fetch(url);
             const blob = await res.blob();
-            clothFile = new File([blob], "selected_product.jpg", {type: "image/jpeg"});
+            const file = new File([blob], "product.jpg", {type: "image/jpeg"});
 
-            if (!bodyFile) {
-                alert(`[${name}] 상품이 피팅룸에 준비되었습니다! 👕\n이제 '내 전신 사진'을 올려주세요.`);
+            // 2. 🌟 카테고리에 따라 상의/하의 구분
+            if (isBottomCategory(category)) {
+                // 하의 세팅
+                bottomFile = file;
+                if (document.getElementById('bottom-preview'))  document.getElementById('bottom-preview').src = url;
+                if (document.getElementById('bottom-name'))     document.getElementById('bottom-name').innerText = name;
+                if (document.getElementById('bottom-price'))    document.getElementById('bottom-price').innerText = formattedPrice; // ✅
+                if (document.getElementById('bottom-product-id')) document.getElementById('bottom-product-id').value = productId;
+                if (document.getElementById('bottom-display-wrap')) document.getElementById('bottom-display-wrap').style.display = 'flex';
+            } else {
+                // 상의 세팅
+                topFile = file;
+                if (document.getElementById('top-preview'))    document.getElementById('top-preview').src = url;
+                if (document.getElementById('top-name'))       document.getElementById('top-name').innerText = name;
+                if (document.getElementById('top-price'))      document.getElementById('top-price').innerText = formattedPrice; // ✅
+                if (document.getElementById('top-product-id')) document.getElementById('top-product-id').value = productId;
+                if (document.getElementById('top-display-wrap')) document.getElementById('top-display-wrap').style.display = 'flex';
             }
-        } catch (e) {
+            updateTryOnBtn();
+
+        } catch(e) {
             console.error("이미지 변환 실패", e);
         }
     }
-
     // ==============================================================
     // [C] 가상 피팅 실행 로직
     // ==============================================================
     const tryOnBtn = document.getElementById('try-on-btn');
-    if(tryOnBtn) {
+    if (tryOnBtn) {
         tryOnBtn.addEventListener('click', async () => {
-            if (!bodyFile || !clothFile) {
-                alert("내 사진과 상품 정보가 모두 필요합니다."); return;
+            if (!bodyFile) {
+                alert("전신 사진이 필요합니다."); return;
+            }
+            if (!topFile && !bottomFile) {
+                alert("상의 또는 하의 상품을 선택해주세요."); return;
             }
 
             tryOnBtn.disabled = true;
@@ -270,10 +281,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             const formData = new FormData();
             formData.append('user_image', bodyFile);
-            formData.append('cloth_image', clothFile);
+
+            // 🌟 상의+하의 동시 or 단일 전송
+            if (topFile && bottomFile) {
+                formData.append('top_image', topFile);
+                formData.append('bottom_image', bottomFile);
+            } else {
+                formData.append('cloth_image', topFile || bottomFile);
+            }
 
             try {
-                // 1. 파이썬 AI 서버 호출
                 const response = await fetch(`${AI_SERVER_URL}/api/try-on`, {
                     method: 'POST',
                     body: formData
@@ -282,8 +299,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 if (!response.ok) throw new Error(data.error || '피팅 처리 중 문제가 발생했습니다.');
 
-                // 2. 결과 표시
-                const resultImg = document.getElementById('fitting-result-img');
+                // 결과 표시
+                const resultImg  = document.getElementById('fitting-result-img');
                 const placeholder = document.getElementById('fitting-placeholder-main');
                 if (resultImg) {
                     resultImg.src = data.result_url;
@@ -291,35 +308,39 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
                 if (placeholder) placeholder.style.display = 'none';
 
-                // 3. 스프링 부트에 피팅 기록 저장
-                const productId = document.getElementById('target-product-id')?.value || 0;
-                saveFittingToDB(productId, data.result_url);
+                // DB 저장 (상의 우선, 없으면 하의 ID)
+                const topId    = document.getElementById('top-product-id')?.value;
+                const bottomId = document.getElementById('bottom-product-id')?.value;
+                const saveId   = topId || bottomId || 0;
+                saveFittingToDB(topId, bottomId, data.result_url);
 
             } catch (error) {
                 alert("가상 피팅 오류: " + error.message);
             } finally {
                 tryOnBtn.disabled = false;
+                updateTryOnBtn();
                 document.getElementById('fitting-loading-overlay').style.display = 'none';
             }
         });
     }
 
-    async function saveFittingToDB(productId, resultB64) {
-        console.log("DB 저장 시도 중... 상품ID:", productId);
+    async function saveFittingToDB(topId, bottomId, resultB64) {
+        const hasTop    = topId    && topId    !== 'undefined' && topId    != 0;
+        const hasBottom = bottomId && bottomId !== 'undefined' && bottomId != 0;
 
-        // 🌟 [추가 1] 상품 ID가 undefined거나 없으면 아예 서버로 요청을 안 보내게 막습니다!
-        if (!productId || productId === 'undefined' || productId == 0) {
-            console.warn("상품 ID가 유효하지 않아 피팅 기록을 저장하지 않습니다.");
+        if (!hasTop && !hasBottom) {
+            console.warn("유효한 상품 ID가 없어 피팅 기록을 저장하지 않습니다.");
             return;
         }
 
         try {
             const response = await fetch('/api/ai/save-fitting', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    productId: productId,
-                    resultImageUrl: resultB64
+                    topProductId:    hasTop    ? topId    : null,
+                    bottomProductId: hasBottom ? bottomId : null,
+                    resultImageUrl:  resultB64
                 })
             });
 
@@ -327,30 +348,107 @@ document.addEventListener('DOMContentLoaded', async function () {
                 alert("로그인이 풀렸습니다! 피팅 기록을 저장하려면 로그인해주세요.");
                 return;
             }
-
-            if (!response.ok) {
-                throw new Error(`서버 응답 오류 (상태 코드: ${response.status})`);
-            }
-
+            if (!response.ok) throw new Error(`서버 응답 오류 (상태 코드: ${response.status})`);
             console.log("🎉 아카이브 저장 완료!");
 
         } catch (error) {
             console.error("아카이브 저장 실패:", error);
-            alert("피팅 기록 저장 중 오류가 발생했습니다. (F12 콘솔창을 확인해주세요)");
+            alert("피팅 기록 저장 중 오류가 발생했습니다.");
         }
     }
 
-    // ==============================================================
-    // [D] 스토어 상세페이지에서 '피팅하기'로 넘어온 경우 처리
-    // ==============================================================
-    const urlParams = new URLSearchParams(window.location.search);
-    const productIdFromUrl = urlParams.get('productId');
+    function fillDropdown(prefix, products) {
+        const trigger  = document.getElementById(`${prefix}-select-trigger`);
+        const dropdown = document.getElementById(`${prefix}-select-dropdown`);
+        const wrap     = document.getElementById(`${prefix}-select-wrap`);
+        if (!trigger || !dropdown) return;
 
-    if (productIdFromUrl) {
-        const clothImgFromThymeleaf = document.getElementById('cloth-preview-fixed');
-        if (clothImgFromThymeleaf && clothImgFromThymeleaf.src) {
-            // 🌟 [추가 2] 3번째 파라미터로 productIdFromUrl을 넣어주어 undefined가 발생하지 않게 합니다!
-            setProductForFitting(clothImgFromThymeleaf.src, "선택한 상품", productIdFromUrl);
+        // 드롭다운 옵션 렌더링
+        dropdown.innerHTML = '';
+        products.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'custom-select-option';
+            item.innerHTML = `
+            <img src="${p.imgUrl}" alt="${p.name}" onerror="this.src='/img/default_product.png'">
+            <div class="custom-select-option-info">
+                <div class="custom-select-option-name">${p.name}</div>
+                <div class="custom-select-option-price">${Number(p.price).toLocaleString()}원</div>
+            </div>
+        `;
+            item.addEventListener('click', () => {
+                // 선택 상태 표시
+                dropdown.querySelectorAll('.custom-select-option').forEach(el => el.classList.remove('selected'));
+                item.classList.add('selected');
+
+                // 트리거 텍스트 업데이트
+                trigger.querySelector('span').textContent = p.name;
+
+                // 드롭다운 닫기
+                wrap.classList.remove('open');
+
+                // 피팅룸에 세팅
+                setProductForFitting(p.imgUrl, p.name, p.productId, p.category, p.price);
+            });
+            dropdown.appendChild(item);
+        });
+
+        // 트리거 클릭 시 열기/닫기
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = wrap.classList.contains('open');
+            // 다른 드롭다운 모두 닫기
+            document.querySelectorAll('.custom-select-wrap.open').forEach(el => el.classList.remove('open'));
+            if (!isOpen) wrap.classList.add('open');
+        });
+    }
+
+// 외부 클릭 시 드롭다운 닫기
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select-wrap.open').forEach(el => el.classList.remove('open'));
+    });
+
+// loadProductDropdowns 함수도 수정
+    async function loadProductDropdowns() {
+        try {
+            const res = await fetch('/api/products/all');
+            if (!res.ok) return;
+            const products = await res.json();
+
+            const tops    = products.filter(p => isTopCategory(p.category));
+            const bottoms = products.filter(p => isBottomCategory(p.category));
+
+            fillDropdown('top', tops);       // ✅ suffix만 넘김
+            fillDropdown('bottom', bottoms);
+
+        } catch (e) {
+            console.error("상품 드롭다운 로드 실패:", e);
         }
     }
+
+// clearSlot에서 드롭다운 트리거 텍스트도 초기화
+    window.clearSlot = function(type) {
+        const trigger = document.getElementById(`${type}-select-trigger`);
+        if (trigger) trigger.querySelector('span').textContent = '-- 상품 선택 --';
+
+        document.querySelectorAll(`#${type}-select-dropdown .custom-select-option`)
+            .forEach(el => el.classList.remove('selected'));
+
+        if (type === 'top') {
+            topFile = null;
+            document.getElementById('top-preview').src = '';
+            document.getElementById('top-name').innerText = '';
+            document.getElementById('top-price').innerText = '';
+            document.getElementById('top-product-id').value = '';
+            document.getElementById('top-display-wrap').style.display = 'none';
+        } else {
+            bottomFile = null;
+            document.getElementById('bottom-preview').src = '';
+            document.getElementById('bottom-name').innerText = '';
+            document.getElementById('bottom-price').innerText = '';
+            document.getElementById('bottom-product-id').value = '';
+            document.getElementById('bottom-display-wrap').style.display = 'none';
+        }
+        updateTryOnBtn();
+    };
+    loadProductDropdowns();
 });

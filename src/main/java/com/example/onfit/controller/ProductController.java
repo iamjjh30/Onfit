@@ -27,4 +27,9 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+    // 기존 코드 유지하고 아래만 추가
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductDto>> getAllProductsForFitting() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
 }
