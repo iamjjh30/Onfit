@@ -102,7 +102,14 @@
 
                 <div class="purchase-group">
                     <div class="btn-row">
-                        <button class="btn-fitting" th:onclick="|location.href='/AIStyler?productId=' + ${product.id}|">VIRTUAL FITTING</button>
+                        <button class="btn-fitting"
+                                id="btn-fitting"
+                                th:data-id="${product.id}"
+                                th:data-category="${product.category}"
+                                th:data-image="${product.imageUrl}"
+                                th:data-name="${product.name}">
+                            VIRTUAL FITTING
+                        </button>
                         <button id="btn-cart" class="btn-light outline" >장바구니</button>
                     </div>
                     <button class="btn-dark fill" id="btn-buy-now"
@@ -227,6 +234,19 @@
                 selectedSize = this.innerText;
             });
         });
+
+        // DOMContentLoaded 안에 추가
+        const btnFitting = document.getElementById('btn-fitting');
+        if (btnFitting) {
+            btnFitting.addEventListener('click', function () {
+                const id       = this.dataset.id;
+                const category = this.dataset.category;
+                const image    = this.dataset.image;
+                const name     = this.dataset.name;
+
+                location.href = `/AIStyler?productId=${id}&category=${encodeURIComponent(category)}&imageUrl=${encodeURIComponent(image)}&name=${encodeURIComponent(name)}`;
+            });
+        }
 
         // [장바구니 담기]
         // --- [5] 장바구니 담기 (수정된 로직) ---

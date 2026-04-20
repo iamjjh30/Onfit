@@ -76,22 +76,49 @@
         <div class="fitting-layout">
             <div class="card input-card">
                 <h2 class="card-title">피팅 준비하기</h2>
+                <!-- 기존 코드에서 이 부분을 교체 -->
+                <!-- ❌ 삭제: <div class="upload-group"> ~ </div> (선택된 상품 섹션 전체) -->
+                <!-- ✅ 아래 코드로 대체 -->
+
+                <!-- 상의 -->
                 <div class="upload-group">
-                    <label>1. 선택된 상품</label>
-
-                    <div class="selected-product-display" id="product-display-wrap"
-                         th:style="${product == null ? 'display:none;' : 'display:block;'}">
-                        <div class="fixed-cloth-box">
-                            <img id="cloth-preview-fixed" th:src="${product != null ? product.imageUrl : ''}" alt="선택된 상품" style="width: 100%;">
-                            <input type="hidden" id="target-product-id" th:value="${product != null ? product.id : ''}">
+                    <label>1. 상의 선택</label>
+                    <div class="custom-select-wrap" id="top-select-wrap">
+                        <div class="custom-select-trigger" id="top-select-trigger">
+                            <span>-- 상품 선택 --</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
-                        <p class="selected-name" id="cloth-name-fixed" th:text="${product != null ? product.name : ''}">상품명</p>
+                        <div class="custom-select-dropdown" id="top-select-dropdown"></div>
                     </div>
+                    <div id="top-display-wrap" class="product-preview-card" style="display:none;">
+                        <img id="top-preview" src="" alt="상의">
+                        <div class="product-preview-info">
+                            <p class="product-preview-name" id="top-name"></p>
+                            <p class="product-preview-price" id="top-price"></p>
+                        </div>
+                        <input type="hidden" id="top-product-id">
+                        <button type="button" class="btn-clear-slot" onclick="clearSlot('top')">✕</button>
+                    </div>
+                </div>
 
-                    <div class="no-product-selected" id="cloth-placeholder"
-                         th:style="${product != null ? 'display:none;' : 'display:block;'}">
-                        <p>선택된 상품이 없습니다.</p>
-                        <button type="button" onclick="location.href='/store'" class="btn-outline">스토어에서 옷 고르기</button>
+                <!-- 하의 -->
+                <div class="upload-group">
+                    <label>2. 하의 선택</label>
+                    <div class="custom-select-wrap" id="bottom-select-wrap">
+                        <div class="custom-select-trigger" id="bottom-select-trigger">
+                            <span>-- 상품 선택 --</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <div class="custom-select-dropdown" id="bottom-select-dropdown"></div>
+                    </div>
+                    <div id="bottom-display-wrap" class="product-preview-card" style="display:none;">
+                        <img id="bottom-preview" src="" alt="하의">
+                        <div class="product-preview-info">
+                            <p class="product-preview-name" id="bottom-name"></p>
+                            <p class="product-preview-price" id="bottom-price"></p>
+                        </div>
+                        <input type="hidden" id="bottom-product-id">
+                        <button type="button" class="btn-clear-slot" onclick="clearSlot('bottom')">✕</button>
                     </div>
                 </div>
                 <div class="upload-group">
