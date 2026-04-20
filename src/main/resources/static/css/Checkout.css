@@ -527,3 +527,5 @@ footer {
     color: #fff;
     font-weight: 600;
 }
+
+#btn-address-search:hover { background: #333 !important; }

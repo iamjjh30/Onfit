@@ -1,7 +1,7 @@
 /* ================================================================
    CheckoutSuccess.js — 결제 성공 후 DB 저장 처리
 ================================================================ */
-var API_BASE = '';
+var API_BASE = 'http://localhost:8080';
 
 var params     = new URLSearchParams(window.location.search);
 var paymentKey = params.get('paymentKey');

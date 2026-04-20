@@ -1,9 +1,12 @@
 package com.example.onfit.controller;
 
 import com.example.onfit.entity.Member;
+import com.example.onfit.repository.ProductRepository;
 import com.example.onfit.service.OrderService;
+import com.example.onfit.service.StyleDnaService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,35 +18,52 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentApiController {
 
-    private final OrderService orderService; // 🌟 1. 서비스 주입
+    private final ProductRepository productRepository; // 🌟 추가
 
+    @Autowired
+    private StyleDnaService styleDnaService;
+
+    private final OrderService orderService; // 🌟 1. 서비스 주입
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmPayment(HttpSession session, @RequestBody Map<String, Object> payload) {
 
-        // 2. 세션에서 로그인 회원 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");
         if (loginMember == null) {
             return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
         }
 
-        // 3. 프론트엔드(Payload)에서 데이터 추출
-        String orderId = (String) payload.get("orderId");
-        Long amount = Long.valueOf(payload.get("amount").toString());
-
-        // 🌟 CheckoutSuccess.js 등에서 보낸 상품 리스트와 배송 정보 추출
+        String orderId   = (String) payload.get("orderId");
+        Long amount      = Long.valueOf(payload.get("amount").toString());
         List<Map<String, Object>> items = (List<Map<String, Object>>) payload.get("items");
-        String recvName = (String) payload.get("recvName");
-        String address = (String) payload.get("address");
-        String phone = (String) payload.get("phone");
+        String recvName  = (String) payload.get("recvName");
+        String address   = (String) payload.get("address");
+        String phone     = (String) payload.get("phone");
+        String payMethod = payload.get("payMethod") != null ? payload.get("payMethod").toString() : null;
 
         System.out.println("========== DB 저장 로직 시작 ==========");
+        System.out.println("받는분: " + recvName);
+        System.out.println("주소: "   + address);
+        System.out.println("연락처: " + phone);
         System.out.println("주문번호: " + orderId);
         System.out.println("상품개수: " + (items != null ? items.size() : 0));
 
         try {
-            // 🌟 4. [핵심] 서비스 호출하여 DB에 저장 (order + order_item)
-            // 서비스 메서드에 배송 정보 파라미터를 추가하셨다면 함께 넘겨주세요!
-            orderService.saveOrder(loginMember, orderId, amount, items);
+            orderService.saveOrder(loginMember, orderId, amount, items,
+                    recvName, phone, address, payMethod);
+
+            // 🌟 구매 DNA 활동 기록
+            if (items != null) {
+                for (Map<String, Object> item : items) {
+                    try {
+                        Long productId = Long.valueOf(item.get("productId").toString());
+                        productRepository.findById(productId).ifPresent(product ->
+                                styleDnaService.recordActivity(loginMember, product, "BUY")
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
             return ResponseEntity.ok(Map.of(
                     "status", "success",

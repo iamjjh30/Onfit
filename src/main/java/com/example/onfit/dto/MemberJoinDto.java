@@ -13,4 +13,6 @@ public class MemberJoinDto {
     private String birthYear;
     private String birthMonth;
     private String birthDay;
+    private String address; // 🌟 추가
+    private String addressDetail;
 }

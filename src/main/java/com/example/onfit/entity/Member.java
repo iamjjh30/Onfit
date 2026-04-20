@@ -15,6 +15,10 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String address; // 기본 배송지 주소
+
+    private String addressDetail; // 🌟 상세 주소
+
     @Column(nullable = false, unique = true)
     private String loginId;
 

@@ -55,6 +55,10 @@ function fetchOrderDetail(orderId, container) {
 function renderOrderDetail(order, container) {
     var items       = order.items || [];
     var totalAmount = order.totalAmount || 0; // 🌟 totalPrice -> totalAmount
+    var fullAddress   = order.receiverAddress || '';
+    var addressParts  = fullAddress.split('||');
+    var baseAddr      = addressParts[0] || '-';
+    var detailAddr    = addressParts[1] ? ' ' + addressParts[1] : '';
 
     // 날짜 처리 (String 또는 Array 대응)
     var date = '';
@@ -109,7 +113,7 @@ function renderOrderDetail(order, container) {
         '<p class="section-title">배송 정보</p>' +
         '<div class="deli-box">' +
         '<p class="deli-name">받는 분: '    + (order.receiverName || '-') + '</p>' +
-        '<p class="deli-address">주소: ' + (order.receiverAddress  || '-') + '</p>' +
+        '<p class="deli-address">주소: ' + baseAddr + detailAddr + '</p>'
         '<p class="deli-tel">연락처: '     + (order.receiverPhone    || '-') + '</p>' +
         '</div>' +
         '</div>' +

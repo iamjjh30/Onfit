@@ -28,6 +28,9 @@ public class CartController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private StyleDnaService styleDnaService;
+
     // 1. 장바구니 목록 조회
     @GetMapping
     public ResponseEntity<?> getCartList(HttpSession session) {
@@ -65,33 +68,35 @@ public class CartController {
         }
 
     }
-    @PostMapping("/add") // 클래스 상단의 /api/cart 와 합쳐져서 실제 주소는 "/api/cart/add" 가 됩니다.
+    @PostMapping("/add")
     public ResponseEntity<String> addToCart(@RequestBody Map<String, Object> payload, HttpSession session) {
 
-        // 1. 로그인 확인
         Member loginMember = (Member) session.getAttribute("loginMember");
         if (loginMember == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
         try {
-            // 2. 프론트엔드에서 보낸 데이터(JSON) 꺼내기
             Long productId = Long.valueOf(payload.get("productId").toString());
-            int quantity = Integer.parseInt(payload.get("quantity").toString());
-            String size = payload.containsKey("size") ? payload.get("size").toString() : "FREE";
+            int quantity   = Integer.parseInt(payload.get("quantity").toString());
+            String size    = payload.containsKey("size") ? payload.get("size").toString() : "FREE";
 
-            // 3. DB에서 상품 정보 찾기
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-            // 4. 장바구니(Cart) 엔티티 만들어서 DB에 저장하기
             Cart cart = new Cart();
             cart.setMember(loginMember);
             cart.setProduct(product);
             cart.setQty(quantity);
             cart.setSize(size);
-
             cartRepository.save(cart);
+
+            // 🌟 DNA 활동 기록 추가
+            try {
+                styleDnaService.recordActivity(loginMember, product, "BUY");
+            } catch (Exception e) {
+                e.printStackTrace(); // DNA 기록 실패해도 장바구니는 정상 처리
+            }
 
             return ResponseEntity.ok("장바구니에 성공적으로 담겼습니다.");
 

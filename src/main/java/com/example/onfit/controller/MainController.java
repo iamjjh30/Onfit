@@ -67,7 +67,10 @@ public class MainController {
         return "AIStyler";
     }
 
-
+    @GetMapping("/OrderInfoDetail")
+    public String orderInfoDetail() {
+        return "OrderInfoDetail"; // templates/OrderInfoDetail.html 반환
+    }
     @GetMapping("/Cart")
     public String cartPage() {
         // src/main/resources/templates/Cart.html 파일을 찾아서 화면에 띄워줍니다!

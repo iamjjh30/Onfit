@@ -67,22 +67,28 @@ public class OrderApiController {
     // 🌟 프론트엔드에서 결제 성공 시 호출할 저장 API
     @PostMapping("/save")
     public ResponseEntity<?> saveOrderAfterPayment(HttpSession session, @RequestBody Map<String, Object> requestData) {
-        System.out.println("=== 주문 저장 API 호출됨 ==="); // 👈 로그 추가
-        System.out.println("넘어온 데이터: " + requestData); // 👈 데이터가 잘 왔는지 확인
+        System.out.println("=== 주문 저장 API 호출됨 ===");
+        System.out.println("넘어온 데이터: " + requestData);
 
         Member loginMember = (Member) session.getAttribute("loginMember");
         if (loginMember == null) {
-            System.out.println("로그인 멤버가 세션에 없음!"); // 👈 세션 문제 확인
+            System.out.println("로그인 멤버가 세션에 없음!");
             return ResponseEntity.status(401).build();
         }
 
         try {
-            String orderId = requestData.get("orderId").toString();
-            Long totalAmount = Long.valueOf(requestData.get("totalAmount").toString());
+            String orderId      = requestData.get("orderId").toString();
+            Long totalAmount    = Long.valueOf(requestData.get("totalAmount").toString());
             List<Map<String, Object>> items = (List<Map<String, Object>>) requestData.get("items");
 
-            // 공장(Service) 가동!
-            orderService.saveOrder(loginMember, orderId, totalAmount, items);
+            String receiverName    = requestData.getOrDefault("receiverName", "").toString();
+            String receiverPhone   = requestData.getOrDefault("receiverPhone", "").toString();
+            String receiverAddress = requestData.getOrDefault("receiverAddress", "").toString();
+            String payMethod       = requestData.getOrDefault("payMethod", "").toString();
+
+            // ✅ member → loginMember
+            orderService.saveOrder(loginMember, orderId, totalAmount, items,
+                    receiverName, receiverPhone, receiverAddress, payMethod);
 
             return ResponseEntity.ok("주문 저장 성공!");
         } catch (Exception e) {
@@ -90,4 +96,48 @@ public class OrderApiController {
             return ResponseEntity.badRequest().body("주문 저장 실패: " + e.getMessage());
         }
     }
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderDetail(@PathVariable String orderId, HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Order order = orderRepository.findByOrderId(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(404).body("주문을 찾을 수 없습니다.");
+        }
+
+        // 본인 주문인지 확인
+        if (!order.getMember().getId().equals(loginMember.getId())) {
+            return ResponseEntity.status(403).body("접근 권한이 없습니다.");
+        }
+
+        Map<String, Object> orderMap = new HashMap<>();
+        orderMap.put("orderId", order.getOrderId());
+        orderMap.put("totalAmount", order.getTotalAmount());
+        orderMap.put("status", order.getStatus());
+        orderMap.put("createdAt", order.getCreatedAt());
+        orderMap.put("receiverName", order.getReceiverName());
+        orderMap.put("receiverAddress", order.getReceiverAddress());
+        orderMap.put("receiverPhone", order.getReceiverPhone());
+        orderMap.put("payMethod", order.getPayMethod());
+
+        List<Map<String, Object>> items = new ArrayList<>();
+        if (order.getOrderItems() != null) {
+            items = order.getOrderItems().stream().map(item -> {
+                Map<String, Object> itemMap = new HashMap<>();
+                itemMap.put("productName", item.getProduct().getName());
+                itemMap.put("imageUrl", item.getProduct().getImageUrl());
+                itemMap.put("price", item.getPrice());
+                itemMap.put("quantity", item.getQuantity());
+                itemMap.put("size", item.getSize());
+                return itemMap;
+            }).collect(Collectors.toList());
+        }
+        orderMap.put("items", items);
+
+        return ResponseEntity.ok(orderMap);
+    }
+
 }

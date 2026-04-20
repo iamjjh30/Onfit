@@ -17,17 +17,24 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;       // 🌟 추가
     private final ProductRepository productRepository;
 
     @Transactional
-    public void saveOrder(Member member, String orderId, Long totalAmount, List<Map<String, Object>> items) {
+    public void saveOrder(Member member, String orderId, Long totalAmount,
+                          List<Map<String, Object>> items,
+                          String receiverName, String receiverPhone,
+                          String receiverAddress, String payMethod) {
 
         Order order = Order.builder()
                 .orderId(orderId)
                 .member(member)
                 .totalAmount(totalAmount)
-                .status("결제완료") // 기본 상태 설정
+                .status("결제완료")
+                .receiverName(receiverName)
+                .receiverPhone(receiverPhone)
+                .receiverAddress(receiverAddress)
+                .payMethod(payMethod)
                 .build();
 
         for (Map<String, Object> itemData : items) {
@@ -38,26 +45,20 @@ public class OrderService {
                 throw new RuntimeException("상품 ID(productId)가 전달되지 않았습니다. 데이터: " + itemData);
             }
 
-            // 1. Long 변환 (중복 호출 제거)
             Long productId = Long.valueOf(pIdObj.toString());
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new IllegalArgumentException("상품 없음: " + productId));
 
-            // 2. 사이즈 처리
             String size = itemData.get("size") != null ? itemData.get("size").toString() : "FREE";
 
-            // 3. 수량 처리 (안전하게 계산된 값을 사용해야 합니다)
             Object qtyObj = itemData.get("qty");
-            if (qtyObj == null) {
-                qtyObj = itemData.get("quantity");
-            }
-            // 🌟 수정됨: qtyObj가 null이면 1, 아니면 파싱
+            if (qtyObj == null) qtyObj = itemData.get("quantity");
             int finalQuantity = (qtyObj != null) ? Integer.parseInt(qtyObj.toString()) : 1;
 
             OrderItem orderItem = OrderItem.builder()
                     .product(product)
                     .size(size)
-                    .quantity(finalQuantity) // 🌟 중요: 앞에서 계산한 finalQuantity 변수를 사용!
+                    .quantity(finalQuantity)
                     .price(product.getPrice().longValue())
                     .build();
 
@@ -67,3 +68,5 @@ public class OrderService {
         orderRepository.save(order);
     }
 }
+
+

@@ -22,6 +22,8 @@ Desktop.ini
 .DS_Store
 
 ### 환경 설정 및 보안 (개인 DB 정보 등) ###
+# 보안 설정 파일 제외
+src/main/resources/application-secret.properties
 # 만약 개인 설정을 따로 관리한다면 아래 파일들을 제외하세요.
 # application-local.properties
 # .env

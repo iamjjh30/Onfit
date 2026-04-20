@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="./css/Checkout.css"/>
     <!-- 토스페이먼츠 SDK v1 (API 개별 연동) -->
     <script src="https://js.tosspayments.com/v1"></script>
+    <!-- 카카오 주소 API 스크립트 -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -37,7 +39,19 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">주소</label>
-                        <input type="text" id="input-address" class="form-input" placeholder="배송 받을 주소를 입력해주세요">
+                        <div style="display:flex; gap:8px; margin-bottom:8px;">
+                            <input type="text" id="input-address" class="form-input"
+                                   placeholder="주소 검색을 눌러주세요" readonly
+                                   style="cursor:pointer; flex:1;">
+                            <button type="button" id="btn-address-search"
+                                    style="flex-shrink:0; height:46px; padding:0 18px;
+                       border:1px solid #e8e8e8; border-radius:10px;
+                       background:#111; color:#fff; font-size:0.88rem;
+                       font-weight:600; cursor:pointer; white-space:nowrap;
+                       transition: background .2s;">주소 검색</button>
+                        </div>
+                        <input type="text" id="input-address-detail" class="form-input"
+                               placeholder="상세 주소 입력">
                     </div>
                     <div class="form-group">
                         <label class="form-label">배송 메모</label>
@@ -47,6 +61,10 @@
                             <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
                             <option value="부재 시 연락 주세요">부재 시 연락 주세요</option>
                         </select>
+                    </div>
+                    <div class="same-as-orderer">
+                        <input type="checkbox" id="same-as-orderer">
+                        <label for="same-as-orderer">주문자 정보와 동일</label>
                     </div>
                 </section>
 

@@ -41,6 +41,8 @@ public class MemberService {
                 .tel(dto.getTel())
                 .email(dto.getEmail())
                 .birthDate(fullBirthDate)
+                .address(dto.getAddress()) // 🌟 추가
+                .addressDetail(dto.getAddressDetail())
                 .personalColor("미진단")
                 .styleDna("미진단")
                 .build();

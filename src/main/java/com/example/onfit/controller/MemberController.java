@@ -200,4 +200,26 @@ public class MemberController {
 
         return ResponseEntity.ok(Map.of("success", isCorrect));
     }
+    @GetMapping("/api/member/me")
+    @ResponseBody
+    public ResponseEntity<?> getMyInfo(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        // 🌟 세션 대신 DB에서 최신 정보 조회
+        Member freshMember = memberRepository.findById(loginMember.getId())
+                .orElse(null);
+        if (freshMember == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        Map<String, Object> info = new HashMap<>();
+        info.put("name", freshMember.getName());
+        info.put("tel",  freshMember.getTel());
+        info.put("address",  freshMember.getAddress());
+        info.put("addressDetail", freshMember.getAddressDetail());
+        return ResponseEntity.ok(info);
+    }
 }

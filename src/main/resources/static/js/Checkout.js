@@ -46,6 +46,8 @@ var PAY_METHOD_MAP = {
 ---------------------------------------------------------------- */
 function init() {
     initPayMethodBtns();
+    initSameAsOrderer(); // 🌟 추가
+    initAddressSearch();
     if (MODE === 'direct') {
         initDirect();
     } else {
@@ -162,7 +164,9 @@ function requestPayment() {
     var btn      = document.getElementById('pay-btn');
     var recvName = document.getElementById('input-name').value.trim();
     var phone    = document.getElementById('input-phone').value.trim();
-    var address  = document.getElementById('input-address').value.trim();
+    var baseAddress   = document.getElementById('input-address').value.trim();
+    var detailAddress = document.getElementById('input-address-detail').value.trim();
+    var address = detailAddress ? baseAddress + ' ' + detailAddress : baseAddress;
 
     if (!recvName || !phone || !address) {
         alert('배송지 정보를 모두 입력해주세요.');
@@ -260,3 +264,53 @@ document.addEventListener('DOMContentLoaded', function() {
     if (payBtn) payBtn.addEventListener('click', requestPayment);
     window.addEventListener('resize', positionSummary);
 });
+/* ----------------------------------------------------------------
+   주문자 정보와 동일 체크박스
+---------------------------------------------------------------- */
+function initSameAsOrderer() {
+    var checkbox = document.getElementById('same-as-orderer');
+    if (!checkbox) return;
+
+    checkbox.addEventListener('change', function() {
+        if (!this.checked) {
+            // 체크 해제 시 입력값 비우기
+            document.getElementById('input-name').value    = '';
+            document.getElementById('input-phone').value   = '';
+            return;
+        }
+
+        // 세션에서 회원 정보 불러오기
+        fetch('/api/member/me', {
+            credentials: 'include'
+        })
+            .then(function(res) {
+                if (!res.ok) throw new Error('로그인 필요');
+                return res.json();
+            })
+            .then(function(member) {
+                document.getElementById('input-name').value  = member.name  || '';
+                document.getElementById('input-phone').value = member.tel   || '';
+                document.getElementById('input-address').value       = member.address       || '';
+                document.getElementById('input-address-detail').value = member.addressDetail || '';
+            })
+            .catch(function(err) {
+                console.error('회원 정보 불러오기 실패:', err);
+                alert('회원 정보를 불러오지 못했습니다. 로그인 상태를 확인해주세요.');
+                checkbox.checked = false;
+            });
+    });
+}
+function initAddressSearch() {
+    var btn = document.getElementById('btn-address-search');
+    if (!btn) return;
+
+    btn.addEventListener('click', function() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = data.roadAddress || data.jibunAddress;
+                document.getElementById('input-address').value = addr;
+                document.getElementById('input-address-detail').focus();
+            }
+        }).open();
+    });
+}
