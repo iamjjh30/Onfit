@@ -1,15 +1,9 @@
 /* ================================================================
    CommunityWrite.js
+   - 세션 기반 인증으로 수정 (JWT 토큰 방식 제거)
    - 다중 이미지 (최대 5장) → imgUrl: JSON.stringify([url1, url2, ...])
-   - Share Fit 제거
    - POST /api/posts
 ================================================================ */
-
-var API_BASE = 'http://localhost:8080';
-function getToken() { return localStorage.getItem('token'); }
-function authHeaders() {
-    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
-}
 
 var selectedCat      = '잡담';
 var imageFiles       = [];   // File 객체 배열 (최대 5)
@@ -20,18 +14,30 @@ var MAX_IMAGES       = 5;
 
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', function () {
-    if (!getToken()) {
-        document.getElementById('writeCard').style.display     = 'none';
-        document.getElementById('loginRequired').style.display = 'flex';
-        return;
-    }
     setupCategoryTabs();
     setupCharCount();
     setupImageUpload();
     setupProductPicker();
     setupSubmit();
     fetchProducts();
+
+    // ✅ 로그인 여부는 서버에서 세션으로 확인 (토큰 체크 제거)
+    // Thymeleaf에서 th:if="${session.loginMember != null}" 로 처리하거나
+    // 아래처럼 API로 확인
+    checkLoginStatus();
 });
+
+/* ── 로그인 상태 확인 (세션 기반) ── */
+function checkLoginStatus() {
+    fetch('/api/posts', {
+        credentials: 'include'  // ✅ 세션 쿠키 포함
+    })
+        .then(function (r) {
+            // 비로그인이어도 목록 조회는 되므로, 별도 엔드포인트가 없으면
+            // 글쓰기 페이지 접근 제어는 서버(컨트롤러)에서 처리하는 것을 권장
+        })
+        .catch(function () {});
+}
 
 /* ── 카테고리 탭 ── */
 function setupCategoryTabs() {
@@ -53,7 +59,7 @@ function setupCharCount() {
 
 /* ── 다중 이미지 업로드 ── */
 function setupImageUpload() {
-    var trigger  = document.getElementById('imgUploadTrigger');
+    var trigger   = document.getElementById('imgUploadTrigger');
     var fileInput = document.getElementById('imgFileInput');
 
     if (!trigger || !fileInput) return;
@@ -67,7 +73,7 @@ function setupImageUpload() {
     });
 
     fileInput.addEventListener('change', function () {
-        var newFiles = Array.from(this.files);
+        var newFiles  = Array.from(this.files);
         var remaining = MAX_IMAGES - imageFiles.length;
         if (newFiles.length > remaining) {
             alert('최대 ' + MAX_IMAGES + '장까지만 첨부 가능해요. ' + remaining + '장만 추가됩니다.');
@@ -79,7 +85,6 @@ function setupImageUpload() {
             return true;
         });
 
-        // 각 파일 base64로 읽기
         validFiles.forEach(function (file) {
             var reader = new FileReader();
             reader.onload = function (e) {
@@ -90,7 +95,6 @@ function setupImageUpload() {
             reader.readAsDataURL(file);
         });
 
-        // input 초기화 (같은 파일 재선택 허용)
         this.value = '';
     });
 }
@@ -132,7 +136,9 @@ function renderImagePreviews() {
 
 /* ── 상품 목록 ── */
 function fetchProducts() {
-    fetch('/api/products', { headers: authHeaders() })
+    fetch('/api/products', {
+        credentials: 'include'  // ✅ 세션 쿠키 포함
+    })
         .then(function (r) { return r.json(); })
         .then(function (data) {
             allProducts = data;
@@ -146,8 +152,8 @@ function fetchProducts() {
 
 /* ── 상품 피커 ── */
 function setupProductPicker() {
-    var header = document.getElementById('productPickerHeader');
-    var body   = document.getElementById('productPickerBody');
+    var header  = document.getElementById('productPickerHeader');
+    var body    = document.getElementById('productPickerBody');
     var chevron = header ? header.querySelector('.picker-chevron') : null;
 
     if (header) {
@@ -243,12 +249,11 @@ function setupSubmit() {
             return;
         }
 
-        var firstLine    = rawContent.split('\n')[0] || '게시글';
-        var title        = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
-        var productTags  = selectedProducts.map(function (p) { return '[상품:' + p.productId + ']'; }).join('\n');
+        var firstLine   = rawContent.split('\n')[0] || '게시글';
+        var title       = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
+        var productTags = selectedProducts.map(function (p) { return '[상품:' + p.productId + ']'; }).join('\n');
         var finalContent = rawContent + (productTags ? '\n' + productTags : '');
 
-        // 이미지 URL 구성 (base64 배열 → JSON 문자열)
         var imgUrl = imageBase64s.length === 0
             ? null
             : imageBase64s.length === 1
@@ -260,11 +265,21 @@ function setupSubmit() {
 
         fetch('/api/posts', {
             method: 'POST',
-            headers: authHeaders(),
+            credentials: 'include',                              // ✅ 세션 쿠키 포함
+            headers: { 'Content-Type': 'application/json' },    // ✅ Authorization 헤더 제거
             body: JSON.stringify({ title: title, content: finalContent, type: selectedCat, imgUrl: imgUrl })
         })
-            .then(function (r) { if (!r.ok) throw new Error('게시 실패'); return r.json(); })
+            .then(function (r) {
+                if (r.status === 401) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = '/login';
+                    return null;
+                }
+                if (!r.ok) throw new Error('게시 실패');
+                return r.json();
+            })
             .then(function (post) {
+                if (!post) return;
                 window.location.href = '/community/' + post.postId;
             })
             .catch(function () {

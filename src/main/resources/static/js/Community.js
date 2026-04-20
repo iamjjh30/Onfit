@@ -1,18 +1,6 @@
 /* ================================================================
-   Community.js — API 연동 / Share Fit 제거 / 다중 이미지 지원
+   Community.js — 세션 기반 인증으로 수정 (JWT 토큰 방식 제거)
 ================================================================ */
-
-var API_BASE = 'http://localhost:8080';
-
-function getToken() { return localStorage.getItem('token'); }
-function authHeaders() {
-    var token = getToken();
-    var h = { 'Content-Type': 'application/json' };
-    if (token && token !== 'null' && token !== 'undefined') {
-        h['Authorization'] = 'Bearer ' + token;
-    }
-    return h;
-}
 
 /* ----------------------------------------------------------------
    상태
@@ -27,7 +15,6 @@ var state = {
    초기화
 ---------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', function () {
-    loadUserProfile();
     loadLikedPosts();
     setupTabListeners();
     setupSearch();
@@ -35,23 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ----------------------------------------------------------------
-   유저 프로필
+   좋아요 로컬 캐시 로드
 ---------------------------------------------------------------- */
-function loadUserProfile() {
-    var token   = getToken();
-    var nameEl  = document.getElementById('userName');
-    var imgEl   = document.getElementById('userProfileImg');
-    if (!token) { if (nameEl) nameEl.textContent = '로그인 해주세요'; return; }
-
-    fetch('/api/users/me', { headers: authHeaders() })
-        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-        .then(function (u) {
-            if (nameEl) nameEl.textContent = u.nickname || u.name || '사용자';
-            if (imgEl && u.profileImg) imgEl.src = u.profileImg;
-        })
-        .catch(function () { if (nameEl) nameEl.textContent = '로그인 해주세요'; });
-}
-
 function loadLikedPosts() {
     var s = localStorage.getItem('likedPosts');
     if (s) { try { state.likedPosts = JSON.parse(s); } catch (e) {} }
@@ -96,7 +68,7 @@ function setupSearch() {
 }
 
 /* ----------------------------------------------------------------
-   API 호출
+   API 호출 — 세션 쿠키 자동 전송 (credentials: 'include')
 ---------------------------------------------------------------- */
 function fetchPosts(type) {
     var container = document.getElementById('postListContainer');
@@ -107,7 +79,9 @@ function fetchPosts(type) {
     var url = '/api/posts';
     if (type) url += '?type=' + encodeURIComponent(type);
 
-    fetch(url, { headers: authHeaders() })
+    fetch(url, {
+        credentials: 'include'  // ✅ 세션 쿠키(JSESSIONID) 자동 포함
+    })
         .then(function (r) { if (!r.ok) throw new Error('조회 실패'); return r.json(); })
         .then(function (data) {
             // Share Fit 타입 항상 제외
@@ -246,7 +220,9 @@ function cleanProductTags(content) {
 
 function fetchAndRenderProducts(ids, containerEl) {
     Promise.all(ids.map(function (id) {
-        return fetch('/api/products/' + id)
+        return fetch('/api/products/' + id, {
+            credentials: 'include'  // ✅ 세션 쿠키 포함
+        })
             .then(function (r) { return r.ok ? r.json() : null; })
             .catch(function () { return null; });
     })).then(function (products) {
@@ -290,16 +266,29 @@ function attachCardListeners() {
     });
 }
 
+/* ----------------------------------------------------------------
+   좋아요 토글 — 401 응답으로 로그인 여부 판단
+---------------------------------------------------------------- */
 function toggleLike(postId) {
-    if (!getToken()) { alert('로그인이 필요합니다.'); return; }
-
-    fetch('/api/posts/' + postId + '/like', { method: 'POST', headers: authHeaders() })
-        .then(function (r) { return r.json(); })
+    fetch('/api/posts/' + postId + '/like', {
+        method: 'POST',
+        credentials: 'include'  // ✅ 세션 쿠키 포함
+    })
+        .then(function (r) {
+            if (r.status === 401) {
+                alert('로그인이 필요합니다.');
+                return null;
+            }
+            return r.json();
+        })
         .then(function (data) {
+            if (!data) return;
             state.likedPosts[postId] = data.liked;
             localStorage.setItem('likedPosts', JSON.stringify(state.likedPosts));
             state.posts = state.posts.map(function (p) {
-                return p.postId === postId ? Object.assign({}, p, { liked: data.liked, likeCount: data.likeCount }) : p;
+                return p.postId === postId
+                    ? Object.assign({}, p, { liked: data.liked, likeCount: data.likeCount })
+                    : p;
             });
             renderPosts(state.posts);
         })

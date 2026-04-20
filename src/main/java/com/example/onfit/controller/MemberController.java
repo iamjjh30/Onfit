@@ -174,4 +174,23 @@ public class MemberController {
         // 3. 로그인이 되어있다면 templates 폴더 안의 MyPalette.html 파일 열기
         return "MyPalette";
     }
+    @PostMapping("/api/check-password")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> checkPassword(
+            @RequestBody Map<String, String> body,
+            HttpSession session) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "로그인이 필요합니다."));
+        }
+
+        String inputPwd = body.get("password");
+
+        // ⚠️ 현재 평문 비교 (BCrypt 도입 시 passwordEncoder.matches() 로 교체)
+        boolean isCorrect = loginMember.getPassword().equals(inputPwd);
+
+        return ResponseEntity.ok(Map.of("success", isCorrect));
+    }
 }
