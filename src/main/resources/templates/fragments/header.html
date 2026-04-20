@@ -3,13 +3,9 @@
 <div th:fragment="header">
     <style>
         /* ====================================================
-           GNB — Main.css 완전 덮어쓰기 + 검색 수직 확장
-           Main.css의 #header { height:50px; display:flex; overflow:visible }
-           를 모두 override 해야 함
+           GNB — 최종 수정 버전 (이미지 크기 및 레이아웃 최적화)
            ==================================================== */
 
-        /* Main.css의 #header flex 레이아웃을 block으로 바꿔서
-           세로 확장이 가능하도록 전환 */
         #header {
             position: fixed !important;
             top: 12px !important;
@@ -17,198 +13,104 @@
             right: 5vw !important;
             z-index: 9999 !important;
             width: auto !important;
-            height: auto !important;        /* ← 50px 고정 해제 */
+            height: auto !important;
             border-radius: 25px !important;
             background: rgba(255,255,255,0.25) !important;
             backdrop-filter: blur(30px) saturate(220%) !important;
             -webkit-backdrop-filter: blur(30px) saturate(220%) !important;
             border: 1px solid rgba(255,255,255,0.45) !important;
             box-shadow: 0 10px 50px -10px rgba(0,0,0,0.1) !important;
-            display: block !important;      /* ← flex → block (내부에서 직접 flex 처리) */
-            overflow: hidden !important;    /* ← visible → hidden (확장 패널 클리핑) */
-            transition: background     0.6s cubic-bezier(0.16,1,0.3,1),
-                        border-color   0.6s cubic-bezier(0.16,1,0.3,1),
-                        box-shadow     0.6s cubic-bezier(0.16,1,0.3,1),
-                        border-radius  0.45s cubic-bezier(0.16,1,0.3,1) !important;
+            display: block !important;
+            transition: background 0.6s cubic-bezier(0.16,1,0.3,1),
+                        border-color 0.6s cubic-bezier(0.16,1,0.3,1),
+                        box-shadow 0.6s cubic-bezier(0.16,1,0.3,1),
+                        border-radius 0.45s cubic-bezier(0.16,1,0.3,1) !important;
         }
 
-        /* 검색 열렸을 때 */
         #header.search-open {
+            overflow: hidden !important;
             border-radius: 25px 25px 20px 20px !important;
             background: rgba(255,255,255,0.97) !important;
             border-color: rgba(210,210,210,0.8) !important;
             box-shadow: 0 24px 70px -10px rgba(0,0,0,0.2) !important;
         }
 
-        /* ── GNB 기본 바 (50px 높이 flex 행) ── */
-        #header-bar {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
+        #header-bar { height: 50px; display: flex; align-items: center; width: 100%; }
 
-        /* ── 로고 ── */
-        #logo { width: auto; flex-shrink: 0; }
         #logo img {
             width: 40px; height: 40px; margin: 0 20px; display: block;
             transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
         }
         #logo img:hover { transform: rotate(45deg); }
 
-        /* ── 네비게이션 ── */
-        #header-bar > nav { flex-shrink: 0; }
-        #header-bar > nav ul { display: flex; margin: 0; padding: 0; }
-        #header-bar > nav ul li {
-            float: none; margin-left: 30px;
-            line-height: 50px; cursor: pointer; white-space: nowrap;
-            list-style: none;
-        }
+        #header-bar > nav ul { display: flex; margin: 0; padding: 0; list-style: none; }
+        #header-bar > nav ul li { margin-left: 30px; line-height: 50px; cursor: pointer; white-space: nowrap; }
         #header-bar > nav ul li a { text-decoration: none; color: black; }
-        #header-bar > nav ul li a:visited { color: black; }
         #header-bar > nav ul li:hover a { color: #FFB834; font-weight: bold; transition: 0.3s ease; }
 
-        /* ── 검색 트리거 박스 ── */
-        #header-search-inline {
-            flex: 1;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding-right: 12px;
-            min-width: 0;
-        }
+        #header-search-inline { flex: 1; display: flex; justify-content: flex-end; align-items: center; padding-right: 12px; }
         #header-search-box {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 260px;
-            height: 36px;
-            border-radius: 50px;
-            padding: 0 16px;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(40px) saturate(250%);
-            -webkit-backdrop-filter: blur(40px) saturate(250%);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.07);
-            cursor: pointer;
-            transition: background 0.25s ease, box-shadow 0.25s ease;
-            /* width 확장 트랜지션 제거 — 클릭 시 패널로 전환하므로 불필요 */
-        }
-        #header-search-box:hover {
-            background: rgba(255,255,255,0.72);
-        }
-        #search-icon { flex-shrink: 0; pointer-events: none; }
-        #header-search-placeholder {
-            flex: 1; font-size: 13px; color: #999; font-weight: 400;
-            pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            display: flex; align-items: center; gap: 8px; width: 260px; height: 36px;
+            border-radius: 50px; padding: 0 16px; background: rgba(255,255,255,0.5);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.07); cursor: pointer;
         }
 
-        /* ── 아이콘 ── */
-        .header_icon {
-            flex-shrink: 0;
-            width: auto; height: 50px;
-            padding: 0 16px; position: relative;
-            display: flex; align-items: center;
-            cursor: pointer;
-        }
-        .header_icon img { width: 25px; height: 25px; display: block; }
-        .header_icon:hover > .header_icon_hover1,
-        .header_icon:hover > .header_icon_hover2 { display: block !important; }
+        .header_icon { flex-shrink: 0; height: 50px; padding: 0 16px; position: relative; display: flex; align-items: center; cursor: pointer; }
+        .header_icon img { width: 25px; height: 25px; }
+        .header_icon:hover > .header_icon_hover1, .header_icon:hover > .header_icon_hover2 { display: block !important; }
 
-        .header_icon_hover1,
-        .header_icon_hover2 {
-            display: none; position: absolute; width: 160px;
-            border-radius: 12px; background-color: white;
-            border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-            right: 0; left: auto; z-index: 100; top: 48px;
+        .header_icon_hover1, .header_icon_hover2 {
+            display: none; position: absolute; width: 160px; border-radius: 12px; background: white;
+            border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1); right: 0; top: 48px; z-index: 100;
         }
-        .header_icon_hover1 nav ul,
-        .header_icon_hover2 nav ul { display: block; padding: 8px 0; }
-        .header_icon_hover1 nav ul li,
-        .header_icon_hover2 nav ul li { float: none; line-height: 40px; padding: 0 16px; list-style: none; }
-        .header_icon_hover1 nav ul li a,
-        .header_icon_hover2 nav ul li a { text-decoration: none; color: black; display: block; }
-        .header_icon_hover1 nav ul li a:hover,
-        .header_icon_hover2 nav ul li a:hover { color: #FFB834; }
+        .header_icon_hover1 nav ul li, .header_icon_hover2 nav ul li { list-style: none; line-height: 40px; padding: 0 16px; }
+        .header_icon_hover1 nav ul li a, .header_icon_hover2 nav ul li a { text-decoration: none; color: black; display: block; }
 
-        /* ================================================================
-           검색 확장 패널 — GNB 하단에 수직 확장
-        ================================================================ */
-        #search-panel {
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: max-height 0.55s cubic-bezier(0.16,1,0.3,1),
-                        opacity     0.35s ease;
-        }
-        #header.search-open #search-panel {
-            max-height: 280px;
-            opacity: 1;
-        }
+        /* ── 검색 패널 ── */
+        #search-panel { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease; }
+        #header.search-open #search-panel { max-height: 420px; opacity: 1; }
+        #search-panel-inner { padding: 0 28px 26px; border-top: 1px solid rgba(0,0,0,0.07); }
 
-        #search-panel-inner {
-            padding: 0 28px 26px;
-            border-top: 1px solid rgba(0,0,0,0.07);
-        }
+        .sp-input-row { display: flex; align-items: center; gap: 14px; padding: 18px 0 14px; border-bottom: 2px solid #111; margin-bottom: 22px; }
+        #sp-input { flex: 1; border: none; outline: none; background: transparent; font-size: 20px; font-weight: 700; color: #111; }
+        #sp-cancel { font-size: 13px; font-weight: 600; color: #999; cursor: pointer; padding-left: 10px; }
 
-        .sp-input-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 18px 0 14px;
-            border-bottom: 2px solid #111;
-            margin-bottom: 22px;
-        }
-        #sp-input {
-            flex: 1; border: none; outline: none;
-            background: transparent;
-            font-size: 20px; font-weight: 700; color: #111;
-            letter-spacing: -0.01em;
-        }
-        #sp-input::placeholder { color: #ccc; font-weight: 500; }
-        #sp-cancel {
-            flex-shrink: 0; font-size: 13px; font-weight: 600; color: #999;
-            cursor: pointer; padding: 4px 0 4px 10px; transition: color 0.18s;
-        }
-        #sp-cancel:hover { color: #111; }
+        /* 검색 결과 레이아웃 */
+        #sp-results-content { display: none; margin-top: 10px; }
+        .search-result-container { display: flex; gap: 40px; }
+        .result-left { width: 140px; flex-shrink: 0; }
+        .sp-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.13em; color: #bbb; margin-bottom: 15px; text-transform: uppercase; }
+        .filter-buttons { display: flex; flex-direction: column; gap: 10px; }
+        .res-btn { width: 100%; padding: 12px; border-radius: 20px; border: 1px solid #eee; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; }
+        .res-btn.active { background: #000; color: #fff; border-color: #000; }
 
-        .sp-section-label {
-            font-size: 10px; font-weight: 700;
-            letter-spacing: 0.13em; text-transform: uppercase;
-            color: #bbb; margin-bottom: 13px;
+        /* 상품 그리드 핵심 수정 */
+        .result-right { flex: 1; overflow: hidden; }
+        .product-grid { display: flex; gap: 20px; justify-content: flex-start; }
+        .prod-card { width: 150px; flex-shrink: 0; cursor: pointer; }
+        .prod-img {
+            width: 100%; height: 180px; background: #f4f4f4; border-radius: 15px;
+            margin-bottom: 10px; overflow: hidden;
         }
+        .prod-img img { width: 100%; height: 100%; object-fit: cover; }
+        .p-name {
+            font-size: 14px; font-weight: 700; color: #111; margin: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .p-price { font-size: 12px; color: #888; margin-top: 4px; }
+
         .sp-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .sp-tag {
-            padding: 7px 18px; border-radius: 50px;
-            border: 1px solid #e8e8e8; font-size: 13px; color: #444;
-            background: #f9f9f9; cursor: pointer;
-            transition: background 0.18s, color 0.18s, border-color 0.18s;
-        }
-        .sp-tag:hover { background: #111; color: #fff; border-color: #111; }
+        .sp-tag { padding: 7px 18px; border-radius: 50px; border: 1px solid #e8e8e8; font-size: 13px; background: #f9f9f9; cursor: pointer; }
+        .sp-tag:hover { background: #111; color: #fff; }
 
-        /* 배경 마스크 */
-        #header-mask {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.15);
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-            z-index: 9998;
-        }
+        #header-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.15); backdrop-filter: blur(4px); opacity: 0; visibility: hidden; transition: 0.4s; z-index: 9998; }
         #header-mask.active { opacity: 1; visibility: visible; }
     </style>
 
     <div id="header-mask"></div>
-
     <div id="header">
-
-        <!-- GNB 기본 바 -->
         <div id="header-bar">
-            <a th:href="@{/}">
-                <div id="logo">
-                    <img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit 로고">
-                </div>
-            </a>
-
+            <a th:href="@{/}"><div id="logo"><img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit 로고"></div></a>
             <nav>
                 <ul>
                     <li><a th:href="@{/AIStyler}">AI진단</a></li>
@@ -217,115 +119,130 @@
                     <li><a th:href="@{/MyPalette}">내 팔레트</a></li>
                 </ul>
             </nav>
-
             <div id="header-search-inline">
                 <div id="header-search-box">
-                    <svg id="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <span id="header-search-placeholder">Mens Fashion Solution</span>
                 </div>
             </div>
 
-            <!-- 프로필 -->
             <div class="header_icon">
                 <img th:src="@{/img/Main/icon_profile.png}" alt="프로필">
                 <div class="header_icon_hover1">
-                    <nav>
-                        <ul>
-                            <th:block th:unless="${session.loginMember != null}">
-                                <li><a th:href="@{/login}">로그인</a></li>
-                                <li><a th:href="@{/join}">회원가입</a></li>
-                                <li><a th:href="@{/find}">ID 찾기</a></li>
-                            </th:block>
-                            <th:block th:if="${session.loginMember != null}">
-                                <li style="padding: 11px 18px; font-weight: bold; color: #111;">
-                                    <span th:text="${session.loginMember.name} + '님 환영해요!'">홍길동님 환영해요!</span>
-                                </li>
-                                <li><a th:href="@{/mypalette}">마이페이지</a></li>
-                                <li><a th:href="@{/logout}">로그아웃</a></li>
-                            </th:block>
-                        </ul>
-                    </nav>
+                    <nav><ul>
+                        <th:block th:unless="${session.loginMember != null}">
+                            <li><a th:href="@{/login}">로그인</a></li>
+                            <li><a th:href="@{/join}">회원가입</a></li>
+                        </th:block>
+                        <th:block th:if="${session.loginMember != null}">
+                            <li style="padding: 11px 18px; font-weight: bold; color: #111;"><span th:text="${session.loginMember.name} + '님 환영해요!'"></span></li>
+                            <li><a th:href="@{/mypalette}">마이페이지</a></li>
+                            <li><a th:href="@{/logout}">로그아웃</a></li>
+                        </th:block>
+                    </ul></nav>
                 </div>
             </div>
-
-            <!-- 장바구니 -->
             <div class="header_icon">
                 <img th:src="@{/img/Main/icon_cart (1).png}" alt="장바구니">
                 <div class="header_icon_hover2">
-                    <nav>
-                        <ul>
-                            <li><a th:href="@{/Cart}">장바구니</a></li>
-                            <li><a th:href="@{/OrderInfo}">주문내역</a></li>
-                            <li><a th:href="@{/store}">스토어</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div><!-- /#header-bar -->
-
-        <!-- 검색 확장 패널 -->
-        <div id="search-panel">
-            <div id="search-panel-inner">
-                <div class="sp-input-row">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                         stroke="#111" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
-                    <input type="search" id="sp-input" placeholder="OnFit.com 검색하기" autocomplete="off">
-                    <span id="sp-cancel">취소</span>
-                </div>
-                <div class="sp-section-label">Popular Keywords</div>
-                <div class="sp-tags">
-                    <div class="sp-tag">#퍼스널컬러</div>
-                    <div class="sp-tag">#봄웜톤 코디</div>
-                    <div class="sp-tag">#와이드데님</div>
-                    <div class="sp-tag">#오버핏셔츠</div>
-                    <div class="sp-tag">#겨울 레이어드</div>
+                    <nav><ul>
+                        <li><a th:href="@{/Cart}">장바구니</a></li>
+                        <li><a th:href="@{/OrderInfo}">주문내역</a></li>
+                    </ul></nav>
                 </div>
             </div>
         </div>
 
-    </div><!-- /#header -->
+        <div id="search-panel">
+            <div id="search-panel-inner">
+                <div class="sp-input-row">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="search" id="sp-input" placeholder="OnFit.com 검색하기" autocomplete="off">
+                    <span id="sp-cancel">취소</span>
+                </div>
+                <div id="sp-initial-content">
+                    <div class="sp-section-label">Popular Keywords</div>
+                    <div class="sp-tags">
+                        <div class="sp-tag">#퍼스널컬러</div>
+                        <div class="sp-tag">#봄웜톤 코디</div>
+                        <div class="sp-tag">#와이드데님</div>
+                    </div>
+                </div>
+                <div id="sp-results-content">
+                    <div class="search-result-container">
+                        <div class="result-left">
+                            <div class="sp-section-label">페이지 이동</div>
+                            <div class="filter-buttons"></div>
+                        </div>
+                        <div class="result-right">
+                            <div class="sp-section-label">상품 검색 결과</div>
+                            <div class="product-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const header     = document.getElementById('header');
-            const triggerBox = document.getElementById('header-search-box');
-            const cancelBtn  = document.getElementById('sp-cancel');
-            const mask       = document.getElementById('header-mask');
-            const spInput    = document.getElementById('sp-input');
+            const header = document.getElementById('header'), mask = document.getElementById('header-mask');
+            const triggerBox = document.getElementById('header-search-box'), cancelBtn = document.getElementById('sp-cancel');
+            const spInput = document.getElementById('sp-input'), initialContent = document.getElementById('sp-initial-content'), resultsContent = document.getElementById('sp-results-content');
+            const menuContainer = document.querySelector('.filter-buttons'), productGrid = document.querySelector('.product-grid');
 
-            function openSearch() {
-                header.classList.add('search-open');
-                mask.classList.add('active');
-                setTimeout(function () { spInput.focus(); }, 400);
-            }
-            function closeSearch() {
-                header.classList.remove('search-open');
-                mask.classList.remove('active');
-                spInput.value = '';
-            }
+            function openSearch() { header.classList.add('search-open'); mask.classList.add('active'); setTimeout(() => spInput.focus(), 400); }
+            function closeSearch() { header.classList.remove('search-open'); mask.classList.remove('active'); spInput.value = ''; initialContent.style.display = 'block'; resultsContent.style.display = 'none'; }
 
-            triggerBox.addEventListener('click', openSearch);
-            cancelBtn.addEventListener('click', closeSearch);
-            mask.addEventListener('click', closeSearch);
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') closeSearch();
-            });
+            triggerBox.onclick = openSearch; cancelBtn.onclick = closeSearch; mask.onclick = closeSearch;
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
 
-            document.querySelectorAll('.sp-tag').forEach(function (tag) {
-                tag.addEventListener('click', function () {
-                    spInput.value = this.textContent.replace(/^#/, '').trim();
-                    spInput.focus();
-                });
-            });
+            spInput.oninput = function() {
+                const keyword = this.value.trim();
+                if (keyword.length > 0) {
+                    fetch(`/api/search/live?keyword=${encodeURIComponent(keyword)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            // 1. 메뉴 버튼 업데이트
+                            menuContainer.innerHTML = '';
+                            if(data.menus && data.menus.length > 0) {
+                                data.menus.forEach((menu, idx) => {
+                                    const btn = document.createElement('button');
+                                    btn.className = `res-btn ${idx === 0 ? 'active' : ''}`;
+                                    btn.textContent = menu.name;
+                                    btn.onclick = () => location.href = menu.url;
+                                    menuContainer.appendChild(btn);
+                                });
+                            } else { menuContainer.innerHTML = '<p style="font-size:12px; color:#ccc;">결과 없음</p>'; }
+
+                            // 2. 상품 그리드 업데이트 (이동 경로 수정됨)
+                            productGrid.innerHTML = '';
+                            if(data.products && data.products.length > 0) {
+                                data.products.forEach(p => {
+                                    const card = `
+                                        <div class="prod-card" onclick="location.href='/itemDetail?id=${p.id}'">
+                                            <div class="prod-img">
+                                                <img src="${p.imgPath || '/img/no-image.png'}" alt="${p.name}">
+                                            </div>
+                                            <div class="prod-info">
+                                                <p class="p-name">${p.name}</p>
+                                                <p class="p-price">${Number(p.price).toLocaleString()}원</p>
+                                            </div>
+                                        </div>`;
+                                    productGrid.insertAdjacentHTML('beforeend', card);
+                                });
+                            } else { productGrid.innerHTML = '<p style="font-size:12px; color:#ccc;">상품 없음</p>'; }
+
+                            initialContent.style.display = 'none';
+                            resultsContent.style.display = 'block';
+                        })
+                        .catch(err => console.error("Search API Error:", err));
+                } else {
+                    initialContent.style.display = 'block';
+                    resultsContent.style.display = 'none';
+                }
+            };
         });
     </script>
-
 </div>
 </html>
