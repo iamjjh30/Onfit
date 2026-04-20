@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 쇼핑하러 가기
     document.getElementById('btn-shop').addEventListener('click', () => {
-        window.location.href = '../index/storeMain.html';
+        window.location.href = '/store.html';
     });
 
     // 한번 더 검사

@@ -16,7 +16,6 @@ public class StoreController {
     @Autowired
     private ProductRepository productRepository; // 상품 레포지토리 연결
 
-    // 🌟 스토어 메인 화면 보여주기
     @GetMapping("/store")
     public String storeMain(Model model) {
         // 1. DB에서 모든 상품 데이터를 가져옵니다.
@@ -26,7 +25,7 @@ public class StoreController {
         model.addAttribute("products", productList);
 
         return "store";
-    }
+    } // 👈 이 닫는 중괄호가 빠져있었습니다!
 
     @GetMapping("/itemDetail")
     public String itemDetail(@RequestParam("id") Long id, Model model) {

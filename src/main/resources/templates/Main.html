@@ -301,7 +301,7 @@
         }
         .ctpopup-palette {
             display: flex;
-            gap: 10px;
+            gap: 16px;
             flex-wrap: wrap;
         }
         .ctpopup-swatch {
@@ -311,18 +311,18 @@
             gap: 5px;
         }
         .ctpopup-swatch-dot {
-            width: 36px;
-            height: 36px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            border: 2px solid rgba(0,0,0,0.1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
         }
         .ctpopup-swatch-name {
-            font-size: 9px;
+            font-size: 10px;
             color: #888;
             letter-spacing: 0.04em;
             text-align: center;
-            max-width: 44px;
+            max-width: 72px;
             line-height: 1.2;
         }
         .ctpopup-tags {
@@ -393,7 +393,7 @@
             <div class="ctpopup-palette" id="ctpopupPalette"></div>
             <div class="ctpopup-tags" id="ctpopupTags"></div>
             <div class="ctpopup-keywords" id="ctpopupKeywords"></div>
-            <button class="ctpopup-cta" onclick="location.href='/storeMain'">트렌드 아이템 보러가기 →</button>
+            <button class="ctpopup-cta" onclick="location.href='/store'">트렌드 아이템 보러가기 →</button>
         </div>
     </div>
 </div>
@@ -483,7 +483,7 @@
         <p>퍼스널 컬러로 탐색하기</p>
         <nav>
             <ul id="tab_button">
-                <li data-tab="neutral"      class="active"><span class="tab-emoji">🌫️</span># 뉴트럴</li>
+                <li data-tab="neutral"      class="active"><span class="tab-emoji">🌫️</span>#뉴트럴컬러</li>
                 <li data-tab="spring_warm">              <span class="tab-emoji">🌸</span># 스프링 웜</li>
                 <li data-tab="summer_cool">              <span class="tab-emoji">🌊</span># 써머 쿨</li>
                 <li data-tab="autumn_warm">              <span class="tab-emoji">🍂</span># 어텀 웜</li>
@@ -525,11 +525,10 @@
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <h2 class="section-main-title">Neutral color</h2>
+                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">뉴트럴 컬러</h2></div>
                         <p class="section-sub-title">모든 색을 소화하는 당신에게</p>
                     </div>
                     <div class="bp-header-right">
-                        <span class="bp-count">04</span>
                         <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
                     </div>
                 </div>
@@ -597,7 +596,7 @@
             </div>
 
             <div class="style-section">
-                <p class="section-label">NEUTRAL STYLE</p>
+                <p class="section-label">뉴트럴 스타일</p>
                 <h2 class="section-main-title">추천하는 패션조합</h2>
                 <p class="section-sub-title">뉴트럴한 당신을 위해</p>
                 <div class="outfit-grid">
@@ -700,7 +699,7 @@
                 </div>
                 <div id="banner_button_wrap" style="margin-top:40px;display:flex;justify-content:center;gap:12px;">
                     <button id="banner_button_left" onclick="location.href='/AIStyler'">AI로 입어보기</button>
-                    <button id="banner_button_right" onclick="location.href='/storeMain'">스토어 더보기</button>
+                    <button id="banner_button_right" onclick="location.href='/store'">스토어 더보기</button>
                 </div>
             </div>
 
@@ -782,11 +781,10 @@
             <div class="bp-header">
                 <div class="bp-header-left">
                     <p class="section-label">BEST PICKS</p>
-                    <h2 class="section-main-title">Spring Warm</h2>
+                    <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">스프링 웜</h2></div>
                     <p class="section-sub-title">가볍게, 화사하게</p>
                 </div>
                 <div class="bp-header-right">
-                    <span class="bp-count">04</span>
                     <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
                 </div>
             </div>
@@ -851,7 +849,7 @@
         </div>
 
         <div class="style-section">
-            <p class="section-label">SPRING STYLE</p>
+            <p class="section-label">스프링 스타일</p>
             <h2 class="section-main-title">추천하는 패션조합</h2>
             <p class="section-sub-title">화사한 당신을 위해</p>
             <div class="outfit-grid">
@@ -952,19 +950,19 @@
                     </div>
                 </div>
             </div>
-            <div id="banner_button_wrap_sw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_sw" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_sw" onclick="location.href='/storeMain'">스토어 더보기</button></div>
+            <div id="banner_button_wrap_sw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_sw" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_sw" onclick="location.href='/store'">스토어 더보기</button></div>
         </div>
 
         <div class="neutral-trend-section">
             <div class="neutral-trend-header">
-                <h2>이번 시즌의<br>봄 웜 트렌드</h2>
+                <h2>이번 시즌의<br>스프링 웜 트렌드</h2>
                 <p>살구, 코랄, 아이보리를 중심으로 한 스프링.<br>따뜻하고 생기 넘치는 봄의 스타일링.</p>
             </div>
             <div class="trend-single-img" onclick="openColorTrendPopup('spring_warm')">
                 <img th:src="@{/img/Main/sp_img.jpg}" alt="봄 웜 트렌드">
                 <div class="trend-single-overlay">
                     <div class="trend-single-chips"><div class="trend-chip-dot" style="background:#ff8a65"></div><div class="trend-chip-dot" style="background:#ffab91"></div><div class="trend-chip-dot" style="background:#ffe0b2"></div><div class="trend-chip-dot" style="background:#fff8e1"></div></div>
-                    <span class="trend-single-label">이번 시즌 봄 웜 트렌드</span>
+                    <span class="trend-single-label">이번 시즌 스프링 웜 트렌드</span>
                     <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
                 </div>
             </div>
@@ -1032,11 +1030,10 @@
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <h2 class="section-main-title">Summer Cool</h2>
+                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">Summer Cool</h2></div>
                         <p class="section-sub-title">선명하고 시원하게</p>
                     </div>
                     <div class="bp-header-right">
-                        <span class="bp-count">04</span>
                         <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
                     </div>
                 </div>
@@ -1202,7 +1199,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="banner_button_wrap_sc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_sc" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_sc" onclick="location.href='/storeMain'">스토어 더보기</button></div>
+                <div id="banner_button_wrap_sc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_sc" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_sc" onclick="location.href='/store'">스토어 더보기</button></div>
             </div>
 
             <div class="neutral-trend-section">
@@ -1282,11 +1279,10 @@
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <h2 class="section-main-title">Autumn Warm</h2>
+                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">어텀 웜</h2></div>
                         <p class="section-sub-title">깊고 풍성하게</p>
                     </div>
                     <div class="bp-header-right">
-                        <span class="bp-count">04</span>
                         <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
                     </div>
                 </div>
@@ -1448,7 +1444,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="banner_button_wrap_aw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_aw" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_aw" onclick="location.href='/storeMain'">스토어 더보기</button></div>
+                <div id="banner_button_wrap_aw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_aw" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_aw" onclick="location.href='/store'">스토어 더보기</button></div>
             </div>
 
             <div class="neutral-trend-section">
@@ -1528,11 +1524,10 @@
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <h2 class="section-main-title">Winter Cool</h2>
+                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">윈터 쿨</h2></div>
                         <p class="section-sub-title">차갑고 선명하게</p>
                     </div>
                     <div class="bp-header-right">
-                        <span class="bp-count">04</span>
                         <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
                     </div>
                 </div>
@@ -1698,7 +1693,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="banner_button_wrap_wc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_wc" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_wc" onclick="location.href='/storeMain'">스토어 더보기</button></div>
+                <div id="banner_button_wrap_wc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_wc" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_wc" onclick="location.href='/store'">스토어 더보기</button></div>
             </div>
 
             <div class="neutral-trend-section">
@@ -1762,9 +1757,9 @@
         </div>
         <div class="f_nav_group">
             <p class="f_nav_title">스토어</p>
-            <a th:href="@{/storeMain}"><span>전체 상품</span></a>
-            <a th:href="@{/storeMain}"><span>신상품</span></a>
-            <a th:href="@{/storeMain}"><span>베스트</span></a>
+            <a th:href="@{/store}"><span>전체 상품</span></a>
+            <a th:href="@{/store}"><span>신상품</span></a>
+            <a th:href="@{/store}"><span>베스트</span></a>
         </div>
         <div class="f_nav_group">
             <p class="f_nav_title">커뮤니티</p>

@@ -55,4 +55,8 @@ public class MemberService {
                 .filter(m -> m.getPassword().equals(dto.getPassword()))
                 .orElse(null);
     }
+    public boolean isAdmin(String loginId) {
+        java.util.List<String> adminIds = java.util.Arrays.asList("kdoryul", "exx", "ID3"); // 여기에 진짜 ID 3개 넣어
+        return adminIds.contains(loginId);
+    }
 }
