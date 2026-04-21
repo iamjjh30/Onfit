@@ -216,6 +216,7 @@ public class MemberController {
         }
 
         Map<String, Object> info = new HashMap<>();
+        info.put("id", freshMember.getId());
         info.put("name", freshMember.getName());
         info.put("tel",  freshMember.getTel());
         info.put("address",  freshMember.getAddress());

@@ -465,7 +465,7 @@
                 <ul>
                     <li><a th:href="@{/AIStyler}">AI진단</a></li>
                     <li><a th:href="@{/store}">스토어</a></li>
-                    <li><a th:href="@{/Community}">커뮤니티</a></li>
+                    <li><a th:href="@{/community}">커뮤니티</a></li>
                     <li><a th:href="@{/MyPalette}">내 팔레트</a></li>
                 </ul>
             </nav>
@@ -505,7 +505,7 @@
 
                 <div class="icon-panel-content" id="panel-profile-member">
                     <div class="icon-panel-welcome" th:if="${session.loginMember != null}">
-                        안녕하세요, <strong th:text="${session.loginMember.memberName}">사용자</strong>님 👋
+                        안녕하세요, <strong th:text="${session.loginMember.name}">사용자</strong>님 👋
                     </div>
                     <a th:href="@{/mypalette}" class="icon-panel-item">🎨 마이페이지</a>
                     <a th:href="@{/logout}" class="icon-panel-item">👋 로그아웃</a>
@@ -664,8 +664,7 @@
                 // 로그인 여부에 따른 프로필 패널 분기 (타임리프 인라인 적용)
                 let contentId = config.getContentId();
                 if (panelKey === 'profile') {
-                    /*[[${session.loginMember != null}]]*/ var isLogin = false;
-                    // 타임리프가 true/false를 실제 자바스크립트 값으로 변환함
+                    var isLogin = /*[[${session.loginMember != null}]]*/ false;
                     contentId = isLogin ? 'panel-profile-member' : 'panel-profile-guest';
                 }
 

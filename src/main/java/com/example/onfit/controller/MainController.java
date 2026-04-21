@@ -43,7 +43,7 @@ public class MainController {
         return "OrderInfoDetail";
     }
 
-    @GetMapping("/Community")
+    @GetMapping("/community")
     public String communityPage() {
         return "Community";
     }
@@ -56,10 +56,6 @@ public class MainController {
     @GetMapping("/community/write")
     public String communityWritePage() {
         return "CommunityWrite";
-    }
-    @GetMapping("/community/sharefit_write")
-    public String communityShareFitWritePage() {
-        return "ShareFitWrite";
     }
 
     @GetMapping("/diagnosis")
