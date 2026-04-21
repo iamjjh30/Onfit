@@ -18,12 +18,18 @@ html, body {
 nav ul li { float: left; list-style-type: none; }
 
 #wrap {
-    max-width: 1440px; width: 90%;
-    margin-left: auto; margin-right: auto;
-    padding-top: 0;
+    max-width: 1440px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    /* padding-top: 0; 을 아래와 같이 수정 */
+    padding-top: 120px;
     opacity: 0;
     animation: contentLoadIn 0.5s ease-out 0.5s forwards;
     overflow: visible;
+    /* 추가: 헤더보다 아래에 있게 함 */
+    position: relative;
+    z-index: 1;
 }
 a { text-decoration: none; color: black; }
 a:hover { color: #FFB834; }
@@ -34,210 +40,6 @@ a:visited { color: black; }
 .prod-info .prod-price,
 .prod-name, .prod-price { color: white !important; }
 .prod-name:hover, .prod-price:hover { color: white !important; }
-
-/* ====================================================
-   GNB — body 기준 sticky, wrap 완전 독립
-   ==================================================== */
-#header-outer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    width: 100%;
-    padding: 12px 5vw 0;
-    box-sizing: border-box;
-}
-#header {
-    width: 100%; height: 50px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(30px) saturate(220%);
-    -webkit-backdrop-filter: blur(30px) saturate(220%);
-    border: 1px solid rgba(255,255,255,0.45);
-    box-shadow: 0 10px 50px -10px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    overflow: visible;
-    transition: background 0.6s cubic-bezier(0.16,1,0.3,1),
-                border-color 0.6s cubic-bezier(0.16,1,0.3,1),
-                box-shadow 0.6s cubic-bezier(0.16,1,0.3,1);
-}
-#logo { width: auto; flex-shrink: 0; }
-#logo img {
-    width: 40px; height: 40px; margin: 0 20px; display: block;
-    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
-}
-#logo img:hover { transform: rotate(45deg); }
-
-#header nav { flex-shrink: 0; }
-#header nav ul { display: flex; margin: 0; padding: 0; }
-#header nav ul li { float: none; margin-left: 30px; line-height: 50px; cursor: pointer; white-space: nowrap; }
-#header nav ul li:hover { color: #FFB834; font-weight: bold; transition: 0.3s ease; }
-
-/* 검색창 — 아이콘 포함 */
-#header-search-inline {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 12px;
-    min-width: 0;
-}
-#header-search-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 260px;
-    height: 36px;
-    border-radius: 50px;
-    padding: 0 16px;
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(40px) saturate(250%);
-    -webkit-backdrop-filter: blur(40px) saturate(250%);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.07);
-    transition: width 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, background 0.3s ease;
-}
-#header-search-box:focus-within {
-    width: 340px;
-    background: rgba(255,255,255,0.75);
-    box-shadow: inset 0 0 0 1.5px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.1);
-}
-#search-icon { flex-shrink: 0; pointer-events: none; }
-#header-search-input {
-    flex: 1; height: 100%; border: none; outline: none;
-    background: transparent; font-size: 13px; color: #111;
-    letter-spacing: 0.01em; font-weight: 500; min-width: 0;
-}
-#header-search-input::placeholder { color: #999; font-weight: 400; }
-
-/* ==================== GNB 아이콘 (부모) ==================== */
-.header_icon {
-    flex-shrink: 0;
-    width: auto; height: 100%;
-    padding: 0 16px; position: static; /* static — 드롭다운은 #header 기준 */
-    display: flex; align-items: center;
-    cursor: pointer;
-}
-.header_icon img { width: 30px; height: 30px; display: block; object-fit: contain; }
-
-/* 호버 시 아이콘 #FFB834 틴트 */
-.header_icon:hover img {
-    filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.05);
-}
-
-/* ==================== #header를 드롭다운 기준점으로 ==================== */
-#header { overflow: visible; position: relative; }
-
-/* ==================== 드롭다운 공통 ==================== */
-.header_icon_hover1,
-.header_icon_hover2 {
-    display: block;
-    position: absolute;
-    top: 100%;               /* #header 하단에 바로 붙음 */
-    right: 0;                /* 항상 오른쪽 끝 고정 */
-    width: 180px;
-
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(30px) saturate(220%);
-    -webkit-backdrop-filter: blur(30px) saturate(220%);
-
-    border: 1px solid rgba(255, 255, 255, 0.60);
-    border-top: none;
-    border-radius: 0 0 10px 10px;
-    box-shadow:
-        inset 1px 0 0 rgba(255, 255, 255, 0.6),
-        inset -1px 0 0 rgba(255, 255, 255, 0.6),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.5),
-        0 14px 32px rgba(0, 0, 0, 0.13);
-
-    overflow: hidden;
-    z-index: 99999;
-
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-4px);
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        visibility 0.2s ease;
-    pointer-events: none;
-}
-
-/* 이음새 덮개 */
-.header_icon:hover::before {
-    content: "";
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.82);
-    z-index: 100000;
-}
-
-/* 호버 시 표시 */
-.header_icon:hover > .header_icon_hover1,
-.header_icon:hover > .header_icon_hover2 {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-/* ==================== 내부 메뉴 ==================== */
-.header_icon_hover1 nav ul,
-.header_icon_hover2 nav ul {
-    display: flex !important;
-    flex-direction: column !important;
-    list-style: none;
-    margin: 0; padding: 5px 0;
-    width: 100%;
-}
-
-.header_icon_hover1 nav ul li,
-.header_icon_hover2 nav ul li {
-    float: none !important;
-    display: block !important;
-    width: 100%; line-height: 1;
-    margin-left: 0 !important;
-    padding: 0; box-sizing: border-box;
-    transition: background 0.15s ease;
-}
-
-.header_icon_hover1 nav ul li + li,
-.header_icon_hover2 nav ul li + li {
-    border-top: 1px solid rgba(255, 255, 255, 0.35);
-}
-
-/* 메뉴 hover — GNB nav li:hover 색 #FFB834 동일 */
-.header_icon_hover1 nav ul li:hover,
-.header_icon_hover2 nav ul li:hover {
-    background: rgba(255, 184, 52, 0.12);
-}
-
-.header_icon_hover1 nav ul a,
-.header_icon_hover2 nav ul a {
-    display: block !important;
-    float: none !important;
-    padding: 10px 16px;
-    font-size: 13px; font-weight: 500;
-    color: rgba(0, 0, 0, 0.72) !important;
-    text-decoration: none;
-    white-space: nowrap;
-    box-sizing: border-box; width: 100%;
-    transition: color 0.15s ease;
-}
-
-.header_icon_hover1 nav ul li:hover > a,
-.header_icon_hover2 nav ul li:hover > a {
-    color: #FFB834 !important;
-    font-weight: 700;
-}
-.header_icon_hover3,
-.header_search,
-.header_search_main,
-.header_search_btn,
-.header_main { display: none !important; }
-
 /* ====================================================
    BANNER — wrap 내 신박한 디자인
    ==================================================== */
@@ -249,7 +51,7 @@ a:visited { color: black; }
     aspect-ratio: 16 / 7;
     min-height: 300px;
     max-height: 820px;
-    margin-top: 100px;
+    margin-top: 20px;
     border-radius: 16px;   /* 줄여서 모서리 크롭 최소화 */
     position: relative;
     overflow: hidden;
@@ -1283,7 +1085,7 @@ footer {
 .bp-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    
+
     gap: 14px;
 }
 .bp-card:nth-child(1) { grid-column: auto; grid-row: auto; }
@@ -2322,3 +2124,18 @@ body {
     font-size: 13px !important; color: #888; letter-spacing: 0.04em;
     text-align: center; max-width: 55px; line-height: 1.2;
 }
+    /* 헤더를 최상위 레이어로 고정 */
+    #header {
+        z-index: 10000 !important;
+    }
+
+    /* 검색 아이콘 및 우측 아이콘 클릭 활성화 */
+    .header_search, .header_icon, .header_icon[data-panel] {
+        cursor: pointer !important;
+        pointer-events: auto !important;
+    }
+
+    /* 배경 오버레이(마스크)가 헤더를 가리지 않게 조정 */
+    .header-mask {
+        z-index: 9998 !important;
+    }

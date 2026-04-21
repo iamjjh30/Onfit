@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -376,7 +376,6 @@
     </style>
 </head>
 <body>
-
 <div id="micro-overlay"></div>
 <div class="snowman-throw" id="snowmanEmoji">⛄</div>
 
@@ -398,64 +397,7 @@
     </div>
 </div>
 
-<div id="header-outer">
-    <div id="header">
-        <a href="#wrap">
-            <div id="logo">
-                <img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit 로고">
-            </div>
-        </a>
-        <nav>
-            <ul>
-                <li><a th:href="@{/AIStyler}">AI진단</a></li>
-                <li><a th:href="@{/store}">스토어</a></li>
-                <li><a th:href="@{/Community}">커뮤니티</a></li>
-                <li><a th:href="@{/MyPalette}">내 팔레트</a></li>
-            </ul>
-        </nav>
-        <div id="header-search-inline">
-            <div id="header-search-box">
-                <svg id="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                <input type="search" id="header-search-input" placeholder="Mens Fashion Solution" autocomplete="off">
-            </div>
-        </div>
-
-        <div class="header_icon">
-            <img th:src="@{/img/Main/icon_profile.png}" alt="프로필">
-            <div class="header_icon_hover1">
-                <nav>
-                    <ul>
-                        <th:block th:unless="${session.loginMember != null}">
-                            <li><a th:href="@{/login}">로그인</a></li>
-                            <li><a th:href="@{/join}">회원가입</a></li>
-                            <li><a th:href="@{/find}">ID 찾기</a></li>
-                        </th:block>
-                        <th:block th:if="${session.loginMember != null}">
-                            <li style="padding: 11px 18px; font-weight: bold; color: #111;">
-                                <span th:text="${session.loginMember.name} + '님 환영해요!'">홍길동님 환영해요!</span>
-                            </li>
-                            <li><a th:href="@{/mypalette}">마이페이지</a></li>
-                            <li><a th:href="@{/logout}">로그아웃</a></li>
-                        </th:block>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-
-        <div class="header_icon">
-            <img th:src="@{/img/Main/icon_cart (1).png}" alt="장바구니">
-            <div class="header_icon_hover2">
-                <nav><ul>
-                    <li><a th:href="@{/Cart}">장바구니</a></li>
-                    <li><a th:href="@{/OrderInfo}">주문내역</a></li>
-                    <li><a th:href="@{/store}">스토어</a></li>
-                </ul></nav>
-            </div>
-        </div>
-    </div>
-</div>
+<header th:replace="~{fragments/header :: header}"></header>
 
 <div id="wrap">
 
@@ -1815,336 +1757,170 @@
     </div>
 </div>
 
+/* ================================================================
+Main.html 전용 스크립트 (GNB 연동 수정본)
+================================================================ */
 <script>
-    function toggleFaq(btn) {
-        const item = btn.closest('.faq-item');
-        const isOpen = item.classList.contains('open');
-        document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-        if (!isOpen) item.classList.add('open');
-    }
-</script>
+function toggleFaq(btn) {
+const item = btn.closest('.faq-item');
+const isOpen = item.classList.contains('open');
+document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+if (!isOpen) item.classList.add('open');
+}
 
-<script th:src="@{/js/Main.js}"></script>
+/* ── 배너 슬라이드쇼 ── */
+(function() {
+const slides = document.querySelectorAll('#banner .slide');
+const dots   = document.querySelectorAll('.banner-dot');
+let current  = 0, timer = null;
+function goTo(idx) {
+if(!slides.length) return;
+slides[current].classList.remove('active'); dots[current].classList.remove('active');
+current = (idx + slides.length) % slides.length;
+slides[current].classList.add('active'); dots[current].classList.add('active');
+}
+function startAuto() { clearInterval(timer); timer = setInterval(() => goTo(current + 1), 4000); }
+dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAuto(); }));
+const banner = document.getElementById('banner');
+if(banner) {
+banner.addEventListener('mouseenter', () => clearInterval(timer));
+banner.addEventListener('mouseleave', startAuto);
+startAuto();
+}
+})();
 
-<script>
-    /* ── 배너 슬라이드쇼 ── */
-    (function() {
-        const slides = document.querySelectorAll('#banner .slide');
-        const dots   = document.querySelectorAll('.banner-dot');
-        let current  = 0, timer = null;
-        function goTo(idx) {
-            slides[current].classList.remove('active'); dots[current].classList.remove('active');
-            current = (idx + slides.length) % slides.length;
-            slides[current].classList.add('active'); dots[current].classList.add('active');
-        }
-        function startAuto() { clearInterval(timer); timer = setInterval(() => goTo(current + 1), 4000); }
-        dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAuto(); }));
-        const banner = document.getElementById('banner');
-        banner.addEventListener('mouseenter', () => clearInterval(timer));
-        banner.addEventListener('mouseleave', startAuto);
-        startAuto();
-    })();
-</script>
+/* ================================================================
+월별 데이터 & 렌더링
+================================================================ */
+const MONTHLY_OUTFIT = {
+1:  { label:'JAN', season:'WINTER', keyword:'딥 윈터 무드', colors:['#1a1a2e','#16213e','#4fc3f7','#e8eaf6'], names:['미드나잇','딥 인디고','아이시 블루','오프 화이트'], accent:'#4fc3f7', bg:'linear-gradient(135deg,#0d1117 0%,#1a1a2e 100%)' },
+2:  { label:'FEB', season:'WINTER', keyword:'크리미 윈터', colors:['#f5e6d3','#d4a574','#8b6914','#2c2c2c'], names:['크림','카멜','버번','차콜'], accent:'#d4a574', bg:'linear-gradient(135deg,#1a1510 0%,#2c2416 100%)' },
+3:  { label:'MAR', season:'SPRING', keyword:'얼리 스프링', colors:['#a8d5a2','#f8f9e8','#c8e6c9','#558b2f'], names:['세이지','오트밀','민트','포레스트'], accent:'#a8d5a2', bg:'linear-gradient(135deg,#0d1a0d 0%,#1a2e1a 100%)' },
+4:  { label:'APR', season:'SPRING', keyword:'블로섬 봄', colors:['#f8c8d4','#e91e8c','#ffecd2','#ff6b9d'], names:['핑크블러쉬','로즈','피치','코랄핑크'], accent:'#f8c8d4', bg:'linear-gradient(135deg,#1a0d12 0%,#2e1a20 100%)' },
+5:  { label:'MAY', season:'SPRING', keyword:'라이트 스프링', colors:['#fff176','#ffcc02','#ffe0b2','#ff8f00'], names:['선샤인','버터','피치','탠저린'], accent:'#ffcc02', bg:'linear-gradient(135deg,#1a1500 0%,#2e2600 100%)' },
+6:  { label:'JUN', season:'SUMMER', keyword:'써머 쿨', colors:['#00bcd4','#e0f7fa','#006064','#ffffff'], names:['아쿠아','아이스','딥 틸','화이트'], accent:'#00bcd4', bg:'linear-gradient(135deg,#001a1e 0%,#002b33 100%)' },
+7:  { label:'JUL', season:'SUMMER', keyword:'비비드 써머', colors:['#ff5722','#ff9800','#ffeb3b','#4caf50'], names:['레드오렌지','오렌지','옐로','그린'], accent:'#ff5722', bg:'linear-gradient(135deg,#1a0800 0%,#2e1400 100%)' },
+8:  { label:'AUG', season:'SUMMER', keyword:'트로피컬', colors:['#26a69a','#80cbc4','#fff8e1','#ff8a65'], names:['틸','라이트 틸','크림','코랄'], accent:'#26a69a', bg:'linear-gradient(135deg,#001a18 0%,#002e2b 100%)' },
+9:  { label:'SEP', season:'AUTUMN', keyword:'얼리 어텀', colors:['#bf8040','#8d6e63','#d7ccc8','#4e342e'], names:['어텀 골드','코코아','베이지','초코'], accent:'#bf8040', bg:'linear-gradient(135deg,#1a0f00 0%,#2e1e00 100%)' },
+10: { label:'OCT', season:'AUTUMN', keyword:'딥 어텀', colors:['#d84315','#bf360c','#e65100','#ff8f00'], names:['번트 레드','딥 오렌지','러스트','앰버'], accent:'#d84315', bg:'linear-gradient(135deg,#1a0800 0%,#3d1200 100%)' },
+11: { label:'NOV', season:'AUTUMN', keyword:'어텀 뉴트럴', colors:['#795548','#bcaaa4','#efebe9','#4e342e'], names:['웜 브라운','로즈 베이지','오트밀','다크 브라운'], accent:'#795548', bg:'linear-gradient(135deg,#120d0a 0%,#1e1510 100%)' },
+12: { label:'DEC', season:'WINTER', keyword:'홀리데이 윈터', colors:['#c62828','#b71c1c','#f5f5f5','#212121'], names:['크리스마스 레드','딥 레드','스노우','블랙'], accent:'#c62828', bg:'linear-gradient(135deg,#0d0000 0%,#1a0000 100%)' },
+};
 
-<script>
-    /* ================================================================
-       월별 데이터
-    ================================================================ */
-    const MONTHLY_OUTFIT = {
-        1:  { label:'JAN', season:'WINTER', keyword:'딥 윈터 무드', colors:['#1a1a2e','#16213e','#4fc3f7','#e8eaf6'], names:['미드나잇','딥 인디고','아이시 블루','오프 화이트'], accent:'#4fc3f7', bg:'linear-gradient(135deg,#0d1117 0%,#1a1a2e 100%)' },
-        2:  { label:'FEB', season:'WINTER', keyword:'크리미 윈터', colors:['#f5e6d3','#d4a574','#8b6914','#2c2c2c'], names:['크림','카멜','버번','차콜'], accent:'#d4a574', bg:'linear-gradient(135deg,#1a1510 0%,#2c2416 100%)' },
-        3:  { label:'MAR', season:'SPRING', keyword:'얼리 스프링', colors:['#a8d5a2','#f8f9e8','#c8e6c9','#558b2f'], names:['세이지','오트밀','민트','포레스트'], accent:'#a8d5a2', bg:'linear-gradient(135deg,#0d1a0d 0%,#1a2e1a 100%)' },
-        4:  { label:'APR', season:'SPRING', keyword:'블로섬 봄', colors:['#f8c8d4','#e91e8c','#ffecd2','#ff6b9d'], names:['핑크블러쉬','로즈','피치','코랄핑크'], accent:'#f8c8d4', bg:'linear-gradient(135deg,#1a0d12 0%,#2e1a20 100%)' },
-        5:  { label:'MAY', season:'SPRING', keyword:'라이트 스프링', colors:['#fff176','#ffcc02','#ffe0b2','#ff8f00'], names:['선샤인','버터','피치','탠저린'], accent:'#ffcc02', bg:'linear-gradient(135deg,#1a1500 0%,#2e2600 100%)' },
-        6:  { label:'JUN', season:'SUMMER', keyword:'써머 쿨', colors:['#00bcd4','#e0f7fa','#006064','#ffffff'], names:['아쿠아','아이스','딥 틸','화이트'], accent:'#00bcd4', bg:'linear-gradient(135deg,#001a1e 0%,#002b33 100%)' },
-        7:  { label:'JUL', season:'SUMMER', keyword:'비비드 써머', colors:['#ff5722','#ff9800','#ffeb3b','#4caf50'], names:['레드오렌지','오렌지','옐로','그린'], accent:'#ff5722', bg:'linear-gradient(135deg,#1a0800 0%,#2e1400 100%)' },
-        8:  { label:'AUG', season:'SUMMER', keyword:'트로피컬', colors:['#26a69a','#80cbc4','#fff8e1','#ff8a65'], names:['틸','라이트 틸','크림','코랄'], accent:'#26a69a', bg:'linear-gradient(135deg,#001a18 0%,#002e2b 100%)' },
-        9:  { label:'SEP', season:'AUTUMN', keyword:'얼리 어텀', colors:['#bf8040','#8d6e63','#d7ccc8','#4e342e'], names:['어텀 골드','코코아','베이지','초코'], accent:'#bf8040', bg:'linear-gradient(135deg,#1a0f00 0%,#2e1e00 100%)' },
-        10: { label:'OCT', season:'AUTUMN', keyword:'딥 어텀', colors:['#d84315','#bf360c','#e65100','#ff8f00'], names:['번트 레드','딥 오렌지','러스트','앰버'], accent:'#d84315', bg:'linear-gradient(135deg,#1a0800 0%,#3d1200 100%)' },
-        11: { label:'NOV', season:'AUTUMN', keyword:'어텀 뉴트럴', colors:['#795548','#bcaaa4','#efebe9','#4e342e'], names:['웜 브라운','로즈 베이지','오트밀','다크 브라운'], accent:'#795548', bg:'linear-gradient(135deg,#120d0a 0%,#1e1510 100%)' },
-        12: { label:'DEC', season:'WINTER', keyword:'홀리데이 윈터', colors:['#c62828','#b71c1c','#f5f5f5','#212121'], names:['크리스마스 레드','딥 레드','스노우','블랙'], accent:'#c62828', bg:'linear-gradient(135deg,#0d0000 0%,#1a0000 100%)' },
-    };
+function renderSeasonalColors(monthLabelId, badgeId, paletteId, keywordId, seasonTextId) {
+const month = new Date().getMonth() + 1;
+const d = MONTHLY_OUTFIT[month];
+const mlEl = document.getElementById(monthLabelId);
+const bdEl = document.getElementById(badgeId);
+const plEl = document.getElementById(paletteId);
+const kwEl = document.getElementById(keywordId);
+const stEl = document.getElementById(seasonTextId);
+if (!mlEl || !plEl) return;
+mlEl.textContent = d.label;
+if (bdEl) { bdEl.textContent = d.season; bdEl.style.borderColor = d.accent; bdEl.style.color = d.accent; }
+if (kwEl) { kwEl.textContent = d.keyword; kwEl.style.color = d.accent; }
+if (stEl) stEl.textContent = d.season;
+const section = plEl.closest('.seasonal-colors-section');
+if (section) { section.style.setProperty('--season-glow', `radial-gradient(ellipse 60% 80% at 30% 50%, ${d.accent}44 0%, transparent 70%)`); }
+plEl.innerHTML = d.colors.map((c, i) => `
+<div class="season-chip-group">
+    <div class="season-chip" style="background:${c}"></div>
+    <span class="season-chip-name">${d.names[i]}</span>
+</div>
+`).join('');
+}
 
-    /* 월별 색상 섹션 렌더링 */
-    function renderSeasonalColors(monthLabelId, badgeId, paletteId, keywordId, seasonTextId) {
-        const month = new Date().getMonth() + 1;
-        const d = MONTHLY_OUTFIT[month];
+/* ================================================================
+탭 전환 + 마이크로 인터랙션 + GNB 연동
+================================================================ */
+const MICRO_THEMES = { neutral: null, spring_warm: 'spring', summer_cool: 'summer', autumn_warm: 'autumn', winter_cool: 'winter' };
+const TAB_THEME = {
+neutral:     null,
+spring_warm: { bg:'rgba(255,220,235,0.35)', border:'rgba(230,80,150,0.35)',  shadow:'rgba(230,80,150,0.15)' },
+summer_cool: { bg:'rgba(200,235,255,0.35)', border:'rgba(0,180,220,0.35)',   shadow:'rgba(0,180,220,0.15)' },
+autumn_warm: { bg:'rgba(255,210,170,0.35)', border:'rgba(210,100,30,0.35)',  shadow:'rgba(210,100,30,0.15)' },
+winter_cool: { bg:'rgba(200,215,255,0.35)', border:'rgba(80,100,220,0.35)',  shadow:'rgba(80,100,220,0.15)' },
+};
 
-        const mlEl = document.getElementById(monthLabelId);
-        const bdEl = document.getElementById(badgeId);
-        const plEl = document.getElementById(paletteId);
-        const kwEl = document.getElementById(keywordId);
-        const stEl = document.getElementById(seasonTextId);
+let microTimer = null;
+function launchMicro(season, tabEl) {
+const old = tabEl.querySelector('.tab-particles');
+if (old) old.remove();
+if (microTimer) clearTimeout(microTimer);
+const cont = document.createElement('div');
+cont.className = 'tab-particles';
+tabEl.appendChild(cont);
+const W = tabEl.offsetWidth;
+function mkParticle(cls, extra) {
+const p = document.createElement('span');
+p.className = 'tab-p ' + cls;
+p.style.left = (Math.random() * W) + 'px';
+p.style.setProperty('--dx', ((Math.random()-0.5)*36)+'px');
+p.style.animationDelay = (Math.random()*0.4)+'s';
+if (extra) Object.assign(p.style, extra);
+cont.appendChild(p);
+}
+if (season === 'spring') { for (let i=0; i<12; i++) mkParticle('tp-petal'); }
+else if (season === 'summer') { for (let i=0; i<14; i++) mkParticle('tp-drop'); }
+else if (season === 'autumn') { const cols=['#d84315','#e65100','#ff8f00','#795548']; for (let i=0; i<10; i++) mkParticle('tp-leaf',{background:cols[i%4]}); }
+else if (season === 'winter') {
+const fl=['❄','❅','❆','✦'];
+for (let i=0; i<12; i++) {
+const p = document.createElement('span'); p.className = 'tab-p tp-snow'; p.textContent = fl[i%4];
+p.style.left = (Math.random()*W)+'px'; p.style.setProperty('--dx', ((Math.random()-0.5)*30)+'px'); p.style.animationDelay = (Math.random()*0.4)+'s';
+cont.appendChild(p);
+}
+const snowman = document.getElementById('snowmanEmoji');
+if(snowman) { snowman.classList.add('active'); setTimeout(()=>snowman.classList.remove('active'), 600); }
+}
+microTimer = setTimeout(()=>cont.remove(), 1500);
+}
 
-        if (!mlEl || !plEl) return;
+document.addEventListener('DOMContentLoaded', () => {
+// header.html 내부의 #header 요소를 타겟팅
+const headerElement = document.querySelector('#header');
+const tabs          = document.querySelectorAll('#tab_button li');
+const contents      = document.querySelectorAll('.content');
 
-        if (mlEl) mlEl.textContent = d.label;
-        if (bdEl) { bdEl.textContent = d.season; bdEl.style.borderColor = d.accent; bdEl.style.color = d.accent; }
-        if (kwEl) { kwEl.textContent = d.keyword; kwEl.style.color = d.accent; }
-        if (stEl) stEl.textContent = d.season;
+renderSeasonalColors('scMonthName', 'scBadge', 'scPalette', 'scKeyword', 'scSeasonText');
+renderSeasonalColors('scMonthSW', 'scBadgeSW', 'scPaletteSW', 'scKeywordSW', null);
+renderSeasonalColors('scMonthSC', 'scBadgeSC', 'scPaletteSC', 'scKeywordSC', null);
+renderSeasonalColors('scMonthAW', 'scBadgeAW', 'scPaletteAW', 'scKeywordAW', null);
+renderSeasonalColors('scMonthWC', 'scBadgeWC', 'scPaletteWC', 'scKeywordWC', null);
 
-        const section = plEl.closest('.seasonal-colors-section');
-        if (section) {
-            section.style.setProperty('--season-glow',
-                `radial-gradient(ellipse 60% 80% at 30% 50%, ${d.accent}44 0%, transparent 70%)`);
-        }
+tabs.forEach(tab => {
+tab.addEventListener('click', function() {
+const target = this.getAttribute('data-tab');
+tabs.forEach(t => t.classList.remove('active'));
+this.classList.add('active');
+contents.forEach(c => c.classList.remove('active'));
+const show = document.querySelector(`[data-tab-content="${target}"]`);
+if (show) show.classList.add('active');
 
-        plEl.innerHTML = d.colors.map((c, i) => `
-            <div class="season-chip-group">
-                <div class="season-chip" style="background:${c}"></div>
-                <span class="season-chip-name">${d.names[i]}</span>
-            </div>
-        `).join('');
-    }
+/* 핵심: header.html의 GNB 색상 변경 */
+const theme = TAB_THEME[target];
+if (headerElement) {
+if (theme) {
+headerElement.style.setProperty('background', theme.bg, 'important');
+headerElement.style.setProperty('border-color', theme.border, 'important');
+headerElement.style.setProperty('box-shadow', `0 15px 40px -10px ${theme.shadow}`, 'important');
+} else {
+// 뉴트럴 상태 (기본값 복구)
+headerElement.style.setProperty('background', 'rgba(255, 255, 255, 0.4)', 'important');
+headerElement.style.setProperty('border-color', 'rgba(255, 255, 255, 0.4)', 'important');
+headerElement.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.04)', 'important');
+}
+}
+const season = MICRO_THEMES[target];
+if (season) launchMicro(season, this);
+});
+});
+});
 
-    /* ================================================================
-       탭 전환 + 마이크로 인터랙션 (요청 1)
-    ================================================================ */
-    const MICRO_THEMES = {
-        neutral:     null,
-        spring_warm: 'spring',
-        summer_cool: 'summer',
-        autumn_warm: 'autumn',
-        winter_cool: 'winter',
-    };
+/* ================================================================
+컬러별 트렌드 팝업 (여기에 코드가 들어있어야 합니다)
+================================================================ */
+// ... 만약 COLOR_TREND_DATA나 관련 함수가 더 있다면 여기에 넣어주세요.
+// 없더라도 주석과 코드는 script 태그 안에 있어야 에러가 안 납니다.
 
-    const TAB_THEME = {
-        neutral:     null,
-        spring_warm: { bg:'rgba(255,220,235,0.35)', border:'rgba(230,80,150,0.35)',  shadow:'rgba(230,80,150,0.15)' },
-        summer_cool: { bg:'rgba(200,235,255,0.35)', border:'rgba(0,180,220,0.35)',   shadow:'rgba(0,180,220,0.15)' },
-        autumn_warm: { bg:'rgba(255,210,170,0.35)', border:'rgba(210,100,30,0.35)',  shadow:'rgba(210,100,30,0.15)' },
-        winter_cool: { bg:'rgba(200,215,255,0.35)', border:'rgba(80,100,220,0.35)',  shadow:'rgba(80,100,220,0.15)' },
-    };
-
-    let microTimer = null;
-
-    function launchMicro(season, tabEl) {
-        // 이전 파티클 제거
-        const old = tabEl.querySelector('.tab-particles');
-        if (old) old.remove();
-        if (microTimer) clearTimeout(microTimer);
-
-        const cont = document.createElement('div');
-        cont.className = 'tab-particles';
-        tabEl.appendChild(cont);
-
-        const W = tabEl.offsetWidth;
-
-        function mkParticle(cls, extra) {
-            const p = document.createElement('span');
-            p.className = 'tab-p ' + cls;
-            p.style.left = (Math.random() * W) + 'px';
-            p.style.setProperty('--dx', ((Math.random()-0.5)*36)+'px');
-            p.style.animationDelay = (Math.random()*0.4)+'s';
-            if (extra) Object.assign(p.style, extra);
-            cont.appendChild(p);
-        }
-
-        if (season === 'spring') {
-            for (let i=0; i<12; i++) mkParticle('tp-petal');
-        } else if (season === 'summer') {
-            for (let i=0; i<14; i++) mkParticle('tp-drop');
-        } else if (season === 'autumn') {
-            const cols=['#d84315','#e65100','#ff8f00','#795548'];
-            for (let i=0; i<10; i++) mkParticle('tp-leaf',{background:cols[i%4]});
-        } else if (season === 'winter') {
-            const fl=['❄','❅','❆','✦'];
-            for (let i=0; i<12; i++) {
-                const p = document.createElement('span');
-                p.className = 'tab-p tp-snow';
-                p.textContent = fl[i%4];
-                p.style.left = (Math.random()*W)+'px';
-                p.style.setProperty('--dx', ((Math.random()-0.5)*30)+'px');
-                p.style.animationDelay = (Math.random()*0.4)+'s';
-                cont.appendChild(p);
-            }
-            const snowman = document.getElementById('snowmanEmoji');
-            snowman.classList.add('active');
-            setTimeout(()=>snowman.classList.remove('active'), 600);
-        }
-        microTimer = setTimeout(()=>cont.remove(), 1500);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const header   = document.querySelector('#header');
-        const tabs     = document.querySelectorAll('#tab_button li');
-        const contents = document.querySelectorAll('.content');
-
-        /* 월별 색상 렌더 */
-        renderSeasonalColors('scMonthName', 'scBadge', 'scPalette', 'scKeyword', 'scSeasonText');
-        renderSeasonalColors('scMonthSW', 'scBadgeSW', 'scPaletteSW', 'scKeywordSW', null);
-        renderSeasonalColors('scMonthSC', 'scBadgeSC', 'scPaletteSC', 'scKeywordSC', null);
-        renderSeasonalColors('scMonthAW', 'scBadgeAW', 'scPaletteAW', 'scKeywordAW', null);
-        renderSeasonalColors('scMonthWC', 'scBadgeWC', 'scPaletteWC', 'scKeywordWC', null);
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const target = this.getAttribute('data-tab');
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                contents.forEach(c => c.classList.remove('active'));
-                const show = document.querySelector(`[data-tab-content="${target}"]`);
-                if (show) show.classList.add('active');
-
-                /* GNB 색상 */
-                const theme = TAB_THEME[target];
-                if (theme) {
-                    header.style.background  = theme.bg;
-                    header.style.borderColor = theme.border;
-                    header.style.boxShadow   = `0 15px 40px -10px ${theme.shadow}`;
-                } else {
-                    header.style.background  = 'rgba(255,255,255,0.3)';
-                    header.style.borderColor = 'rgba(255,255,255,0.4)';
-                    header.style.boxShadow   = '0 10px 50px -10px rgba(0,0,0,0.1)';
-                }
-
-                /* 마이크로 인터랙션 */
-                const season = MICRO_THEMES[target];
-                if (season) launchMicro(season, this);
-            });
-        });
-    });
-
-    /* ================================================================
-       컬러별 트렌드 팝업
-    ================================================================ */
-    const COLOR_TREND_DATA = {
-        neutral: {
-            badge: 'NEUTRAL',
-            badgeColor: '#555',
-            img: '/img/Main/ss.png',
-            title: '뉴트럴 트렌드',
-            desc: '블랙, 그레이, 크림 무채색 팔레트로 완성하는 이번 시즌의 핵심. 오버사이즈 실루엣과 모노크로매틱 레이어드로 깊이감을 더하고, 소재의 질감 차이만으로 스타일을 완성하는 미니멀리즘의 정수.',
-            palette: [
-                { color: '#212121', name: 'Noir' },
-                { color: '#555555', name: 'Charcoal' },
-                { color: '#999999', name: 'Gray' },
-                { color: '#cccccc', name: 'Silver' },
-                { color: '#f5f5f5', name: 'Cream' },
-            ],
-            tags: ['# 오버핏', '# 모노톤', '# 미니멀', '# 레이어드', '# 클린'],
-            keywords: [
-                { text: '블랙&그레이 톤온톤으로 세련된 깊이감', color: '#333' },
-                { text: '오버사이즈 실루엣으로 현대적 볼륨 연출', color: '#555' },
-                { text: '소재 질감 차이로 포인트 레이어드', color: '#888' },
-            ],
-        },
-        spring_warm: {
-            badge: 'SPRING WARM',
-            badgeColor: '#e05a00',
-            img: '/img/Main/sp_img.jpg',
-            title: '봄 웜 트렌드',
-            desc: '코랄, 살구, 아이보리가 물드는 봄 시즌. 린넨 소재의 가벼운 레이어드와 플로럴 패턴이 만나 화사함을 극대화합니다. 피부를 밝고 생기있게 빛내는 봄의 웜한 에너지.',
-            palette: [
-                { color: '#ff8a65', name: 'Coral' },
-                { color: '#ffb74d', name: 'Apricot' },
-                { color: '#ffe0b2', name: 'Peach' },
-                { color: '#fff8e1', name: 'Ivory' },
-                { color: '#d7ccc8', name: 'Sand' },
-            ],
-            tags: ['# 플로럴', '# 코랄', '# 아이보리', '# 린넨', '# 캐주얼'],
-            keywords: [
-                { text: '코랄·살구 투톤 레이어드로 화사함 연출', color: '#e05a00' },
-                { text: '린넨·면 소재로 봄 특유의 가벼움 표현', color: '#c07040' },
-                { text: '아이보리 베이스에 코랄 포인트 매치', color: '#a06030' },
-            ],
-        },
-        summer_cool: {
-            badge: 'SUMMER COOL',
-            badgeColor: '#006d82',
-            img: '/img/Main/s_img.jpg',
-            title: '써머 쿨 트렌드',
-            desc: '아쿠아, 아이시 블루, 라벤더가 어우러지는 여름 쿨톤의 계절. 마린 룩의 선명한 청량감과 뮤트 쿨 팔레트가 피부를 맑고 투명하게 빛나게 합니다. 이번 시즌 청량함의 기준.',
-            palette: [
-                { color: '#00bcd4', name: 'Aqua' },
-                { color: '#26c6da', name: 'Teal' },
-                { color: '#80deea', name: 'Ice Blue' },
-                { color: '#b2ebf2', name: 'Mist' },
-                { color: '#e0f7fa', name: 'Frost' },
-            ],
-            tags: ['# 아이시블루', '# 마린룩', '# 버뮤다', '# 쿨톤', '# 청량감'],
-            keywords: [
-                { text: '아이시 블루·라벤더 뮤트 쿨 팔레트 활용', color: '#006d82' },
-                { text: '린넨·코튼 소재로 청량한 여름 질감 표현', color: '#00838f' },
-                { text: '마린 스트라이프로 써머 포인트 연출', color: '#0097a7' },
-            ],
-        },
-        autumn_warm: {
-            badge: 'AUTUMN WARM',
-            badgeColor: '#bf4e0c',
-            img: '/img/Main/f_img.jpg',
-            title: '어텀 웜 트렌드',
-            desc: '번트 오렌지, 러스트, 어스톤이 깊어지는 가을. 빈티지 아웃도어 무드의 체크 패턴과 울 소재 레이어드로 풍성한 가을 감성을 완성합니다. 깊고 따뜻한 색채가 계절을 지배합니다.',
-            palette: [
-                { color: '#bf360c', name: 'Burnt' },
-                { color: '#e64a19', name: 'Rust' },
-                { color: '#ff8a65', name: 'Amber' },
-                { color: '#a1887f', name: 'Mocha' },
-                { color: '#fbe9e7', name: 'Blush' },
-            ],
-            tags: ['# 번트오렌지', '# 러스트', '# 어스톤', '# 레이어드', '# 빈티지'],
-            keywords: [
-                { text: '번트 오렌지·러스트 어스톤 딥 레이어드', color: '#bf360c' },
-                { text: '체크·헤링본 패턴으로 가을 무드 강조', color: '#a04000' },
-                { text: '울·코듀로이 소재로 보온성과 질감 동시에', color: '#795548' },
-            ],
-        },
-        winter_cool: {
-            badge: 'WINTER COOL',
-            badgeColor: '#3f51b5',
-            img: '/img/Main/w_img.jpg',
-            title: '윈터 쿨 트렌드',
-            desc: '미드나잇 블루, 인디고, 아이시 화이트의 에디토리얼 팔레트. 오버코트의 날카로운 실루엣과 터틀넥 레이어드가 겨울의 선명함을 완성합니다. 차갑고 강렬한 대비가 이번 시즌의 언어.',
-            palette: [
-                { color: '#1a1a2e', name: 'Midnight' },
-                { color: '#3f51b5', name: 'Indigo' },
-                { color: '#7986cb', name: 'Slate' },
-                { color: '#b0bec5', name: 'Ash' },
-                { color: '#e8eaf6', name: 'Ice' },
-            ],
-            tags: ['# 모노크롬', '# 인디고', '# 오버코트', '# 에디토리얼', '# 시크'],
-            keywords: [
-                { text: '미드나잇·인디고 딥톤 에디토리얼 레이어드', color: '#3f51b5' },
-                { text: '오버코트 실루엣으로 윈터 무드 완성', color: '#5c6bc0' },
-                { text: '터틀넥 니트로 블랙·화이트 대비 연출', color: '#7986cb' },
-            ],
-        },
-    };
-
-    function openColorTrendPopup(colorKey) {
-        const d = COLOR_TREND_DATA[colorKey];
-        if (!d) return;
-        document.getElementById('ctpopupImg').src = d.img;
-        const badge = document.getElementById('ctpopupBadge');
-        badge.textContent = d.badge;
-        badge.style.borderColor = d.badgeColor;
-        badge.style.color = d.badgeColor;
-        document.getElementById('ctpopupTitle').textContent = d.title;
-        document.getElementById('ctpopupDesc').textContent = d.desc;
-        document.getElementById('ctpopupPalette').innerHTML = d.palette.map(p =>
-            `<div class="ctpopup-swatch"><div class="ctpopup-swatch-dot" style="background:${p.color}"></div><span class="ctpopup-swatch-name">${p.name}</span></div>`
-        ).join('');
-        document.getElementById('ctpopupTags').innerHTML = d.tags.map(t =>
-            `<span class="ctpopup-tag">${t}</span>`
-        ).join('');
-        document.getElementById('ctpopupKeywords').innerHTML = d.keywords.map(k =>
-            `<div class="ctpopup-kw-row"><div class="ctpopup-kw-dot" style="background:${k.color}"></div><span>${k.text}</span></div>`
-        ).join('');
-        document.getElementById('color-trend-popup-overlay').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeColorTrendPopup(e) {
-        if (!e) return;
-        if (e.forceClose || e.target === document.getElementById('color-trend-popup-overlay')) {
-            document.getElementById('color-trend-popup-overlay').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    }
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeColorTrendPopup({ forceClose: true });
-    });
-</script>
-</body>
-</html>
+</script> </body> </html>
