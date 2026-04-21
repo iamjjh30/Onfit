@@ -23,8 +23,8 @@ public class Comment {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)  // ✅ user_id → member_id
+    private Member member;                              // ✅ User → Member
 
     // 대댓글용: null이면 댓글, 값 있으면 대댓글
     @ManyToOne(fetch = FetchType.LAZY)

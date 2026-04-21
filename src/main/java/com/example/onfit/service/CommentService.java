@@ -19,19 +19,19 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;  // ✅ UserRepository → MemberRepository
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> getComments(Long postId, Long currentUserId) {
+    public List<CommentResponse> getComments(Long postId, Long currentMemberId) {  // ✅ 파라미터명 통일
         return commentRepository.findByPostPostIdAndParentIsNullOrderByCreatedAtAsc(postId)
                 .stream()
-                .map(c -> CommentResponse.from(c, currentUserId))
+                .map(c -> CommentResponse.from(c, currentMemberId))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentResponse createComment(Long userId, Long postId, CommentCreateRequest req) {
-        User user = userRepository.findById(userId)
+    public CommentResponse createComment(Long memberId, Long postId, CommentCreateRequest req) {  // ✅ userId → memberId
+        Member member = memberRepository.findById(memberId)  // ✅ User → Member
                 .orElseThrow(() -> CustomException.notFound("사용자를 찾을 수 없습니다."));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> CustomException.notFound("게시글을 찾을 수 없습니다."));
@@ -43,39 +43,45 @@ public class CommentService {
         }
 
         Comment comment = Comment.builder()
-                .user(user)
+                .member(member)  // ✅ .user(user) → .member(member)
                 .post(post)
                 .parent(parent)
                 .content(req.getContent())
                 .build();
 
-        return CommentResponse.from(commentRepository.save(comment), userId);
+        return CommentResponse.from(commentRepository.save(comment), memberId);
     }
 
     @Transactional
-    public void deleteComment(Long userId, Long commentId) {
+    public void deleteComment(Long memberId, Long commentId) {  // ✅ userId → memberId
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> CustomException.notFound("댓글을 찾을 수 없습니다."));
-        if (!comment.getUser().getUserId().equals(userId)) {
+        if (!comment.getMember().getId().equals(memberId)) {  // ✅ getUser().getUserId() → getMember().getId()
             throw CustomException.forbidden("삭제 권한이 없습니다.");
         }
         commentRepository.delete(comment);
     }
 
     @Transactional
-    public boolean toggleLike(Long userId, Long commentId) {
-        User user = userRepository.findById(userId)
+    public boolean toggleLike(Long memberId, Long commentId) {  // ✅ userId → memberId
+        Member member = memberRepository.findById(memberId)  // ✅ User → Member
                 .orElseThrow(() -> CustomException.notFound("사용자를 찾을 수 없습니다."));
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> CustomException.notFound("댓글을 찾을 수 없습니다."));
 
-        return commentLikeRepository.findByCommentCommentIdAndUserUserId(commentId, userId)
+        // ✅ findByCommentCommentIdAndUserUserId → findByCommentCommentIdAndMemberId
+        return commentLikeRepository.findByCommentCommentIdAndMemberId(commentId, memberId)
                 .map(like -> {
                     commentLikeRepository.delete(like);
                     return false;
                 })
                 .orElseGet(() -> {
-                    commentLikeRepository.save(CommentLike.builder().comment(comment).user(user).build());
+                    commentLikeRepository.save(
+                            CommentLike.builder()
+                                    .comment(comment)
+                                    .member(member)  // ✅ .user(user) → .member(member)
+                                    .build()
+                    );
                     return true;
                 });
     }

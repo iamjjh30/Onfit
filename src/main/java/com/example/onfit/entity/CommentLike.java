@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "comment_like",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"comment_id", "user_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"comment_id", "member_id"}))  // ✅ user_id → member_id
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
@@ -21,6 +21,6 @@ public class CommentLike {
     private Comment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)  // ✅ user_id → member_id
+    private Member member;                              // ✅ User → Member
 }
