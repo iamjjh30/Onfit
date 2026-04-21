@@ -1,41 +1,28 @@
 /* ================================================================
-   CommunityDetail.js — API 연동 / 다중 이미지 Swiper / Share Fit 제거
-   GET  /api/posts/{postId}
-   POST /api/posts/{postId}/like
-   GET  /api/posts/{postId}/comments
-   POST /api/posts/{postId}/comments
+   CommunityDetail.js — 세션 기반 인증으로 수정 (JWT 토큰 방식 제거)
+   GET    /api/posts/{postId}
+   POST   /api/posts/{postId}/like
+   GET    /api/posts/{postId}/comments
+   POST   /api/posts/{postId}/comments
    DELETE /api/posts/{postId}/comments/{commentId}
-   POST /api/posts/{postId}/comments/{commentId}/like
+   POST   /api/posts/{postId}/comments/{commentId}/like
    DELETE /api/posts/{postId}
 ================================================================ */
 
-var API_BASE = 'http://localhost:8080';
-
-function getToken() { return localStorage.getItem('token'); }
-function authHeaders() {
-    var token = getToken();
-    var h = { 'Content-Type': 'application/json' };
-    if (token && token !== 'null' && token !== 'undefined') {
-        h['Authorization'] = 'Bearer ' + token;
-    }
-    return h;
-}
-
 /* ── 상태 ── */
 var ds = {
-    postId:    null,
-    post:      null,
-    comments:  [],
-    isLiked:   false,
-    likeCount: 0,
-    currentUser: null
+    postId:      null,
+    post:        null,
+    comments:    [],
+    isLiked:     false,
+    likeCount:   0,
+    currentUser: null   // /api/member/me 응답으로 채워짐
 };
 
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', function () {
-    // URL에서 postId 추출: /community/{postId}
-    var parts  = window.location.pathname.split('/');
-    ds.postId  = parseInt(parts[parts.length - 1]);
+    var parts = window.location.pathname.split('/');
+    ds.postId = parseInt(parts[parts.length - 1]);
 
     if (!ds.postId) {
         alert('잘못된 접근입니다.');
@@ -49,11 +36,12 @@ document.addEventListener('DOMContentLoaded', function () {
     setupCommentInput();
 });
 
-/* ── 현재 유저 ── */
+/* ── 현재 유저 로드 ── */
 function loadCurrentUser() {
-    var token = getToken();
-    if (!token) return;
-    fetch('/api/users/me', { headers: authHeaders() })
+    // ✅ JWT 토큰 체크 제거 — 세션 쿠키로 자동 인증
+    fetch('/api/member/me', {           // ✅ /api/users/me → /api/member/me
+        credentials: 'include'          // ✅ 세션 쿠키(JSESSIONID) 자동 포함
+    })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (u) {
             ds.currentUser = u;
@@ -67,7 +55,9 @@ function loadCurrentUser() {
 
 /* ── 게시글 조회 ── */
 function fetchPost() {
-    fetch('/api/posts/' + ds.postId, { headers: authHeaders() })
+    fetch('/api/posts/' + ds.postId, {
+        credentials: 'include'          // ✅ 세션 쿠키 포함
+    })
         .then(function (r) { if (!r.ok) throw new Error('조회 실패'); return r.json(); })
         .then(function (post) {
             ds.post      = post;
@@ -82,32 +72,22 @@ function fetchPost() {
 }
 
 function renderPost(post) {
-    // 내비 카테고리 뱃지
     var navCat = document.getElementById('navCategory');
     if (navCat) navCat.textContent = post.type || '';
 
-    // 작성자 정보
     var authorImg  = document.getElementById('postAuthorImg');
     var authorName = document.getElementById('postAuthorName');
     var postDate   = document.getElementById('postDate');
-    if (authorImg)  authorImg.src = post.profileImg || '/img/interface/ProfileDefault.png';
+    if (authorImg)  authorImg.src         = post.profileImg || '/img/interface/ProfileDefault.png';
     if (authorName) authorName.textContent = post.nickname || '작성자';
     if (postDate)   postDate.textContent   = post.createdAt ? post.createdAt.substring(0, 10) : '';
 
-    // 본문
     var textEl = document.getElementById('postText');
     if (textEl) textEl.textContent = cleanProductTags(post.content || post.title || '');
 
-    // 이미지
     renderImages(post.imgUrl);
-
-    // 상품 인용
     renderProductArea(post.content || '');
-
-    // 통계
     updateStats();
-
-    // 수정/삭제 메뉴 (본인만)
     renderPostMenu(post);
 }
 
@@ -134,7 +114,6 @@ function renderImages(imgUrl) {
         return;
     }
 
-    // Swiper
     var slides = images.map(function (src) {
         return '<div class="swiper-slide"><img src="' + src + '" alt="게시글 이미지" loading="lazy"></div>';
     }).join('');
@@ -181,7 +160,9 @@ function renderProductArea(content) {
     area.innerHTML = '<div class="product-area" id="productCards"><span style="font-size:0.82rem;color:#bbb;">상품 불러오는 중...</span></div>';
 
     Promise.all(ids.map(function (id) {
-        return fetch('/api/products/' + id)
+        return fetch('/api/products/' + id, {
+            credentials: 'include'      // ✅ 세션 쿠키 포함
+        })
             .then(function (r) { return r.ok ? r.json() : null; })
             .catch(function () { return null; });
     })).then(function (products) {
@@ -200,12 +181,13 @@ function renderProductArea(content) {
     });
 }
 
-/* ── 게시글 메뉴 ── */
+/* ── 게시글 수정/삭제 메뉴 ── */
 function renderPostMenu(post) {
     var anchor = document.getElementById('postMenuAnchor');
     if (!anchor) return;
 
-    if (!ds.currentUser || ds.currentUser.userId !== post.userId) {
+    // ✅ userId → memberId, currentUser.id 기준으로 본인 확인
+    if (!ds.currentUser || ds.currentUser.id !== post.memberId) {
         anchor.innerHTML = '';
         return;
     }
@@ -234,7 +216,10 @@ function renderPostMenu(post) {
     });
     document.getElementById('deletePostBtn').addEventListener('click', function () {
         if (!confirm('게시글을 삭제할까요?')) return;
-        fetch('/api/posts/' + ds.postId, { method: 'DELETE', headers: authHeaders() })
+        fetch('/api/posts/' + ds.postId, {
+            method: 'DELETE',
+            credentials: 'include'      // ✅ 세션 쿠키 포함
+        })
             .then(function (r) { if (!r.ok) throw new Error(); })
             .then(function () { window.location.href = '/community'; })
             .catch(function () { alert('삭제에 실패했습니다.'); });
@@ -256,15 +241,22 @@ function updateStats() {
     if (heartCount) heartCount.textContent = ds.likeCount;
 
     var total = ds.comments.reduce(function (acc, c) { return acc + 1 + (c.replies ? c.replies.length : 0); }, 0);
-    if (commentCnt)  commentCnt.textContent = total;
-    if (labelCnt)    labelCnt.textContent   = total;
+    if (commentCnt) commentCnt.textContent = total;
+    if (labelCnt)   labelCnt.textContent   = total;
 }
 
 function handleLike() {
-    if (!getToken()) { alert('로그인이 필요합니다.'); return; }
-    fetch('/api/posts/' + ds.postId + '/like', { method: 'POST', headers: authHeaders() })
-        .then(function (r) { return r.json(); })
+    // ✅ getToken() 체크 제거 — 401 응답으로 로그인 여부 판단
+    fetch('/api/posts/' + ds.postId + '/like', {
+        method: 'POST',
+        credentials: 'include'          // ✅ 세션 쿠키 포함
+    })
+        .then(function (r) {
+            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            return r.json();
+        })
         .then(function (data) {
+            if (!data) return;
             ds.isLiked   = data.liked;
             ds.likeCount = data.likeCount;
             updateStats();
@@ -274,7 +266,9 @@ function handleLike() {
 
 /* ── 댓글 ── */
 function fetchComments() {
-    fetch('/api/posts/' + ds.postId + '/comments', { headers: authHeaders() })
+    fetch('/api/posts/' + ds.postId + '/comments', {
+        credentials: 'include'          // ✅ 세션 쿠키 포함
+    })
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (data) {
             ds.comments = data || [];
@@ -305,7 +299,8 @@ function buildCommentHTML(c) {
             '</div>';
     }
 
-    var isOwner = ds.currentUser && ds.currentUser.userId === c.userId;
+    // ✅ userId → memberId 기준으로 본인 확인
+    var isOwner = ds.currentUser && ds.currentUser.id === c.memberId;
     var deleteBtn = isOwner
         ? '<button class="action-btn" data-action="delete-comment" data-comment-id="' + c.commentId + '">삭제</button>'
         : '';
@@ -399,32 +394,40 @@ function toggleReplyInput(commentId, author) {
 function submitReply(commentId) {
     var input = document.getElementById('replyInput_' + commentId);
     if (!input || !input.value.trim()) return;
-    if (!getToken()) { alert('로그인이 필요합니다.'); return; }
 
     fetch('/api/posts/' + ds.postId + '/comments', {
         method: 'POST',
-        headers: authHeaders(),
+        credentials: 'include',         // ✅ 세션 쿠키 포함
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: input.value.trim(), parentId: commentId })
     })
-        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-        .then(function () { fetchComments(); })
+        .then(function (r) {
+            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(function (data) { if (data) fetchComments(); })
         .catch(function () { alert('답글 등록에 실패했습니다.'); });
 }
 
 function toggleCommentLike(commentId) {
-    if (!getToken()) { alert('로그인이 필요합니다.'); return; }
     fetch('/api/posts/' + ds.postId + '/comments/' + commentId + '/like', {
-        method: 'POST', headers: authHeaders()
+        method: 'POST',
+        credentials: 'include'          // ✅ 세션 쿠키 포함
     })
-        .then(function (r) { return r.json(); })
-        .then(function () { fetchComments(); })
+        .then(function (r) {
+            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            return r.json();
+        })
+        .then(function (data) { if (data) fetchComments(); })
         .catch(function () {});
 }
 
 function deleteComment(commentId) {
     if (!confirm('댓글을 삭제할까요?')) return;
     fetch('/api/posts/' + ds.postId + '/comments/' + commentId, {
-        method: 'DELETE', headers: authHeaders()
+        method: 'DELETE',
+        credentials: 'include'          // ✅ 세션 쿠키 포함
     })
         .then(function (r) { if (!r.ok) throw new Error(); })
         .then(function () { fetchComments(); })
@@ -435,22 +438,26 @@ function deleteComment(commentId) {
 function setupCommentInput() {
     var btn   = document.getElementById('submitCommentBtn');
     var input = document.getElementById('commentInput');
-    if (btn) btn.addEventListener('click', submitComment);
+    if (btn)   btn.addEventListener('click', submitComment);
     if (input) input.addEventListener('keypress', function (e) { if (e.key === 'Enter') submitComment(); });
 }
 
 function submitComment() {
     var input = document.getElementById('commentInput');
     if (!input || !input.value.trim()) return;
-    if (!getToken()) { alert('로그인이 필요합니다.'); return; }
 
     fetch('/api/posts/' + ds.postId + '/comments', {
         method: 'POST',
-        headers: authHeaders(),
+        credentials: 'include',         // ✅ 세션 쿠키 포함
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: input.value.trim(), parentId: null })
     })
-        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-        .then(function () { input.value = ''; fetchComments(); })
+        .then(function (r) {
+            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(function (data) { if (data) { input.value = ''; fetchComments(); } })
         .catch(function () { alert('댓글 등록에 실패했습니다.'); });
 }
 

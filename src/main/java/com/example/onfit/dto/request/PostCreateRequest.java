@@ -7,5 +7,5 @@ public class PostCreateRequest {
     @NotBlank private String title;
     @NotBlank private String content;
     private String imgUrl;
-    private String type; // 잡담, Q&A, 공유, Share Fit
+    private String type;
 }
