@@ -6,6 +6,12 @@
 document.addEventListener('DOMContentLoaded', async function () {
     const AI_SERVER_URL = "http://localhost:5000";
 
+    // ✅ URL 파라미터 확인용 로그
+    const urlParams = new URLSearchParams(window.location.search);
+    const productIdFromUrl  = urlParams.get('productId');
+    const categoryFromUrl   = urlParams.get('category');
+    const imageUrlFromUrl   = urlParams.get('imageUrl');
+    const nameFromUrl       = urlParams.get('name');
     // 1. 탭 네비게이션 로직
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -226,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function isTopCategory(category) {
         if (!category) return false;
         const lower = category.toLowerCase();
-        return lower === 'cap' || lower === 'hoodie' || lower === 'jacket' || lower === 'shirt';
+        return lower === 'hoodie' || lower === 'jacket' || lower === 'shirt';
     }
     async function setProductForFitting(url, name, productId, category, price = '') {
         const formattedPrice = price ? Number(price).toLocaleString() + '원' : '';
@@ -311,7 +317,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // DB 저장 (상의 우선, 없으면 하의 ID)
                 const topId    = document.getElementById('top-product-id')?.value;
                 const bottomId = document.getElementById('bottom-product-id')?.value;
-                const saveId   = topId || bottomId || 0;
                 saveFittingToDB(topId, bottomId, data.result_url);
 
             } catch (error) {
@@ -450,5 +455,54 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         updateTryOnBtn();
     };
+    if (productIdFromUrl && imageUrlFromUrl) {
+        const fittingTabBtn = document.querySelector('[data-target="tab-fitting"]');
+        if (fittingTabBtn) fittingTabBtn.click();
+
+        const category = (categoryFromUrl || '').toLowerCase();
+
+        if (category === 'cap') {
+            alert('모자는 현재 가상 피팅을 지원하지 않습니다.');
+        } else {
+            // ✅ 드롭다운이 로드된 후 실행되도록 대기
+            const waitForDropdown = setInterval(() => {
+                const dropdown = document.getElementById(
+                    isBottomCategory(category) ? 'bottom-select-dropdown' : 'top-select-dropdown'
+                );
+                if (!dropdown || dropdown.children.length === 0) return;
+                clearInterval(waitForDropdown);
+
+                const prefix = isBottomCategory(category) ? 'bottom' : 'top';
+
+                // 드롭다운에서 해당 상품 선택 상태 표시
+                dropdown.querySelectorAll('.custom-select-option').forEach(el => {
+                    el.classList.remove('selected');
+                });
+
+                // 트리거 텍스트 업데이트
+                const trigger = document.getElementById(`${prefix}-select-trigger`);
+                if (trigger) trigger.querySelector('span').textContent = decodeURIComponent(nameFromUrl || '선택한 상품');
+
+                // 피팅룸에 세팅
+                setProductForFitting(
+                    decodeURIComponent(imageUrlFromUrl),
+                    decodeURIComponent(nameFromUrl || '선택한 상품'),
+                    productIdFromUrl,
+                    categoryFromUrl || ''
+                );
+            }, 100); // 100ms마다 드롭다운 로드 확인
+
+            // 5초 후 타임아웃
+            setTimeout(() => clearInterval(waitForDropdown), 5000);
+        }
+    }
     loadProductDropdowns();
+
+
+    console.log('URL 파라미터 확인:', {
+        productIdFromUrl,
+        categoryFromUrl,
+        imageUrlFromUrl,
+        nameFromUrl
+    });
 });

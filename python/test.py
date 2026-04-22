@@ -19,12 +19,12 @@ GCP_PROJECT_ID = "tryon-server"
 GCP_REGION     = "us-central1"
 GCS_OUTPUT_URI = "gs://virtualfitting-us/output/"
 
-GCP_KEY_FILE = "tryon-server-2f080f9382c9.json"
+GCP_KEY_FILE = "tryon-server-d8b16121702b.json"
 
 # ==========================================
 # [OpenAI] API 키
 # ==========================================
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {
@@ -140,56 +140,72 @@ def call_vertex_tryon(person_path: str, cloth_path: str, image_count: int = 1) -
 def try_on():
     temp_user_path  = "temp_user.jpg"
     temp_cloth_path = "temp_cloth.jpg"
+    temp_top_path   = "temp_top.jpg"
+    temp_bottom_path = "temp_bottom.jpg"
 
     try:
-        if 'user_image' not in request.files or 'cloth_image' not in request.files:
-            return jsonify({'error': '사람 사진과 옷 사진 2장이 모두 필요합니다.'}), 400
+        if 'user_image' not in request.files:
+            return jsonify({'error': '사람 사진이 필요합니다.'}), 400
 
         user_file = request.files['user_image']
-        cloth_file = request.files['cloth_image']
+        user_file.save(temp_user_path)
+        fix_orientation(temp_user_path)
+
+        # 🌟 상의+하의 동시 피팅 모드
+        if 'top_image' in request.files and 'bottom_image' in request.files:
+            top_file    = request.files['top_image']
+            bottom_file = request.files['bottom_image']
+            top_file.save(temp_top_path)
+            bottom_file.save(temp_bottom_path)
+            fix_orientation(temp_top_path)
+            fix_orientation(temp_bottom_path)
+
+            # 상의/하의 이미지를 위아래로 합쳐서 하나로 만들기
+            from PIL import Image
+            top_img    = Image.open(temp_top_path).convert('RGB')
+            bottom_img = Image.open(temp_bottom_path).convert('RGB')
+
+            # 같은 너비로 리사이즈
+            width = max(top_img.width, bottom_img.width)
+            top_img    = top_img.resize((width, int(top_img.height * width / top_img.width)))
+            bottom_img = bottom_img.resize((width, int(bottom_img.height * width / bottom_img.width)))
+
+            # 위아래 합치기
+            combined = Image.new('RGB', (width, top_img.height + bottom_img.height))
+            combined.paste(top_img, (0, 0))
+            combined.paste(bottom_img, (0, top_img.height))
+            combined.save(temp_cloth_path)
+
+        # 🌟 기존 단일 옷 모드
+        elif 'cloth_image' in request.files:
+            cloth_file = request.files['cloth_image']
+            cloth_file.save(temp_cloth_path)
+            fix_orientation(temp_cloth_path)
+        else:
+            return jsonify({'error': '옷 사진이 필요합니다.'}), 400
 
         image_count = int(request.form.get('image_count', 1))
         image_count = max(1, min(image_count, 4))
 
-        # 🌟 1. 업로드된 파일의 해시값 계산
-        user_hash = get_image_hash_from_file(user_file)
-        cloth_hash = get_image_hash_from_file(cloth_file)
+        user_hash  = get_image_hash_from_file(open(temp_user_path, 'rb'))
+        cloth_hash = get_image_hash_from_file(open(temp_cloth_path, 'rb'))
+        cache_key  = f"{user_hash}_{cloth_hash}_{image_count}"
 
-        # 🌟 2. 사용자+옷 조합의 고유 키 생성 (요청 매수까지 포함)
-        cache_key = f"{user_hash}_{cloth_hash}_{image_count}"
-
-        # 🌟 3. 캐시 확인
         if cache_key in tryon_cache:
-            print(">>> ♻️ 이전에 피팅한 조합입니다! 캐시된 이미지를 반환합니다.")
+            print(">>> ♻️ 캐시된 이미지 반환")
             return jsonify({'result_url': tryon_cache[cache_key]})
 
-        # 캐시에 없으면 기존 로직대로 파일 저장 및 처리 진행
-        user_file.save(temp_user_path)
-        cloth_file.save(temp_cloth_path)
-
-        fix_orientation(temp_user_path)
-        fix_orientation(temp_cloth_path)
-
-        print(f">>> 👕 가상 피팅 시작 (이미지 {image_count}장 요청)")
-
         final_url = call_vertex_tryon(temp_user_path, temp_cloth_path, image_count)
-
-        # 🌟 4. 성공한 결과값을 캐시에 저장
         tryon_cache[cache_key] = final_url
-        print("🎉 Vertex AI 피팅 완료 및 캐시 저장! 결과를 웹으로 전송합니다.")
 
         return jsonify({'result_url': final_url})
-
-    except RuntimeError as e:
-        print(f"❌ Vertex AI 오류: {e}")
-        return jsonify({'error': str(e)}), 500
 
     except Exception as e:
         print(f"❌ 서버 에러: {e}")
         return jsonify({'error': f'서버 내부 에러: {str(e)}'}), 500
 
     finally:
-        for path in [temp_user_path, temp_cloth_path]:
+        for path in [temp_user_path, temp_cloth_path, temp_top_path, temp_bottom_path]:
             if os.path.exists(path):
                 os.remove(path)
 

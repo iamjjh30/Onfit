@@ -216,10 +216,7 @@ h1 {
 }
 
 .product-grid {
-    display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 35px;
-    padding: 50px 0;
 }
 
 .product-thumb {
@@ -227,8 +224,14 @@ h1 {
     aspect-ratio: 3 / 4;
     border-radius: 12px;
     margin-bottom: 15px;
+    overflow: hidden;
 }
-
+.product-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 .product-info .price {
     font-weight: bold;
     font-size: 16px;
@@ -241,110 +244,19 @@ h1 {
     font-size: 12px;
     color: #999;
 }
+.product-item {
+    min-width: 0;
+    max-width: 100%;
+}
+/* 새로 추가할 부분 (a 태그 레이아웃 방어) */
+.product-item a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
-}
-/* ==========================================
-   반응형 (태블릿: 1024px 이하)
-========================================== */
-@media (max-width: 1024px) {
-    #wrap {
-        padding: 0 24px;
-    }
-
-    .product-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-    }
-
-    h1 {
-        font-size: 26px;
-    }
-}
-
-/* ==========================================
-   반응형 (모바일: 768px 이하)
-========================================== */
-@media (max-width: 768px) {
-    #wrap {
-        padding: 0 16px;
-    }
-
-    .store-header {
-        padding: 30px 0 20px 0;
-    }
-
-    h1 {
-        font-size: 22px;
-        margin-bottom: 20px;
-    }
-
-    /* 카테고리 탭 가로 스크롤 */
-    .store-nav {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-
-    .category-tabs {
-        display: flex;
-        overflow-x: auto;
-        white-space: nowrap;
-        width: 100%;
-        padding-bottom: 8px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-
-    .category-tabs::-webkit-scrollbar {
-        display: none;
-    }
-
-    .category-tabs a {
-        margin-right: 18px;
-        font-size: 14px;
-        flex-shrink: 0;
-    }
-
-    /* 필터 버튼 우측 정렬 */
-    .filter-wrapper {
-        align-self: flex-end;
-    }
-
-    /* 필터 드롭다운 전체 너비 */
-    .filter-dropdown-menu {
-        width: 100vw;
-        right: -16px;
-    }
-
-    /* 2열로 줄이기 */
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        padding: 30px 0;
-    }
-
-    .product-info .price {
-        font-size: 14px;
-    }
-
-    .product-info .name {
-        font-size: 13px;
-    }
-}
-
-/* ==========================================
-   반응형 (소형 모바일: 480px 이하)
-========================================== */
-@media (max-width: 480px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .product-thumb {
-        border-radius: 8px;
-    }
 }

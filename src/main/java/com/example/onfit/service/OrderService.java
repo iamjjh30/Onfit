@@ -19,6 +19,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;       // 🌟 추가
     private final ProductRepository productRepository;
+    private final StyleDnaService styleDnaService;
 
     @Transactional
     public void saveOrder(Member member, String orderId, Long totalAmount,
@@ -66,6 +67,11 @@ public class OrderService {
         }
 
         orderRepository.save(order);
+
+        // ✅ 주문 저장 후 등급 업데이트
+        member.setTotalOrderCount(member.getTotalOrderCount() + 1);
+        member.setTotalOrderAmount(member.getTotalOrderAmount() + totalAmount.intValue());
+        styleDnaService.updateLevel(member);
     }
 }
 

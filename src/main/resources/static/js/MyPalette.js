@@ -68,13 +68,70 @@ var hasSeason = false;
 var season    = null;
 var sd        = null;
 
+// ✅ 레벨 관련 변수 추가
+var currentLevel  = 1;
+var levelName     = '🌱 New Fitter';
+var nextAmount    = 100000;
+var orderAmount   = 0;
+var orderCount    = 0;
+
 document.addEventListener('DOMContentLoaded', function() {
+    const dots = document.querySelectorAll('.lv-step-dot');
+    const tooltip = document.getElementById('lvTooltip');
+
+    if (!tooltip) return;
+
+    dots.forEach(dot => {
+        dot.addEventListener('mouseenter', function() {
+            const title = this.getAttribute('data-tip-title');
+            const cond = this.getAttribute('data-tip-cond');
+
+            const benefitSpan = this.closest('.lv-step').querySelector('.lv-step-benefit');
+            const benefitDetail = benefitSpan
+                ? benefitSpan.getAttribute('data-benefit-detail').replace(/\n/g, '<br>')
+                : '';
+
+            tooltip.innerHTML = `
+                <div class="lv-tooltip-title">${title}</div>
+                <div class="lv-tooltip-row">
+                    <span class="lv-tooltip-label">조건</span>
+                    <span class="lv-tooltip-val">${cond}</span>
+                </div>
+                <div class="lv-tooltip-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.15);">
+                    <span class="lv-tooltip-label" style="color:#FFB834;">혜택</span>
+                    <span class="lv-tooltip-val" style="font-weight:600;">${benefitDetail}</span>
+                </div>
+            `;
+
+            const rect = this.getBoundingClientRect();
+
+            // 🌟 여기가 원인이었습니다! 기준점을 부모 섹션인 '.level-section'으로 정확히 잡아줍니다.
+            const wrapRect = this.closest('.level-section').getBoundingClientRect();
+
+            tooltip.style.left = (rect.left - wrapRect.left + (rect.width / 2)) + 'px';
+
+            // 이제 배지 높이(rect.height)만큼 정확히 더해져서 배지 '바로 아래'에 안착합니다!
+            tooltip.style.top = (rect.top - wrapRect.top + rect.height + 15) + 'px';
+
+            tooltip.classList.add('show');
+        });
+
+        dot.addEventListener('mouseleave', () => {
+            tooltip.classList.remove('show');
+        });
+    });
 
     console.log("🎨 MyPalette 초기화 시작...");
 
     try {
         var rawSeason = window.DB_SEASON || localStorage.getItem('onfit_season');
         var rawDna    = window.DB_DNA || localStorage.getItem('onfit_dna');
+
+        currentLevel = window.DB_LEVEL        || 1;
+        levelName    = window.DB_LEVEL_NAME   || '🌱 New Fitter';
+        nextAmount   = window.DB_NEXT_AMOUNT  || 100000;
+        orderAmount  = window.DB_ORDER_AMOUNT || 0;
+        orderCount   = window.DB_ORDER_COUNT  || 0;
 
         if (rawDna && rawDna !== "미진단") {
             try {
@@ -112,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initCuration(); // 🌟 실제 데이터를 가져오는 함수 실행!
     initScrollAnimations();
     renderRecentProducts();
+    renderLevelSection();
 });
 
 /* ────────────────────────────────────────────
@@ -543,4 +601,70 @@ function addCartDirect(productId) {
             console.error('Error:', error);
             alert('서버 오류가 발생했습니다.');
         });
+}
+// ────────────────────────────────────────────
+// 10. 스타일 레벨 섹션 렌더링
+// ────────────────────────────────────────────
+function renderLevelSection() {
+    // 현재 등급 뱃지
+    var badge = document.querySelector('.lv-current-badge');
+    if (badge) badge.textContent = 'Lv.' + currentLevel + ' ' + levelName;
+
+    // 🌟 퍼센트 계산
+    var pct = 0;
+    if (currentLevel >= 5) {
+        pct = 100;
+    } else if (nextAmount > 0) {
+        pct = Math.min(100, Math.floor(orderAmount * 100 / nextAmount));
+    }
+
+    var pctEl = document.querySelector('.level-pct');
+    var fill  = document.getElementById('level-fill'); // 🌟 id로 직접 접근
+
+    if (pctEl) pctEl.textContent = pct + '%';
+
+    // 🌟 IntersectionObserver로 화면에 보일 때 애니메이션
+    if (fill) {
+        fill.style.width = '0%'; // 초기화
+
+        var levelSection = document.querySelector('.level-section');
+        if (levelSection) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (!e.isIntersecting) return;
+                    // 🌟 requestAnimationFrame으로 브라우저 렌더 타이밍에 맞춤
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() {
+                            fill.style.width = pct + '%';
+                        });
+                    });
+                    observer.unobserve(levelSection);
+                });
+            }, { threshold: 0.3 });
+            observer.observe(levelSection);
+        }
+    }
+
+    // 툴팁 내용
+    var btipList = document.getElementById('lvBtipList');
+    if (btipList) {
+        if (currentLevel >= 5) {
+            btipList.innerHTML = '<p style="font-size:0.85rem;color:#555;">🏆 최고 등급 달성! OnFit Editor입니다.</p>';
+        } else {
+            btipList.innerHTML =
+                '<p style="font-size:0.85rem;color:#555;">💰 누적 금액: ' + orderAmount.toLocaleString() + '원 / ' + nextAmount.toLocaleString() + '원</p>' +
+                '<p style="font-size:0.85rem;color:#555;margin-top:4px;">🛍 구매 횟수: ' + orderCount + '회</p>';
+        }
+    }
+
+    // 로드맵 단계 클래스 적용
+    document.querySelectorAll('.lv-step').forEach(function(step, idx) {
+        var stepLevel = idx + 1;
+        step.classList.remove('done', 'current');
+        if (stepLevel < currentLevel)       step.classList.add('done');
+        else if (stepLevel === currentLevel) step.classList.add('current');
+
+        var dot = step.querySelector('.lv-step-dot');
+        if (dot) dot.textContent = stepLevel < currentLevel ? '✓' : String(stepLevel);
+    });
 }

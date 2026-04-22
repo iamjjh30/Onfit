@@ -51,6 +51,6 @@ public class Product {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProductMaterial> materials;
 }

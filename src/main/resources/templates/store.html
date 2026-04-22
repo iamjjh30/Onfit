@@ -33,6 +33,7 @@
                         <div class="filter-column">
                             <h4>정렬기준</h4>
                             <label><input type="radio" name="sort" value="price_low"> 가격 낮은순</label>
+                            <label><input type="radio" name="sort" value="price_high"> 가격 높은순</label>
                             <label><input type="radio" name="sort" value="newest"> 최신순</label>
                             <label><input type="radio" name="sort" value="popular"> 인기순</label>
                         </div>
@@ -66,10 +67,14 @@
     </div>
 
     <main class="product-grid">
-        <div class="product-item" th:each="product : ${products}"
+        <div class="product-item"
+             th:each="product : ${products}"
              th:data-price="${product.price}"
              th:data-tone="${product.recommendedSeasons}"
-             th:data-category="${product.category}">
+             th:data-category="${product.category}"
+             th:data-created="${product.createdAt}"
+             th:data-view="${product.viewCount}"
+        >
 
             <a th:href="@{/itemDetail(id=${product.id})}">
                 <div class="product-thumb">

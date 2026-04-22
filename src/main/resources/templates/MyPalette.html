@@ -51,6 +51,40 @@
         .scroll-gallery::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
         }
+        .lv-tooltip {
+            position: absolute !important;
+            background: #111 !important;
+            color: white !important;
+            border-radius: 12px !important;
+            padding: 14px 18px !important;
+            width: 240px !important;
+            pointer-events: none !important;
+            opacity: 0;
+            /* 위에서 아래로 떨어지는 마이너스 값 제거! */
+            transform: translate(-50%, 10px) !important;
+            transition: opacity 0.2s ease, transform 0.2s ease !important;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.22) !important;
+            z-index: 9999 !important;
+            bottom: auto !important;
+            top: auto; /* 혹시 모를 찌꺼기 방어 */
+        }
+        .lv-tooltip.show {
+            opacity: 1 !important;
+            transform: translate(-50%, 0) !important;
+        }
+
+        /* 🌟 꼬리는 무조건 윗면 천장에 붙게 고정 (배지를 향해 위로 솟음) */
+        .lv-tooltip::before {
+            content: '' !important;
+            position: absolute !important;
+            bottom: 100% !important;  /* 말풍선 천장에 딱 붙임 */
+            top: auto !important;     /* 기존 탑 속성 파괴 */
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            border: 6px solid transparent !important;
+            border-bottom-color: #111 !important; /* 꼬리가 위를 향함 */
+            border-top-color: transparent !important;
+        }
     </style>
 </head>
 <body>
@@ -216,7 +250,7 @@
         <div class="section-header">
             <span class="section-eyebrow">FITTING ARCHIVE</span>
             <div class="dna-title-row">
-                <h2 class="section-title">홍길동님의 피팅 아카이브</h2>
+                <h2 class="section-title"><span id="userName" th:text="${session.loginMember?.name}">스타일리스트</span>님의 피팅 아카이브</h2>
                 <div class="dna-help-wrap">
                     <button class="dna-help-btn" aria-label="피팅 아카이브 안내">?</button>
                     <div class="dna-help-popover">
@@ -278,79 +312,134 @@
                 <span class="section-eyebrow">STYLE LEVEL</span>
                 <h2 class="level-title">나의 스타일 등급</h2>
                 <div class="lv-title-row">
-                    <span class="lv-current-badge">Lv.3 스타일 익스플로러</span>
-                    <div class="lv-demotion-wrap">
-                        <span class="lv-demotion-badge" id="lvDemotionBadge" style="display:none" tabindex="0" role="button" aria-label="강등 위험 상세 보기">⚠ 강등 예정!</span>
-                        <div class="lv-demotion-tip" id="lvDemotionTip">
-                            <p class="lv-dtip-title">⚠️ 강등 위험 이유</p>
-                            <div id="lvDtipReasons"></div>
-                            <div class="lv-dtip-divider"></div>
-                            <div class="lv-dtip-note">반기 내 달성 시 레벨 유지!</div>
-                        </div>
-                    </div>
+                    <!-- ✅ 하드코딩 → 서버 데이터로 교체 -->
+                    <span class="lv-current-badge"
+                          th:text="'Lv.' + ${session.loginMember.styleLevel} + ' ' + ${levelName}">
+                    Lv.1 🌱 뉴비
+                </span>
                 </div>
+
                 <div class="level-bar-wrap">
-                    <div class="lv-bar-trigger" id="lvBarTrigger" tabindex="0" role="button" aria-label="다음 레벨까지 남은 조건 보기">
-                        <div class="level-bar"><div class="level-fill"></div></div>
+                    <div class="lv-bar-trigger" id="lvBarTrigger" tabindex="0" role="button">
+                        <div class="level-bar">
+                            <!-- ✅ 진행도 계산: 현재금액 / 다음레벨 목표금액 -->
+                            <div class="level-fill" id="level-fill" th:style="'--target-pct: ' + ${progressPct} + '%;'"></div>
+                        </div>
                         <div class="lv-bar-tooltip" id="lvBarTooltip">
                             <p class="lv-btip-title">🎯 다음 레벨까지 남은 것</p>
-                            <div id="lvBtipList"></div>
+                            <div id="lvBtipList">
+                                <!-- 5레벨이면 최고 등급 메시지 -->
+                                <p th:if="${session.loginMember.styleLevel == 5}"
+                                   style="font-size:0.85rem; color:#555;">
+                                    🏆 최고 등급 달성! OnFit 에디터입니다.
+                                </p>
+                                <!-- 5레벨 미만이면 남은 조건 표시 -->
+                                <p th:unless="${session.loginMember.styleLevel == 5}"
+                                   style="font-size:0.85rem; color:#555;"
+                                   th:text="'누적 금액: ' + ${#numbers.formatInteger(session.loginMember.totalOrderAmount, 3, 'COMMA')} + '원 / ' + ${#numbers.formatInteger(nextAmount, 3, 'COMMA')} + '원'">
+                                </p>
+                                <p th:unless="${session.loginMember.styleLevel == 5}"
+                                   style="font-size:0.85rem; color:#555; margin-top:4px;"
+                                   th:text="'구매 횟수: ' + ${session.loginMember.totalOrderCount} + '회'">
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <span class="level-pct">60%</span>
+                    <!-- ✅ 진행도 % 텍스트 -->
+                    <span class="level-pct" th:text="${progressPct} + '%'">0%</span>
+                </div>
+
+                <!-- ✅ 누적 구매 정보 요약 -->
+                <div style="margin-top: 12px; font-size: 0.85rem; color: #888; display: flex; gap: 20px;">
+                    <span th:text="'총 구매금액: ' + ${#numbers.formatInteger(orderAmount, 3, 'COMMA')} + '원'"></span>
+                    <span th:text="'총 구매횟수: ' + ${orderCount} + '회'"></span>
                 </div>
             </div>
         </div>
 
         <div class="lv-roadmap">
-            <div class="lv-step done">
+            <!-- Lv.1 -->
+            <div class="lv-step"
+                 th:classappend="${session.loginMember.styleLevel > 1 ? 'done' : (session.loginMember.styleLevel == 1 ? 'current' : '')}">
                 <div class="lv-step-dot"
-                     data-tip-title="Lv.1 뉴비"
-                     data-tip-cond="가입 즉시 달성">✓</div>
+                     data-tip-title="Lv.1 🌱 New Fitter"
+                     data-tip-cond="가입 즉시 달성"
+                     th:text="${session.loginMember.styleLevel > 1 ? '✓' : '1'}">1</div>
                 <div class="lv-step-line"></div>
                 <span class="lv-step-num">Lv.1</span>
-                <span class="lv-step-name">뉴비</span>
-                <span class="lv-step-benefit">5% 쿠폰</span>
+                <span class="lv-step-name">New Fitter</span>
+                <span class="lv-step-benefit"
+                      data-benefit-detail="✅ 가입 웰컴 쿠폰 3,000원 지급&#10;✅ 3만원 이상 무료배송">
+                        웰컴 쿠폰 3,000원
+                </span>
             </div>
-            <div class="lv-step done">
+
+            <!-- Lv.2 -->
+            <div class="lv-step"
+                 th:classappend="${session.loginMember.styleLevel > 2 ? 'done' : (session.loginMember.styleLevel == 2 ? 'current' : '')}">
                 <div class="lv-step-dot"
-                     data-tip-title="Lv.2 스타일 탐색가"
-                     data-tip-cond="피팅 3회 · 게시글 1건">✓</div>
+                     data-tip-title="Lv.2 ⭐ Style Starter"
+                     data-tip-cond="누적 10만원 이상 OR 구매 3회 이상"
+                     th:text="${session.loginMember.styleLevel > 2 ? '✓' : '2'}">2</div>
                 <div class="lv-step-line"></div>
                 <span class="lv-step-num">Lv.2</span>
-                <span class="lv-step-name">스타일 탐색가</span>
-                <span class="lv-step-benefit">7% 쿠폰</span>
+                <span class="lv-step-name">Style Starter</span>
+                <span class="lv-step-benefit"
+                      data-benefit-detail="✅ 5% 할인 쿠폰 월 1회&#10;✅ 신상품 얼리 알림">
+                        5% 쿠폰 월 1회 · 2만원↑ 무료배송
+                </span>
             </div>
-            <div class="lv-step current">
+
+            <!-- Lv.3 -->
+            <div class="lv-step"
+                 th:classappend="${session.loginMember.styleLevel > 3 ? 'done' : (session.loginMember.styleLevel == 3 ? 'current' : '')}">
                 <div class="lv-step-dot"
-                     data-tip-title="Lv.3 스타일 익스플로러"
-                     data-tip-cond="피팅 10회 · 구매 1건 · 게시글 3건">3</div>
+                     data-tip-title="Lv.3 💎 Color Expert"
+                     data-tip-cond="누적 30만원 이상 AND 구매 5회 이상"
+                     th:text="${session.loginMember.styleLevel > 3 ? '✓' : '3'}">3</div>
                 <div class="lv-step-line"></div>
                 <span class="lv-step-num">Lv.3</span>
-                <span class="lv-step-name">스타일 익스플로러</span>
-                <span class="lv-step-benefit">10% 쿠폰</span>
+                <span class="lv-step-name">Color Expert</span>
+                <span class="lv-step-benefit"
+                      data-benefit-detail="✅ 10% 할인 쿠폰 월 1회&#10;✅ 퍼스널 컬러 재진단 무료">
+                    10% 쿠폰 월 1회 · 무조건 무료배송
+                </span>
             </div>
-            <div class="lv-step">
+
+            <!-- Lv.4 -->
+            <div class="lv-step"
+                 th:classappend="${session.loginMember.styleLevel > 4 ? 'done' : (session.loginMember.styleLevel == 4 ? 'current' : '')}">
                 <div class="lv-step-dot"
-                     data-tip-title="Lv.4 트렌드 세터"
-                     data-tip-cond="피팅 25회 · 구매 3건 · 게시글 10건">4</div>
+                     data-tip-title="Lv.4 👑 Fit Master"
+                     data-tip-cond="누적 50만원 이상 AND 구매 10회 이상"
+                     th:text="${session.loginMember.styleLevel > 4 ? '✓' : '4'}">4</div>
                 <div class="lv-step-line"></div>
                 <span class="lv-step-num">Lv.4</span>
-                <span class="lv-step-name">트렌드 세터</span>
-                <span class="lv-step-benefit">15% 쿠폰</span>
+                <span class="lv-step-name">Fit Master</span>
+                <span class="lv-step-benefit"
+                      data-benefit-detail="✅ 15% 할인 쿠폰 월 2회&#10;✅ VIP 시즌 기획전 초대&#10;✅ 가상 피팅 우선 처리">
+                         15% 쿠폰 월 2회 · VIP 기획전 초대
+                </span>
             </div>
-            <div class="lv-step last">
+
+            <!-- Lv.5 -->
+            <div class="lv-step last"
+                 th:classappend="${session.loginMember.styleLevel == 5 ? 'current' : ''}">
                 <div class="lv-step-dot"
-                     data-tip-title="Lv.5 OnFit 마스터"
-                     data-tip-cond="피팅 50회 · 구매 10건 · 게시글 20건">5</div>
+                     data-tip-title="Lv.5 🔥 OnFit Editor"
+                     data-tip-cond="누적 100만원 이상 AND 구매 20회 이상"
+                     th:text="${session.loginMember.styleLevel == 5 ? '✓' : '5'}">5</div>
                 <div class="lv-step-line"></div>
                 <span class="lv-step-num">Lv.5</span>
-                <span class="lv-step-name">OnFit 마스터</span>
-                <span class="lv-step-benefit">20% 쿠폰+</span>
+                <span class="lv-step-name">OnFit Editor</span>
+                <span class="lv-step-benefit"
+                      data-benefit-detail="✅ 20% 할인 쿠폰 월 2회&#10;✅ 당일 배송&#10;✅ 신상품 선구매권&#10;✅ 생일 특별 쿠폰">
+                        20% 쿠폰 · 당일배송 · 스타일리스트 상담
+                </span>
             </div>
         </div>
-        <div class="lv-tooltip" id="lvTooltip"></div>
 
+        <div class="lv-tooltip" id="lvTooltip"></div>
     </section>
 </div><div th:replace="~{fragments/footer :: footer}"></div>
 <div id="toast_wrap"><div id="toast_msg"></div></div>
@@ -365,6 +454,11 @@
     window.DB_SEASON  = /*[[${session.loginMember?.personalColor}]]*/ null;
     window.DB_DNA     = /*[[${dnaJson}]]*/ null;
     window.DB_DNA_TOP = /*[[${dnaTop}]]*/ '미니멀';
+    window.DB_LEVEL        = /*[[${session.loginMember?.styleLevel}]]*/ 1;
+    window.DB_LEVEL_NAME   = /*[[${levelName}]]*/ '🌱 New Fitter';
+    window.DB_NEXT_AMOUNT  = /*[[${nextAmount}]]*/ 100000;
+    window.DB_ORDER_AMOUNT = /*[[${session.loginMember?.totalOrderAmount}]]*/ 0;
+    window.DB_ORDER_COUNT  = /*[[${session.loginMember?.totalOrderCount}]]*/ 0;
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script th:src="@{/js/MyPalette.js}"></script>
@@ -374,6 +468,49 @@
         const gallery = document.querySelector('.scroll-gallery');
         const btnPrev = document.getElementById('btnPrevRecent');
         const btnNext = document.getElementById('btnNextRecent');
+        const dots = document.querySelectorAll('.lv-step-dot');
+        const tooltip = document.getElementById('lvTooltip');
+
+        if (!tooltip) return;
+
+        dots.forEach(dot => {
+            dot.addEventListener('mouseenter', function() {
+                const title = this.getAttribute('data-tip-title');
+                const cond = this.getAttribute('data-tip-cond');
+
+                // 근처에 숨겨진 .lv-step-benefit 태그에서 혜택 정보(data-benefit-detail) 가져오기
+                const benefitSpan = this.closest('.lv-step').querySelector('.lv-step-benefit');
+                const benefitDetail = benefitSpan
+                    ? benefitSpan.getAttribute('data-benefit-detail').replace(/\n/g, '<br>') // 줄바꿈 처리
+                    : '';
+
+                // 툴팁 안에 HTML 렌더링 (조건 + 혜택)
+                tooltip.innerHTML = `
+                <div class="lv-tooltip-title">${title}</div>
+                <div class="lv-tooltip-row">
+                    <span class="lv-tooltip-label">조건</span>
+                    <span class="lv-tooltip-val">${cond}</span>
+                </div>
+                <div class="lv-tooltip-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.15);">
+                    <span class="lv-tooltip-label" style="color:#FFB834;">혜택</span>
+                    <span class="lv-tooltip-val" style="font-weight:600;">${benefitDetail}</span>
+                </div>
+            `;
+
+                // 툴팁 위치 계산 (배지의 정중앙 위로 안착)
+                const rect = this.getBoundingClientRect();
+                const wrapRect = tooltip.offsetParent.getBoundingClientRect();
+
+                tooltip.style.left = (rect.left - wrapRect.left + (rect.width / 2)) + 'px';
+                tooltip.style.top = (rect.top - wrapRect.top - rect.height + 100) + 'px';
+
+                tooltip.classList.add('show');
+            });
+
+            dot.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('show');
+            });
+        });
 
         if(btnPrev && btnNext && gallery) {
             // 버튼 클릭 시 한 칸(약 260px)씩 부드럽게 좌우로 스크롤

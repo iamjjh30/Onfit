@@ -296,7 +296,9 @@ a:visited { color: black; }
     color: #000;
     font-weight: bold;
 }
-
+.btn-fitting {
+    border-radius: 40px;
+}
 .btn-write-review {
     width: fit-content;
     background: none;
@@ -611,4 +613,144 @@ a:visited { color: black; }
     font-size: 18px;
     color: #333;
     transition: transform 0.3s ease;
+}
+/* ====================================================
+   상품 상세 설명 섹션 — itemDetail.css 하단에 추가
+   ==================================================== */
+
+.product-description-section {
+    width: 100%;
+    margin: 0 0 80px 0;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+}
+
+/* 탭 버튼 */
+.desc-tab-row {
+    display: flex;
+    border-bottom: 2px solid #e8e8e8;
+    margin-bottom: 40px;
+    gap: 0;
+}
+.desc-tab {
+    padding: 14px 28px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #aaa;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: -0.02em;
+}
+.desc-tab:hover  { color: #333; }
+.desc-tab.active { color: #111; border-bottom-color: #111; }
+
+/* 탭 콘텐츠 */
+.desc-content { display: none; }
+.desc-content.active { display: block; }
+
+/* 상품 이미지 */
+.desc-image-wrap {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.desc-main-img {
+    max-width: 480px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* 상품 설명 텍스트 */
+.desc-text-wrap {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 32px;
+}
+.desc-text {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+/* 상품 정보 그리드 */
+.desc-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+.desc-info-item {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.desc-info-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+}
+.desc-info-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111;
+}
+
+/* 사이즈 테이블 */
+.size-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+.size-table th,
+.size-table td {
+    padding: 14px 16px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    font-size: 0.88rem;
+}
+.size-table th {
+    font-weight: 800;
+    color: #111;
+    background: #f9f9f9;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.size-table tr:hover td { background: #fafafa; }
+.size-tip {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin-top: 8px;
+}
+
+/* 배송/반품 */
+.delivery-info { display: flex; flex-direction: column; gap: 16px; }
+.di-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 24px;
+    background: #f9f9f9;
+    border-radius: 12px;
+}
+.di-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.di-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 8px;
+}
+.di-text {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.7;
 }

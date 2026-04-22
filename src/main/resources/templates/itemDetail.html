@@ -7,50 +7,92 @@
     <link rel="stylesheet" href="../css/store.css">
     <link rel="stylesheet" href="../css/itemDetail.css">
     <style>
-        /* 🌟 OnFit만의 킬러 기능! 맞춤 추천 뱃지 스타일 */
+        #wrap {
+            margin-top: 150px;
+        }
         .ai-curation-badges { margin: 15px 0 25px 0; display: flex; flex-direction: column; gap: 8px; }
         .ai-badge { padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; letter-spacing: -0.02em; }
         .ai-badge.color-match { background-color: #f0f7ff; color: #0056b3; border: 1px solid #cce3ff; }
         .ai-badge.dna-match { background-color: #f9f0ff; color: #5a189a; border: 1px solid #eedcff; }
         .ai-badge strong { font-weight: 800; margin-right: 4px; }
 
-        /* ===================== 🌟 아이콘 전용 스타일 업데이트 ===================== */
         .feature-grid-container { display: flex; justify-content: space-around; align-items: stretch; margin-top: 30px; gap: 15px; }
         .feature-item { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; padding: 10px; opacity: 0; transform: translateY(15px); animation: fadeInUp 0.6s ease forwards; }
-
-        /* 아이콘 배치 애니메이션 */
         .feature-item:nth-child(1) { animation-delay: 0.1s; }
         .feature-item:nth-child(3) { animation-delay: 0.2s; }
         .feature-item:nth-child(5) { animation-delay: 0.3s; }
 
         .feature-icon-wrap { width: 56px; height: 56px; border-radius: 50%; background: #f8f8f8; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; border: 1px solid #eee; transition: all 0.3s ease; }
         .feature-item:hover .feature-icon-wrap { background: #111; border-color: #111; transform: scale(1.05); }
-
-        /* SVG 아이콘 공통 스타일 */
         .feature-icon-wrap svg { width: 26px; height: 26px; stroke: #333; transition: stroke 0.3s ease; }
         .feature-item:hover .feature-icon-wrap svg { stroke: white; }
-
-        /* 스타일 태그별 전용 아이콘 설정 */
         .style-icon svg { stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* 퍼스널 컬러별 전용 아이콘 설정 */
         .color-icon svg { stroke: none !important; fill: none; }
-        .feature-item:hover .color-icon svg { fill: none; } /* 컬러 아이콘은 hover시 색 안 바꿈 */
-
+        .feature-item:hover .color-icon svg { fill: none; }
         .feature-label { font-size: 0.72rem; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 5px; }
         .feature-value { font-size: 0.9rem; color: var(--black); font-weight: 800; letter-spacing: -0.02em; }
 
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
+        /* 상품 상세 설명 섹션 */
+        .product-description-section {
+            width: 100%;
+            margin: 60px 0 80px 0;
         }
+        .desc-tab-row {
+            display: flex;
+            border-bottom: 2px solid #e8e8e8;
+            margin-bottom: 40px;
+        }
+        .desc-tab {
+            padding: 14px 28px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #aaa;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .desc-tab:hover  { color: #333; }
+        .desc-tab.active { color: #111; border-bottom-color: #111; }
+        .desc-content { display: none; }
+        .desc-content.active { display: block; }
+
+        .desc-image-wrap { text-align: center; margin-bottom: 32px; }
+        .desc-main-img { max-width: 480px; width: 100%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .desc-text-wrap { background: #f9f9f9; border-radius: 12px; padding: 24px 28px; margin-bottom: 32px; }
+        .desc-text { font-size: 0.95rem; color: #444; line-height: 1.8; white-space: pre-line; }
+
+        .desc-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .desc-info-item { background: #f9f9f9; border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; }
+        .desc-info-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+        .desc-info-value { font-size: 0.9rem; font-weight: 600; color: #111; }
+
+        .size-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+        .size-table th, .size-table td { padding: 14px 16px; text-align: center; border-bottom: 1px solid #eee; font-size: 0.88rem; }
+        .size-table th { font-weight: 800; color: #111; background: #f9f9f9; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+        .size-table tr:hover td { background: #fafafa; }
+        .size-tip { font-size: 0.78rem; color: #aaa; margin-top: 8px; }
+
+        .delivery-info { display: flex; flex-direction: column; gap: 16px; }
+        .di-item { display: flex; gap: 20px; align-items: flex-start; padding: 24px; background: #f9f9f9; border-radius: 12px; }
+        .di-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+        .di-title { font-size: 0.9rem; font-weight: 800; color: #111; margin-bottom: 8px; }
+        .di-text { font-size: 0.85rem; color: #666; line-height: 1.7; }
+
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body><div th:replace="~{fragments/header :: header}"></div>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
 
+<!-- ✅ detail-wrap 하나로 모든 콘텐츠 감싸기 -->
 <div id="wrap" class="detail-wrap">
-    <div class="store-header" style="border-bottom: none; padding-bottom: 0;"></div>
 
     <main class="product-detail-container">
+
+        <!-- 상품 상단 (이미지 + 정보) -->
         <section class="detail-top">
             <div class="image-gallery">
                 <div class="main-image transition-fix">
@@ -67,37 +109,24 @@
             </div>
 
             <div class="product-info-box">
-                <p class="breadcrumb" th:text="${product.category == 'SHIRT' ? '셔츠' : (product.category == 'JACKET' ? '자켓' : '후드티')} + ' / 남성 의류'">카테고리</p>
+                <p class="breadcrumb" th:text="${product.category == 'SHIRT' ? '셔츠' : (product.category == 'JACKET' ? '자켓' : (product.category == 'PANTS' ? '바지' : (product.category == 'SHORTS' ? '반바지' : (product.category == 'CAP' ? '모자' : '후드티'))))} + ' / 남성 의류'">카테고리</p>
 
                 <h1 class="product-title" th:text="${product.name}">상품명</h1>
                 <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">0원</p>
 
                 <div class="ai-curation-badges" th:if="${session.loginMember != null}">
-                    <!-- 1. 퍼스널 컬러 매칭 (null 체크 추가) -->
                     <div class="ai-badge color-match"
                          th:if="${session.loginMember.personalColor != null and product.recommendedSeasons != null and #strings.contains(product.recommendedSeasons, session.loginMember.personalColor)}">
                         ✨ <strong>[[${session.loginMember.name}]]</strong>님의 피부톤을 완벽하게 밝혀줄 베스트 컬러!
                     </div>
-
-                    <!-- 2. 스타일 DNA 매칭 (null 체크 추가) -->
                     <div class="ai-badge dna-match"
                          th:if="${session.loginMember.styleDna != null and product.styleTags != null and #strings.contains(product.styleTags, session.loginMember.styleDna)}">
                         🧬 <strong>[[${session.loginMember.styleDna == 'MINIMAL' ? '미니멀' : (session.loginMember.styleDna == 'CASUAL' ? '캐주얼' : (session.loginMember.styleDna == 'STREET' ? '스트릿' : (session.loginMember.styleDna == 'FORMAL' ? '포멀' : '빈티지')))}]]</strong> 취향 저격! 스타일 DNA 매칭 완료
                     </div>
                 </div>
 
-
                 <div class="option-group" id="size">
-                    <div class="size-buttons">
-                        <button class="size-btn" value="S">S</button>
-                        <button class="size-btn active" value="M">M</button>
-                        <button class="size-btn" value="L">L</button>
-                        <button class="size-btn" value="XL">XL</button>
-                    </div>
-                </div>
-
-                <div class="social-actions">
-                    <span class="like-btn">♥ 87</span>
+                    <div class="size-buttons" id="size-buttons"></div>
                 </div>
 
                 <div class="purchase-group">
@@ -106,11 +135,11 @@
                                 id="btn-fitting"
                                 th:data-id="${product.id}"
                                 th:data-category="${product.category}"
-                                th:data-image="${product.imageUrl}"
+                                th:data-image="@{${product.imageUrl}}"
                                 th:data-name="${product.name}">
-                            VIRTUAL FITTING
+                            가상 피팅 해보기
                         </button>
-                        <button id="btn-cart" class="btn-light outline" >장바구니</button>
+                        <button id="btn-cart" class="btn-light outline">장바구니</button>
                     </div>
                     <button class="btn-dark fill" id="btn-buy-now"
                             th:data-id="${product.id}"
@@ -120,26 +149,10 @@
                         구매하기
                     </button>
                 </div>
-
-                <div class="product-info">
-                    <p th:text="'• 어울리는 스타일: ' + ${product.styleTags}">• 어울리는 스타일</p>
-                    <p th:text="'• 상품 관리 번호: ONFIT-' + ${product.id}">• 상품 번호</p>
-                </div>
-
-                <div class="info-accordion">
-                    <div class="accordion-header">
-                        <span>사이즈 & 팁</span>
-                        <span class="arrow-icon">▼</span>
-                    </div>
-                    <div class="accordion-content">
-                        <p>• 핏: 레귤러 핏 (정사이즈 추천)</p>
-                        <p>M：기장: 74 / 가슴둘레: 108 / 어깨너비: 48 / 소매길이: 62</p>
-                        <p>L：기장: 76 / 가슴둘레: 112 / 어깨너비: 50 / 소매길이: 63</p>
-                    </div>
-                </div>
             </div>
         </section>
 
+        <!-- 주요 특징 -->
         <div class="feature-highlight-section">
             <h2>주요 특징</h2>
 
@@ -149,7 +162,6 @@
                  th:data-seasons="${product.recommendedSeasons}"></div>
 
             <div class="feature-grid-container">
-
                 <div class="feature-item">
                     <div class="feature-icon-wrap style-icon" id="styleIconTarget">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ccc" fill="none"/></svg>
@@ -157,9 +169,7 @@
                     <span class="feature-label">STYLE DNA</span>
                     <span class="feature-value" id="styleLabelTarget">분석 중</span>
                 </div>
-
                 <div class="feature-divider"></div>
-
                 <div class="feature-item">
                     <div class="feature-icon-wrap color-icon" id="colorIconTarget">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ccc" fill="none"/></svg>
@@ -167,9 +177,7 @@
                     <span class="feature-label">PERSONAL COLOR</span>
                     <span class="feature-value" id="colorLabelTarget">분석 중</span>
                 </div>
-
                 <div class="feature-divider"></div>
-
                 <div class="feature-item">
                     <div class="feature-icon-wrap style-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -177,28 +185,93 @@
                         </svg>
                     </div>
                     <span class="feature-label">MATERIAL</span>
-                    <span class="feature-value">코튼 100%</span>
+                    <span class="feature-value">
+                        <th:block th:if="${product.materials != null and !product.materials.isEmpty()}">
+                            <th:block th:each="mat, stat : ${product.materials}">
+                                <th:block th:text="${mat.materialName} + ' ' + ${mat.mixRate} + '%'"></th:block>
+                                <th:block th:unless="${stat.last}"> / </th:block>
+                            </th:block>
+                        </th:block>
+                        <th:block th:if="${product.materials == null or product.materials.isEmpty()}">소재 정보 없음</th:block>
+                    </span>
                 </div>
-
             </div>
         </div>
-    </main>
-</div>
+
+        <!-- 상품 상세 설명 섹션 -->
+        <section class="product-description-section">
+            <div class="desc-tab-row">
+                <button class="desc-tab active" data-target="desc-detail">상품 상세</button>
+                <button class="desc-tab" data-target="desc-size">사이즈 정보</button>
+                <button class="desc-tab" data-target="desc-delivery">배송 / 반품</button>
+            </div>
+
+            <!-- 상품 상세 -->
+            <div class="desc-content active" id="desc-detail">
+                <div class="desc-text-wrap">
+                    <p class="desc-text" th:text="${product.description}">상품 설명이 없습니다.</p>
+                </div>
+            </div>
+
+            <!-- 사이즈 정보 -->
+            <div class="desc-content" id="desc-size">
+                <table class="size-table">
+                    <thead id="size-table-head"></thead>
+                    <tbody id="size-table-body"></tbody>
+                </table>
+                <p class="size-tip">※ 단위: cm / 측정 방법에 따라 1~2cm 오차가 있을 수 있습니다.</p>
+            </div>
+
+            <!-- 배송/반품 -->
+            <div class="desc-content" id="desc-delivery">
+                <div class="delivery-info">
+                    <div class="di-item">
+                        <span class="di-icon">🚚</span>
+                        <div>
+                            <p class="di-title">배송 안내</p>
+                            <p class="di-text">5만원 이상 구매 시 무료배송 / 미만 시 배송비 5,000원</p>
+                            <p class="di-text">평균 배송 기간: 2~3 영업일 (주말/공휴일 제외)</p>
+                        </div>
+                    </div>
+                    <div class="di-item">
+                        <span class="di-icon">🔄</span>
+                        <div>
+                            <p class="di-title">교환 / 반품</p>
+                            <p class="di-text">수령 후 7일 이내 교환·반품 가능</p>
+                            <p class="di-text">단, 착용·세탁·훼손된 상품은 불가합니다.</p>
+                        </div>
+                    </div>
+                    <div class="di-item">
+                        <span class="di-icon">📦</span>
+                        <div>
+                            <p class="di-title">반품 비용</p>
+                            <p class="di-text">단순 변심: 왕복 배송비 고객 부담 (6,000원)</p>
+                            <p class="di-text">상품 불량·오배송: 전액 OnFit 부담</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main><!-- ✅ main 닫는 태그 하나만 -->
+</div><!-- /#wrap -->
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script th:inline="javascript">
     /* ================================================================
-       1. 서버 데이터 고정 (Thymeleaf가 자바스크립트 변수로 변환)
-       이 PRODUCT_DATA가 있어야 더 이상 undefined 에러가 나지 않습니다.
+       1. 서버 데이터 (Thymeleaf → JS 변수)
     ================================================================ */
     const PRODUCT_DATA = {
-        id:     /*[[${product.id}]]*/ 0,
-        name:   /*[[${product.name}]]*/ '상품명',
-        price:  /*[[${product.price}]]*/ 0,
-        imgUrl: /*[[${product.imageUrl}]]*/ ''
+        id:             /*[[${product.id}]]*/ 0,
+        name:           /*[[${product.name}]]*/ '상품명',
+        price:          /*[[${product.price}]]*/ 0,
+        imgUrl:         /*[[${product.imageUrl}]]*/ '',
+        availableSizes: /*[[${product.availableSizes}]]*/ 'S,M,L,XL',
+        category:       /*[[${product.category}]]*/ ''
     };
 
     /* ================================================================
-       2. 상수 데이터 (아이콘 매핑)
+       2. 아이콘 매핑 데이터
     ================================================================ */
     const STYLE_ICONS = {
         'MINIMAL': { label: '미니멀', icon: `<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="18"/></svg>` },
@@ -209,83 +282,460 @@
     };
 
     const SEASON_ICONS = {
-        'SPRING_WARM': { label: '봄 웜톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff3ec"/><circle cx="8" cy="9" r="3" fill="#ff7043"/><circle cx="16" cy="11" r="3" fill="#ffb74d"/><circle cx="11" cy="17" r="3" fill="#fff176"/></svg>` },
+        'SPRING_WARM': { label: '봄 웜톤',  icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff3ec"/><circle cx="8" cy="9" r="3" fill="#ff7043"/><circle cx="16" cy="11" r="3" fill="#ffb74d"/><circle cx="11" cy="17" r="3" fill="#fff176"/></svg>` },
         'SUMMER_COOL': { label: '여름 쿨톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e0f7fa"/><circle cx="8" cy="9" r="3" fill="#4fc3f7"/><circle cx="16" cy="11" r="3" fill="#81d4fa"/><circle cx="11" cy="17" r="3" fill="#b2ebf2"/></svg>` },
         'AUTUMN_WARM': { label: '가을 웜톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff0e8"/><circle cx="8" cy="9" r="3" fill="#bf360c"/><circle cx="16" cy="11" r="3" fill="#d84315"/><circle cx="11" cy="17" r="3" fill="#8d6e63"/></svg>` },
         'WINTER_COOL': { label: '겨울 쿨톤', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#eef0ff"/><circle cx="8" cy="9" r="3" fill="#1a237e"/><circle cx="16" cy="11" r="3" fill="#311b92"/><circle cx="11" cy="17" r="3" fill="#b0bec5"/></svg>` }
     };
 
     /* ================================================================
-       3. 메인 로직 (페이지 로드 후 실행)
+       3. 사이즈 데이터 (DOMContentLoaded 밖에 선언)
+    ================================================================ */
+    const SIZE_DATA = {
+        SHIRT: {
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS':  [68, 100, 43, 59],
+                'S':   [70, 104, 45, 60],
+                'M':   [72, 108, 47, 61],
+                'L':   [74, 112, 49, 62],
+                'XL':  [76, 116, 51, 63],
+                'XXL': [78, 120, 53, 64]
+            }
+        },
+        JACKET: {
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS':  [62, 104, 44, 60],
+                'S':   [64, 108, 46, 61],
+                'M':   [66, 112, 48, 62],
+                'L':   [68, 116, 50, 63],
+                'XL':  [70, 120, 52, 64],
+                'XXL': [72, 124, 54, 65]
+            }
+        },
+        HOODIE: {
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS':  [64, 106, 46, 60],
+                'S':   [66, 110, 48, 61],
+                'M':   [68, 114, 50, 62],
+                'L':   [70, 118, 52, 63],
+                'XL':  [72, 122, 54, 64],
+                'XXL': [74, 126, 56, 65]
+            }
+        },
+        PANTS: {
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [72, 92, 28, 28, 98],
+                'M':  [76, 96, 30, 29, 100],
+                'L':  [80, 100, 32, 30, 102],
+                'XL': [84, 104, 34, 31, 104]
+            }
+        },
+        SHORTS: {
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [72, 92, 28, 28, 52],
+                'M':  [76, 96, 30, 29, 54],
+                'L':  [80, 100, 32, 30, 56],
+                'XL': [84, 104, 34, 31, 58]
+            }
+        },
+        CAP: {
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: {
+                'FREE': [58, 7, 12]
+            }
+        }
+    };
+
+    /* ================================================================
+       4. 사이즈 테이블 렌더링 함수 (DOMContentLoaded 밖에 선언)
+    ================================================================ */
+    function renderSizeTable() {
+        // 🌟 상품 ID별 개별 데이터 우선 → 없으면 카테고리 기본값
+        const productId = Number(PRODUCT_DATA.id);
+        const category  = (PRODUCT_DATA.category || '').toUpperCase();
+        const data = PRODUCT_SIZE_DATA[productId] || SIZE_DATA[category] || SIZE_DATA['SHIRT'];
+
+        const availableSizes = (PRODUCT_DATA.availableSizes || 'S,M,L,XL')
+            .split(',').map(s => s.trim()).filter(s => s);
+
+        console.log('data.rows 키:', Object.keys(data.rows));
+        console.log('availableSizes:', availableSizes);
+        console.log('필터 결과:', availableSizes.filter(size => data.rows[size]));
+
+        const thead = document.getElementById('size-table-head');
+        if (thead) {
+            thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+        }
+
+        const tbody = document.getElementById('size-table-body');
+        if (tbody) {
+            tbody.innerHTML = availableSizes
+                .filter(size => data.rows[size])
+                .map(size => {
+                    const vals = data.rows[size];
+                    return '<tr><td>' + size + '</td>' +
+                        vals.map(v => `<td>${v}</td>`).join('') + '</tr>';
+                }).join('');
+        }
+    }
+    /* ================================================================
+           상품별 개별 치수 데이터 (ID 기준)
+           카테고리 기본값에서 상품마다 미세하게 다르게 적용
+        ================================================================ */
+    const PRODUCT_SIZE_DATA = {
+        // ── SHIRT ──────────────────────────────────────────────────
+        1: { // 모던 배색 옥스포드 셔츠 (레귤러핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':   [70, 104, 45, 60],
+                'M':   [72, 108, 47, 61],
+                'L':   [74, 112, 49, 62],
+                'XL':  [76, 116, 51, 63],
+                'XXL': [78, 120, 53, 64]
+            }
+        },
+        2: { // 오션 브리즈 코튼 하프 셔츠 (반팔 - 소매길이 짧음)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':  [68, 106, 46, 24],
+                'M':  [70, 110, 48, 25],
+                'L':  [72, 114, 50, 26],
+                'XL': [74, 118, 52, 27]
+            }
+        },
+        3: { // 에센셜 베이직 릴렉스 셔츠 (릴렉스핏 - 가슴 여유)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS': [72, 108, 48, 62],
+                'S':  [74, 112, 50, 63],
+                'M':  [76, 116, 52, 64],
+                'L':  [78, 120, 54, 65],
+                'XL': [80, 124, 56, 66]
+            }
+        },
+        4: { // 빈티지 워싱 데님 셔츠 (레귤러핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':   [71, 105, 46, 61],
+                'M':   [73, 109, 48, 62],
+                'L':   [75, 113, 50, 63],
+                'XL':  [77, 117, 52, 64],
+                'XXL': [79, 121, 54, 65]
+            }
+        },
+
+        // ── JACKET ─────────────────────────────────────────────────
+        5: { // 미니멀 투포켓 집업 셔켓 (오버핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':  [66, 114, 50, 63],
+                'M':  [68, 118, 52, 64],
+                'L':  [70, 122, 54, 65],
+                'XL': [72, 126, 56, 66]
+            }
+        },
+        6: { // 아이스 블루 유틸리티 자켓 (레귤러핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':   [63, 108, 46, 61],
+                'M':   [65, 112, 48, 62],
+                'L':   [67, 116, 50, 63],
+                'XL':  [69, 120, 52, 64],
+                'XXL': [71, 124, 54, 65]
+            }
+        },
+        7: { // 어반 컴포트 릴렉스 블루종 (릴렉스핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS': [60, 106, 46, 61],
+                'S':  [62, 110, 48, 62],
+                'M':  [64, 114, 50, 63],
+                'L':  [66, 118, 52, 64],
+                'XL': [68, 122, 54, 65]
+            }
+        },
+
+        // ── HOODIE ─────────────────────────────────────────────────
+        8: { // 프리미엄 코튼 릴렉스 핏 후디 (쉐르파 - 두꺼운 소재)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':   [67, 112, 50, 63],
+                'M':   [69, 116, 52, 64],
+                'L':   [71, 120, 54, 65],
+                'XL':  [73, 124, 56, 66],
+                'XXL': [75, 128, 58, 67]
+            }
+        },
+        9: { // 미니멀 아카이브 풀오버 후디 (레귤러핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':  [65, 108, 48, 61],
+                'M':  [67, 112, 50, 62],
+                'L':  [69, 116, 52, 63],
+                'XL': [71, 120, 54, 64]
+            }
+        },
+        10: { // 오리지널 퍼 후드 보머 파카 (오버핏 - 기장 길고 여유 큼)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':   [74, 118, 52, 65],
+                'M':   [76, 122, 54, 66],
+                'L':   [78, 126, 56, 67],
+                'XL':  [80, 130, 58, 68],
+                'XXL': [82, 134, 60, 69]
+            }
+        },
+        11: { // 시티보이 무드 데일리 후디 (오버핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS': [63, 108, 48, 61],
+                'S':  [65, 112, 50, 62],
+                'M':  [67, 116, 52, 63],
+                'L':  [69, 120, 54, 64],
+                'XL': [71, 124, 56, 65]
+            }
+        },
+        12: { // 어반 스트릿 헤비 후디 (박시 오버핏 - 매우 여유로운 핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':   [68, 120, 54, 64],
+                'M':   [70, 124, 56, 65],
+                'L':   [72, 128, 58, 66],
+                'XL':  [74, 132, 60, 67],
+                'XXL': [76, 136, 62, 68]
+            }
+        },
+        13: { // 에센셜 컬러 포인트 후디 (오버핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'XS': [64, 110, 50, 62],
+                'S':  [66, 114, 52, 63],
+                'M':  [68, 118, 54, 64],
+                'L':  [70, 122, 56, 65],
+                'XL': [72, 126, 58, 66]
+            }
+        },
+        14: { // 소프트 터치 기모 후디 (레귤러핏)
+            headers: ['사이즈', '기장', '가슴둘레', '어깨너비', '소매길이'],
+            rows: {
+                'S':  [66, 108, 48, 61],
+                'M':  [68, 112, 50, 62],
+                'L':  [70, 116, 52, 63],
+                'XL': [72, 120, 54, 64]
+            }
+        },
+
+        // ── PANTS ──────────────────────────────────────────────────
+        15: { // 블랙 배럴핏 데님 팬츠 (배럴핏 - 허벅지 넉넉)
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [72, 96, 32, 30, 96],
+                'M':  [76, 100, 34, 31, 98],
+                'L':  [80, 104, 36, 32, 100],
+                'XL': [84, 108, 38, 33, 102]
+            }
+        },
+        16: { // 스카이 블루 테이퍼드 슬랙스 (테이퍼드 - 밑단 좁음)
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [72, 90, 26, 27, 99],
+                'M':  [76, 94, 28, 28, 101],
+                'L':  [80, 98, 30, 29, 103],
+                'XL': [84, 102, 32, 30, 105]
+            }
+        },
+        17: { // 블랙 코튼 스웨트 반바지 (반바지)
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [70, 92, 28, 28, 50],
+                'M':  [74, 96, 30, 29, 52],
+                'L':  [78, 100, 32, 30, 54],
+                'XL': [82, 104, 34, 31, 56]
+            }
+        },
+        18: { // 블랙 페이크 레더 카고 팬츠 (카고 - 넉넉한 핏)
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [74, 98, 34, 31, 100],
+                'M':  [78, 102, 36, 32, 102],
+                'L':  [82, 106, 38, 33, 104],
+                'XL': [86, 110, 40, 34, 106]
+            }
+        },
+        19: { // 베이지 워싱 카고 팬츠
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [73, 96, 33, 30, 99],
+                'M':  [77, 100, 35, 31, 101],
+                'L':  [81, 104, 37, 32, 103],
+                'XL': [85, 108, 39, 33, 105]
+            }
+        },
+        20: { // 네이비 사이드라인 트랙 팬츠 (트랙 - 스트레치)
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [68, 90, 27, 27, 97],
+                'M':  [72, 94, 29, 28, 99],
+                'L':  [76, 98, 31, 29, 101],
+                'XL': [80, 102, 33, 30, 103]
+            }
+        },
+        21: { // 블랙 와이드 치노 팬츠 (와이드)
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [72, 98, 36, 31, 100],
+                'M':  [76, 102, 38, 32, 102],
+                'L':  [80, 106, 40, 33, 104],
+                'XL': [84, 110, 42, 34, 106]
+            }
+        },
+
+        // ── SHORTS ─────────────────────────────────────────────────
+        22: { // 인디고 와이드 데님 숏츠
+            headers: ['사이즈', '허리', '엉덩이', '허벅지', '밑위', '총장'],
+            rows: {
+                'S':  [72, 96, 32, 29, 53],
+                'M':  [76, 100, 34, 30, 55],
+                'L':  [80, 104, 36, 31, 57],
+                'XL': [84, 108, 38, 32, 59]
+            }
+        },
+
+        // ── CAP ────────────────────────────────────────────────────
+        23: { // OF 블랙 볼캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [58, 7, 12] }
+        },
+        24: { // 그래픽 로고 블랙 볼캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [58, 7, 11] }
+        },
+        25: { // OF 빅로고 레드 볼캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [59, 7, 12] }
+        },
+        26: { // OF 코듀로이 투톤 캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [58, 6, 11] }
+        },
+        27: { // OF 헤링본 올리브 캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [59, 7, 12] }
+        },
+        28: { // CAP 스냅백 아이보리/그린
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [60, 8, 13] }
+        },
+        29: { // 퍼즐 로고 투톤 볼캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [58, 7, 11] }
+        },
+        30: { // OF 올드잉글리시 베이지 캡
+            headers: ['사이즈', '머리둘레', '챙길이', '모자높이'],
+            rows: { 'FREE': [59, 7, 12] }
+        }
+    };
+    /* ================================================================
+       5. 사이즈 버튼 렌더링 함수 (DOMContentLoaded 밖에 선언)
+    ================================================================ */
+    let selectedSize = 'M';
+
+    function renderSizeButtons() {
+        const container = document.getElementById('size-buttons');
+        if (!container) return;
+
+        const sizes = (PRODUCT_DATA.availableSizes || 'S,M,L,XL')
+            .split(',').map(s => s.trim()).filter(s => s);
+
+        selectedSize = sizes.includes('M') ? 'M' : sizes[0];
+
+        container.innerHTML = sizes.map(size =>
+            `<button class="size-btn ${size === selectedSize ? 'active' : ''}" value="${size}">${size}</button>`
+        ).join('');
+
+        container.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                container.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedSize = this.value;
+            });
+        });
+    }
+
+    /* ================================================================
+       6. 최근 본 상품 저장 함수
+    ================================================================ */
+    function saveRecentProduct() {
+        let recent = JSON.parse(localStorage.getItem('recentProducts') || '[]');
+        recent = recent.filter(p => String(p.id) !== String(PRODUCT_DATA.id));
+        recent.unshift({
+            id:     PRODUCT_DATA.id,
+            name:   PRODUCT_DATA.name,
+            price:  PRODUCT_DATA.price,
+            imgUrl: PRODUCT_DATA.imgUrl
+        });
+        if (recent.length > 10) recent.pop();
+        localStorage.setItem('recentProducts', JSON.stringify(recent));
+    }
+
+    /* ================================================================
+       7. 메인 로직
     ================================================================ */
     document.addEventListener('DOMContentLoaded', function () {
         console.log("OnFit 상품 상세 페이지 로드 완료:", PRODUCT_DATA);
 
-        // [최근 본 상품 저장]
+        // 초기화
+        renderSizeButtons();
+        renderSizeTable();
         saveRecentProduct();
 
-        // [사이즈 선택 기능]
-        let selectedSize = 'M';
-        const sizeBtns = document.querySelectorAll('.size-btn');
-        sizeBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                sizeBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                selectedSize = this.innerText;
-            });
-        });
-
-        // DOMContentLoaded 안에 추가
+        // 가상 피팅 버튼
         const btnFitting = document.getElementById('btn-fitting');
         if (btnFitting) {
             btnFitting.addEventListener('click', function () {
                 const id       = this.dataset.id;
                 const category = this.dataset.category;
                 const image    = this.dataset.image;
+                const absoluteImage = image.startsWith('http')
+                    ? image
+                    : window.location.origin + '/' + image.replace(/^\.\.\//, '');
                 const name     = this.dataset.name;
-
-                location.href = `/AIStyler?productId=${id}&category=${encodeURIComponent(category)}&imageUrl=${encodeURIComponent(image)}&name=${encodeURIComponent(name)}`;
+                location.href = `/AIStyler?productId=${id}&category=${encodeURIComponent(category)}&imageUrl=${encodeURIComponent(absoluteImage)}&name=${encodeURIComponent(name)}`;
             });
         }
 
-        // [장바구니 담기]
-        // --- [5] 장바구니 담기 (수정된 로직) ---
+        // 장바구니 담기
         const btnCart = document.getElementById('btn-cart');
         if (btnCart) {
             btnCart.addEventListener('click', function () {
-                // 🌟 핵심: rawDataEl을 찾지 말고, 이미 성공이 검증된 PRODUCT_DATA를 쓰세요!
                 const productId = PRODUCT_DATA.id;
-
-                // 🔍 [디버깅] 버튼 눌렀을 때 콘솔에 숫자가 찍히는지 확인하세요.
                 console.log("장바구니에 담을 상품 ID:", productId);
 
                 if (!productId || productId === 0) {
                     alert('상품 번호를 읽어오지 못했습니다. 새로고침 후 다시 시도해주세요.');
                     return;
                 }
-
                 if (!selectedSize) {
                     alert('사이즈를 선택해 주세요!');
                     return;
                 }
 
                 btnCart.innerText = '담는 중...';
-                btnCart.disabled = true;
+                btnCart.disabled  = true;
 
-                // 서버로 전송
                 fetch('/api/cart/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        productId: productId, // 👈 이제 확실한 숫자가 들어갑니다.
-                        size: selectedSize,
-                        quantity: 1
-                    })
+                    body: JSON.stringify({ productId, size: selectedSize, quantity: 1 })
                 })
                     .then(response => {
                         btnCart.innerText = '장바구니';
-                        btnCart.disabled = false;
-
+                        btnCart.disabled  = false;
                         if (response.ok) {
                             if (confirm('장바구니에 담겼습니다! 🛒\n이동하시겠습니까?')) {
                                 window.location.href = '/Cart';
@@ -301,56 +751,52 @@
             });
         }
 
-        // 구매하기 버튼 클릭 시 실행되는 부분
+        // 구매하기 버튼
         const buyNowBtn = document.getElementById('btn-buy-now');
         if (buyNowBtn) {
-            buyNowBtn.addEventListener('click', function() {
-                // 🌟 [비장의 수] PRODUCT_DATA 대신 버튼에 박힌 데이터 속성을 직접 읽습니다.
-                const pId = this.getAttribute('data-id');
-                const pName = this.getAttribute('data-name');
+            buyNowBtn.addEventListener('click', function () {
+                const pId    = this.getAttribute('data-id');
+                const pName  = this.getAttribute('data-name');
                 const pPrice = this.getAttribute('data-price');
-                const pImg = this.getAttribute('data-img');
+                const pImg   = this.getAttribute('data-img');
 
                 console.log("실시간 버튼 데이터 확인:", { pId, pName, pPrice, pImg });
 
-                // pId가 없으면 아래로 내려가서 URL을 만들지 못하게 막습니다.
                 if (!pId || pId === 'undefined') {
                     alert("상품 번호를 찾을 수 없습니다. (ID: " + pId + ")");
                     return;
                 }
 
-                const url = `/Checkout?mode=direct`
+                location.href = `/Checkout?mode=direct`
                     + `&productId=${pId}`
                     + `&name=${encodeURIComponent(pName)}`
                     + `&price=${pPrice}`
                     + `&imgUrl=${encodeURIComponent(pImg)}`
                     + `&size=${encodeURIComponent(selectedSize)}`
                     + `&qty=1`;
-
-                location.href = url;
             });
         }
 
-        // [스타일 DNA & 퍼스널 컬러 아이콘 적용]
+        // 스타일 DNA & 퍼스널 컬러 아이콘
         const rawDataEl = document.getElementById('rawProductData');
         if (rawDataEl) {
-            const firstTag = (rawDataEl.getAttribute('data-tags') || '').split(',')[0].trim().toUpperCase();
+            const firstTag    = (rawDataEl.getAttribute('data-tags')    || '').split(',')[0].trim().toUpperCase();
             const firstSeason = (rawDataEl.getAttribute('data-seasons') || '').split(',')[0].trim().toUpperCase();
 
             if (STYLE_ICONS[firstTag]) {
-                document.getElementById('styleIconTarget').innerHTML = STYLE_ICONS[firstTag].icon;
+                document.getElementById('styleIconTarget').innerHTML  = STYLE_ICONS[firstTag].icon;
                 document.getElementById('styleLabelTarget').innerText = STYLE_ICONS[firstTag].label;
             }
             if (SEASON_ICONS[firstSeason]) {
-                document.getElementById('colorIconTarget').innerHTML = SEASON_ICONS[firstSeason].icon;
+                document.getElementById('colorIconTarget').innerHTML  = SEASON_ICONS[firstSeason].icon;
                 document.getElementById('colorLabelTarget').innerText = SEASON_ICONS[firstSeason].label;
             }
         }
 
-        // [이미지 썸네일 교체]
+        // 썸네일 이미지 교체
         const mainImg = document.getElementById('mainProductImg');
         document.querySelectorAll('.thumb-item').forEach(thumb => {
-            thumb.addEventListener('click', function() {
+            thumb.addEventListener('click', function () {
                 const newSrc = this.querySelector('img').getAttribute('src');
                 mainImg.setAttribute('src', newSrc);
                 document.querySelectorAll('.thumb-item').forEach(t => t.style.border = '1px solid #eee');
@@ -358,25 +804,30 @@
             });
         });
 
-        // [아코디언 토글]
+        // 아코디언 토글
         document.querySelectorAll('.accordion-header').forEach(header => {
             header.addEventListener('click', () => header.parentElement.classList.toggle('active'));
         });
-    });
 
-    // 최근 본 상품 저장 함수
-    function saveRecentProduct() {
-        let recent = JSON.parse(localStorage.getItem('recentProducts') || '[]');
-        recent = recent.filter(p => String(p.id) !== String(PRODUCT_DATA.id));
-        recent.unshift({
-            id: PRODUCT_DATA.id,
-            name: PRODUCT_DATA.name,
-            price: PRODUCT_DATA.price,
-            imgUrl: PRODUCT_DATA.imgUrl
+        // 탭 전환
+        document.querySelectorAll('.desc-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.desc-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.desc-content').forEach(c => {
+                    c.classList.remove('active');
+                    c.style.display = 'none';   // ✅ 직접 숨기기
+                });
+                this.classList.add('active');
+                const target = document.getElementById(this.dataset.target);
+                target.classList.add('active');
+                target.style.display = 'block'; // ✅ 직접 보이기
+            });
         });
-        if (recent.length > 10) recent.pop();
-        localStorage.setItem('recentProducts', JSON.stringify(recent));
-    }
+
+        document.querySelectorAll('.desc-content').forEach(c => {
+            c.style.display = c.classList.contains('active') ? 'block' : 'none';
+        });
+    });
 </script>
 <script src="../js/include.js"></script>
 <script src="../js/main.js"></script>

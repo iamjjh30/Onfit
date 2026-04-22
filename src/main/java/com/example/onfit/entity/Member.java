@@ -44,5 +44,13 @@ public class Member {
     private Integer styleLevel = 1;
 
     @Builder.Default
+    private Integer totalOrderCount = 0;       // 누적 구매 횟수
+
+    @Builder.Default
+    private Integer totalOrderAmount = 0;      // 누적 구매 금액
+
+    private LocalDateTime lastOrderAt;         // 마지막 구매일
+
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }
