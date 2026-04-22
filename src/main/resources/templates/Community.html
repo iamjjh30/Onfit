@@ -15,13 +15,9 @@
     <!-- ── 탭 내비게이션 (AIStyler 스타일) ── -->
     <div class="tab-navigation">
         <button class="tab-btn active" data-menu="ALL">전체</button>
-
         <button class="tab-btn" data-menu="TF">오늘의 핏</button>
-
         <button class="tab-btn" data-menu="잡담">잡담</button>
-
         <button class="tab-btn" data-menu="추천">추천</button>
-
         <button class="tab-btn" data-menu="자랑">자랑</button>
 
     </div>
@@ -75,7 +71,7 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-
+<div id="toast"></div>
 <script th:src="@{/js/include.js}"></script>
 <script th:src="@{/js/Community.js}"></script>
 </body>

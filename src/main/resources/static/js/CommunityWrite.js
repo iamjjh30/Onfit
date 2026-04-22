@@ -1,41 +1,94 @@
 /* ================================================================
    CommunityWrite.js
-   - 세션 기반 인증으로 수정 (JWT 토큰 방식 제거)
+   - 세션 기반 인증 (JWT 토큰 방식 제거)
+   - 수정 모드: URL에 ?edit={postId} 있으면 기존 내용 불러와서 수정
    - 다중 이미지 (최대 5장) → imgUrl: JSON.stringify([url1, url2, ...])
-   - POST /api/posts
+   - POST /api/posts        (새 글)
+   - PUT  /api/posts/{id}   (수정)
 ================================================================ */
 
 var selectedCat      = '잡담';
-var imageFiles       = [];   // File 객체 배열 (최대 5)
-var imageBase64s     = [];   // 각 이미지의 base64 배열
+var imageFiles       = [];
+var imageBase64s     = [];
 var selectedProducts = [];
 var allProducts      = [];
 var MAX_IMAGES       = 5;
+var editPostId       = null;   // ✅ 수정 모드일 때 postId
 
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', function () {
+    // ✅ URL에서 edit 파라미터 확인
+    var params = new URLSearchParams(window.location.search);
+    editPostId = params.get('edit') ? parseInt(params.get('edit')) : null;
+
     setupCategoryTabs();
     setupCharCount();
     setupImageUpload();
     setupProductPicker();
     setupSubmit();
     fetchProducts();
-
-    // ✅ 로그인 여부는 서버에서 세션으로 확인 (토큰 체크 제거)
-    // Thymeleaf에서 th:if="${session.loginMember != null}" 로 처리하거나
-    // 아래처럼 API로 확인
     checkLoginStatus();
+
+    // ✅ 수정 모드면 기존 내용 불러오기
+    if (editPostId) {
+        loadPostForEdit(editPostId);
+    }
 });
 
-/* ── 로그인 상태 확인 (세션 기반) ── */
-function checkLoginStatus() {
-    fetch('/api/posts', {
-        credentials: 'include'  // ✅ 세션 쿠키 포함
+/* ── 수정 모드: 기존 게시글 불러오기 ── */
+function loadPostForEdit(postId) {
+    // 제목 변경
+    var titleEl = document.querySelector('.write-title');
+    if (titleEl) titleEl.textContent = '게시글 수정';
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) submitBtn.textContent = '수정하기';
+
+    fetch('/api/posts/' + postId, {
+        credentials: 'include'
     })
-        .then(function (r) {
-            // 비로그인이어도 목록 조회는 되므로, 별도 엔드포인트가 없으면
-            // 글쓰기 페이지 접근 제어는 서버(컨트롤러)에서 처리하는 것을 권장
+        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+        .then(function (post) {
+            // 카테고리 세팅
+            if (post.type) {
+                selectedCat = post.type;
+                document.querySelectorAll('.cat-tab').forEach(function (tab) {
+                    tab.classList.toggle('active', tab.getAttribute('data-cat') === post.type);
+                });
+            }
+
+            // 내용 세팅 (상품 태그 제거 후)
+            var content = (post.content || post.title || '').replace(/\[상품:\d+:[^\]]*\]\n?/g, '').replace(/\[상품:\d+\]\n?/g, '').trim();
+            var ta = document.getElementById('contentInput');
+            if (ta) {
+                ta.value = content;
+                var ct = document.getElementById('contentCount');
+                if (ct) ct.textContent = content.length;
+            }
+
+            // 이미지 세팅
+            if (post.imgUrl) {
+                var images = [];
+                try {
+                    var parsed = JSON.parse(post.imgUrl);
+                    images = Array.isArray(parsed) ? parsed : [parsed];
+                } catch (e) {
+                    images = [post.imgUrl];
+                }
+                imageBase64s = images.filter(Boolean);
+                imageFiles   = images.map(function () { return null; }); // 기존 이미지는 File 없음
+                renderImagePreviews();
+            }
         })
+        .catch(function () {
+            alert('게시글을 불러올 수 없습니다.');
+            window.location.href = '/community';
+        });
+}
+
+/* ── 로그인 상태 확인 ── */
+function checkLoginStatus() {
+    fetch('/api/posts', { credentials: 'include' })
+        .then(function () {})
         .catch(function () {});
 }
 
@@ -61,7 +114,6 @@ function setupCharCount() {
 function setupImageUpload() {
     var trigger   = document.getElementById('imgUploadTrigger');
     var fileInput = document.getElementById('imgFileInput');
-
     if (!trigger || !fileInput) return;
 
     trigger.addEventListener('click', function () {
@@ -136,9 +188,7 @@ function renderImagePreviews() {
 
 /* ── 상품 목록 ── */
 function fetchProducts() {
-    fetch('/api/products', {
-        credentials: 'include'  // ✅ 세션 쿠키 포함
-    })
+    fetch('/api/products', { credentials: 'include' })
         .then(function (r) { return r.json(); })
         .then(function (data) {
             allProducts = data;
@@ -237,7 +287,7 @@ function renderSelectedProducts() {
     });
 }
 
-/* ── 게시글 제출 ── */
+/* ── 게시글 제출 (새 글 / 수정) ── */
 function setupSubmit() {
     var btn = document.getElementById('submitBtn');
     if (!btn) return;
@@ -249,9 +299,9 @@ function setupSubmit() {
             return;
         }
 
-        var firstLine   = rawContent.split('\n')[0] || '게시글';
-        var title       = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
-        var productTags = selectedProducts.map(function (p) { return '[상품:' + p.productId + ']'; }).join('\n');
+        var firstLine    = rawContent.split('\n')[0] || '게시글';
+        var title        = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
+        var productTags  = selectedProducts.map(function (p) { return '[상품:' + p.productId + ']'; }).join('\n');
         var finalContent = rawContent + (productTags ? '\n' + productTags : '');
 
         var imgUrl = imageBase64s.length === 0
@@ -261,12 +311,16 @@ function setupSubmit() {
                 : JSON.stringify(imageBase64s);
 
         btn.disabled    = true;
-        btn.textContent = '게시 중...';
+        btn.textContent = editPostId ? '수정 중...' : '게시 중...';
 
-        fetch('/api/posts', {
-            method: 'POST',
-            credentials: 'include',                              // ✅ 세션 쿠키 포함
-            headers: { 'Content-Type': 'application/json' },    // ✅ Authorization 헤더 제거
+        // ✅ 수정 모드: PUT, 새 글: POST
+        var url    = editPostId ? '/api/posts/' + editPostId : '/api/posts';
+        var method = editPostId ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: title, content: finalContent, type: selectedCat, imgUrl: imgUrl })
         })
             .then(function (r) {
@@ -275,7 +329,7 @@ function setupSubmit() {
                     window.location.href = '/login';
                     return null;
                 }
-                if (!r.ok) throw new Error('게시 실패');
+                if (!r.ok) throw new Error('실패');
                 return r.json();
             })
             .then(function (post) {
@@ -283,9 +337,9 @@ function setupSubmit() {
                 window.location.href = '/community/' + post.postId;
             })
             .catch(function () {
-                alert('게시글 등록에 실패했습니다. 다시 시도해주세요.');
+                alert((editPostId ? '수정' : '게시글 등록') + '에 실패했습니다. 다시 시도해주세요.');
                 btn.disabled    = false;
-                btn.textContent = '게시하기';
+                btn.textContent = editPostId ? '수정하기' : '게시하기';
             });
     });
 }

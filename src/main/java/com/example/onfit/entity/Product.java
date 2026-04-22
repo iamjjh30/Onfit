@@ -32,8 +32,9 @@ public class Product {
     private String category;
     private String color;
 
-    // 🌟 1. 성별 카테고리 추가 (예: "M", "F", "U" - 남, 녀, 공용)
-    private String gender;
+    private String isfeared;
+
+    private String outfit;
 
     // 🌟 2. 사이즈 정보 추가 (예: "S,M,L,XL" 처럼 쉼표로 연결해서 저장)
     private String availableSizes;

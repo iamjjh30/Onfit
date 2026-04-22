@@ -35,7 +35,7 @@ a { text-decoration: none; color: inherit; }
 
 #wrap {
     max-width: 780px;
-    margin: 0 auto;
+    margin: 80px auto;
     padding: 0 24px 80px;
     opacity: 0;
     animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
@@ -73,7 +73,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ── 레이아웃 ── */
-.detail-layout { display: flex; flex-direction: column; gap: 16px; }
+.detail-layout { display: flex; flex-direction: column; gap: 16px;}
 .detail-main { display: flex; flex-direction: column; gap: 16px; }
 
 /* ── 게시글 카드 ── */
@@ -387,3 +387,26 @@ a { text-decoration: none; color: inherit; }
     font-size: 0.9rem;
     color: var(--text-muted);
 }
+
+#toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #111;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .3s;
+    z-index: 9999;
+    white-space: nowrap;
+}
+#toast.toast-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+#toast.toast-error { background: #e53935; }

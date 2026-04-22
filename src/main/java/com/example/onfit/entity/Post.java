@@ -34,6 +34,7 @@ public class Post {
     @Column(length = 20)
     private String type;
 
+    @Builder.Default
     @Column(name = "like_count")
     private Integer likeCount = 0;
 

@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/cart") // 🌟 클래스 상단에 공통 주소를 박아두면 실수를 줄일 수 있습니다.
+@RequestMapping("/api/cart")
 public class CartController {
 
     @Autowired
@@ -84,18 +85,28 @@ public class CartController {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-            Cart cart = new Cart();
-            cart.setMember(loginMember);
-            cart.setProduct(product);
-            cart.setQty(quantity);
-            cart.setSize(size);
-            cartRepository.save(cart);
+            // ✅ 동일 상품 + 동일 사이즈가 이미 있으면 수량만 증가
+            List<Cart> existingList = cartRepository.findByMemberAndProductAndSize(loginMember, product, size);
 
-            // 🌟 DNA 활동 기록 추가
+            if (!existingList.isEmpty()) {
+                // 혹시 중복이 있어도 첫 번째 것만 사용
+                Cart cart = existingList.get(0);
+                cart.setQty(cart.getQty() + quantity);
+                cartRepository.save(cart);
+            } else {
+                Cart cart = new Cart();
+                cart.setMember(loginMember);
+                cart.setProduct(product);
+                cart.setQty(quantity);
+                cart.setSize(size);
+                cartRepository.save(cart);
+            }
+
+            // DNA 활동 기록
             try {
                 styleDnaService.recordActivity(loginMember, product, "BUY");
             } catch (Exception e) {
-                e.printStackTrace(); // DNA 기록 실패해도 장바구니는 정상 처리
+                e.printStackTrace();
             }
 
             return ResponseEntity.ok("장바구니에 성공적으로 담겼습니다.");

@@ -7,379 +7,14 @@
     <title>OnFit.com</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/Main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
     <link rel="stylesheet" th:href="@{/css/Responsive.css}"/>
-    <style>
-        /* ============================================================
-           BEST PICKS: 카드 — 이미지 + 하단 정보패널 (상시 노출)
-           ============================================================ */
-        .bp-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            align-items: start;    /* 카드 높이 개별 유지 */
-        }
-        /* 카드 전체: flex 세로 배치 */
-        .bp-card {
-            display: flex !important;
-            flex-direction: column !important;
-            overflow: hidden !important;
-            position: relative !important;
-            border-radius: 16px !important;
-            background: #fff !important;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08) !important;
-            transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.32s !important;
-            height: auto !important;
-        }
-        .bp-card:hover {
-            transform: translateY(-6px) scale(1.013) !important;
-            box-shadow: 0 22px 50px rgba(0,0,0,0.13) !important;
-            z-index: 2;
-        }
-        /* 이미지: 고정 비율, 꽉 채움 */
-        .bp-card > img {
-            width: 100% !important;
-            aspect-ratio: 3 / 4 !important;
-            object-fit: cover !important;
-            object-position: center top !important;
-            background: #f3f3f3 !important;
-            display: block !important;
-            flex-shrink: 0 !important;
-            transition: transform 0.55s ease !important;
-        }
-        .bp-card:hover > img { transform: scale(1.05) !important; }
-
-        /* 카드 번호/NEW 배지는 이미지 위에 absolute */
-        .bp-num {
-            position: absolute !important;
-            top: 12px !important; left: 12px !important;
-            z-index: 3 !important;
-        }
-        .bp-new {
-            position: absolute !important;
-            top: 12px !important; right: 12px !important;
-            z-index: 3 !important;
-        }
-
-        /* 정보 패널: 상시 노출, 이미지 아래에 붙음 */
-        .bp-info {
-            position: static !important;    /* absolute 덮어쓰기 */
-            transform: none !important;     /* translateY(100%) 제거 */
-            background: #fff !important;
-            border-top: 1px solid #f0f0f0 !important;
-            padding: 14px 14px 16px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 5px !important;
-            flex-shrink: 0 !important;
-        }
-        .bp-info-text {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 3px !important;
-        }
-        /* 텍스트 색상: 흰색 → 어두운색 */
-        .bp-name { color: #111 !important; font-size: 0.87rem !important; font-weight: 700 !important; }
-        .bp-price { color: #111 !important; font-size: 0.87rem !important; font-weight: 700 !important; margin-top: 2px !important; }
-        /* 브랜드/컬러 서브텍스트 */
-        .bp-brand { font-size: 0.64rem !important; font-weight: 700 !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; color: #bbb !important; }
-        .bp-color { font-size: 0.72rem !important; color: #999 !important; }
-        /* 버튼: full-width, 카드 패널 내부에 자연스럽게 */
-        .bp-cart {
-            margin-top: 8px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 100% !important;
-            background: #111 !important;
-            color: #fff !important;
-            border: none !important;
-            border-radius: 8px !important;
-            padding: 9px 14px !important;
-            font-size: 0.73rem !important;
-            font-weight: 700 !important;
-            cursor: pointer !important;
-            letter-spacing: 0.02em !important;
-            transition: background 0.2s !important;
-            flex-shrink: 0 !important;
-        }
-        .bp-cart:hover { background: #333 !important; }
-
-        /* ============================================================
-           FIX 2 ─ 패션조합: TOP/BOTTOM 이미지 상/하 분리, blank 없음
-           ============================================================ */
-        .outfit-imgs {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
-            grid-template-rows: unset !important;
-            height: auto !important;
-            gap: 4px !important;
-            padding: 0 !important;
-            background: #e8e8e6;
-        }
-        .outfit-img-wrap {
-            position: relative;
-            overflow: hidden;
-            flex: unset !important;
-            flex-direction: unset !important;
-            align-items: unset !important;
-            min-height: unset !important;
-            gap: unset !important;
-        }
-        .outfit-img-wrap img {
-            width: 100% !important;
-            aspect-ratio: 2 / 3 !important;
-            object-fit: cover !important;
-            object-position: center top !important;
-            background: #f7f7f7 !important;
-            border-radius: 0 !important;
-            display: block !important;
-            transition: transform 0.55s ease;
-        }
-        .outfit-set:hover .outfit-img-wrap img { transform: scale(1.05); }
-        /* outfit-set 전체 높이 자동 확장, overflow 정상화 */
-        .outfit-set {
-            overflow: hidden !important;
-        }
-
-        /* ============================================================
-           FIX 3 ─ 트렌드 섹션: 단일 이미지 + 클릭 팝업
-           ============================================================ */
-
-        /* 단일 이미지 래퍼 */
-        .trend-single-img {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-        }
-        .trend-single-img img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .trend-single-img:hover img {
-            transform: scale(1.04);
-        }
-        /* 하단 그라디언트 오버레이 */
-        .trend-single-overlay {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 40px 36px 28px;
-            background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.28) 65%, transparent 100%);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            transition: padding 0.3s;
-        }
-        .trend-single-img:hover .trend-single-overlay {
-            padding-bottom: 34px;
-        }
-        .trend-single-chips {
-            display: flex;
-            gap: 7px;
-            margin-bottom: 4px;
-        }
-        .trend-chip-dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(255,255,255,0.4);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-        }
-        .trend-single-label {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            line-height: 1.2;
-        }
-        .trend-single-hint {
-            font-size: 12px;
-            opacity: 0.65;
-            letter-spacing: 0.04em;
-            transition: opacity 0.2s;
-        }
-        .trend-single-img:hover .trend-single-hint {
-            opacity: 1;
-        }
-
-        /* ── 컬러 트렌드 팝업 ── */
-        #color-trend-popup-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(6px);
-            z-index: 9000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        #color-trend-popup-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .color-trend-popup {
-            position: relative;
-            background: #fff;
-            border-radius: 24px;
-            overflow: hidden;
-            display: flex;
-            max-width: 860px;
-            width: 92vw;
-            max-height: 90vh;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.28);
-            transform: translateY(24px) scale(0.97);
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        #color-trend-popup-overlay.active .color-trend-popup {
-            transform: translateY(0) scale(1);
-        }
-        .ctpopup-close {
-            position: absolute;
-            top: 16px; right: 16px;
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.12);
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 10;
-            transition: background 0.2s;
-        }
-        .ctpopup-close:hover { background: rgba(0,0,0,0.28); }
-        .ctpopup-img-col {
-            flex: 0 0 48%;
-            position: relative;
-            overflow: hidden;
-        }
-        .ctpopup-img-col img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .ctpopup-info-col {
-            flex: 1;
-            padding: 40px 36px 36px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .ctpopup-season-badge {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1.5px solid;
-            align-self: flex-start;
-        }
-        .ctpopup-title {
-            font-size: 26px;
-            font-weight: 800;
-            line-height: 1.2;
-            color: #111;
-            margin: 0;
-        }
-        .ctpopup-desc {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.7;
-            margin: 0;
-        }
-        .ctpopup-palette {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .ctpopup-swatch {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        .ctpopup-swatch-dot {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            border: 2px solid rgba(0,0,0,0.1);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-        .ctpopup-swatch-name {
-            font-size: 10px;
-            color: #888;
-            letter-spacing: 0.04em;
-            text-align: center;
-            max-width: 72px;
-            line-height: 1.2;
-        }
-        .ctpopup-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .ctpopup-tag {
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: #f5f5f5;
-            color: #444;
-            border: 1px solid #e8e8e8;
-        }
-        .ctpopup-keywords {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .ctpopup-kw-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            font-size: 13px;
-            color: #333;
-        }
-        .ctpopup-kw-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .ctpopup-cta {
-            margin-top: auto;
-            padding: 14px 24px;
-            border-radius: 12px;
-            border: none;
-            background: #111;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
-            align-self: stretch;
-            text-align: center;
-        }
-        .ctpopup-cta:hover {
-            background: #333;
-            transform: translateY(-1px);
-        }
-    </style>
 </head>
 <body>
-
 <div id="micro-overlay"></div>
 <div class="snowman-throw" id="snowmanEmoji">⛄</div>
 
+<!-- 컬러 트렌드 팝업 -->
 <div id="color-trend-popup-overlay" onclick="closeColorTrendPopup(event)">
     <div class="color-trend-popup" id="colorTrendPopup">
         <button class="ctpopup-close" onclick="closeColorTrendPopup({forceClose:true})">✕</button>
@@ -398,102 +33,56 @@
     </div>
 </div>
 
-<div id="header-outer">
-    <div id="header">
-        <a href="#wrap">
-            <div id="logo">
-                <img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit 로고">
-            </div>
-        </a>
-        <nav>
-            <ul>
-                <li><a th:href="@{/AIStyler}">AI진단</a></li>
-                <li><a th:href="@{/store}">스토어</a></li>
-                <li><a th:href="@{/Community}">커뮤니티</a></li>
-                <li><a th:href="@{/MyPalette}">내 팔레트</a></li>
-            </ul>
-        </nav>
-        <div id="header-search-inline">
-            <div id="header-search-box">
-                <svg id="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                <input type="search" id="header-search-input" placeholder="Mens Fashion Solution" autocomplete="off">
-            </div>
-        </div>
-
-        <div class="header_icon">
-            <img th:src="@{/img/Main/icon_profile.png}" alt="프로필">
-            <div class="header_icon_hover1">
-                <nav>
-                    <ul>
-                        <th:block th:unless="${session.loginMember != null}">
-                            <li><a th:href="@{/login}">로그인</a></li>
-                            <li><a th:href="@{/join}">회원가입</a></li>
-                            <li><a th:href="@{/find}">ID 찾기</a></li>
-                        </th:block>
-                        <th:block th:if="${session.loginMember != null}">
-                            <li style="padding: 11px 18px; font-weight: bold; color: #111;">
-                                <span th:text="${session.loginMember.name} + '님 환영해요!'">홍길동님 환영해요!</span>
-                            </li>
-                            <li><a th:href="@{/mypalette}">마이페이지</a></li>
-                            <li><a th:href="@{/logout}">로그아웃</a></li>
-                        </th:block>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-
-        <div class="header_icon">
-            <img th:src="@{/img/Main/icon_cart (1).png}" alt="장바구니">
-            <div class="header_icon_hover2">
-                <nav><ul>
-                    <li><a th:href="@{/Cart}">장바구니</a></li>
-                    <li><a th:href="@{/OrderInfo}">주문내역</a></li>
-                    <li><a th:href="@{/store}">스토어</a></li>
-                </ul></nav>
-            </div>
-        </div>
-    </div>
-</div>
+<header th:replace="~{fragments/header :: header}"></header>
 
 <div id="wrap">
 
-    <div id="banner">
-        <a th:href="@{/store}">
-            <img class="slide active" th:src="@{/img/Main/banner2.png}" alt="배너 이미지 1">
-        </a>
-        <a th:href="@{/AIStyler}">
-            <img class="slide" th:src="@{/img/Main/banner3.png}" alt="배너 이미지 2">
-        </a>
-        <a th:href="@{/AIStyler}">
-            <img class="slide" th:src="@{/img/Main/banner1.png}" alt="배너 이미지 3">
-        </a>
-        <div id="banner-btn-area">
-            <button id="banner-learn-btn" onclick="location.href='/AIStyler'">더 알아보기</button>
-        </div>
-        <div id="banner-dots">
-            <div class="banner-dot active" data-index="0"></div>
-            <div class="banner-dot" data-index="1"></div>
-            <div class="banner-dot" data-index="2"></div>
+    <!-- ══════════════════════════════════════════
+         BANNER
+    ══════════════════════════════════════════ -->
+    <div id="banner-outer">
+        <div id="banner">
+            <a th:href="@{/store}">
+                <img class="slide active" th:src="@{/img/Main/banner2.png}" alt="배너 이미지 1">
+            </a>
+            <a th:href="@{/AIStyler}">
+                <img class="slide" th:src="@{/img/Main/banner3.png}" alt="배너 이미지 2">
+            </a>
+            <a th:href="@{/AIStyler}">
+                <img class="slide" th:src="@{/img/Main/banner1.png}" alt="배너 이미지 3">
+            </a>
+            <div id="banner-btn-area">
+                <button id="banner-learn-btn" onclick="location.href='/AIStyler'">더 알아보기</button>
+            </div>
+            <div id="banner-dots">
+                <div class="banner-dot active" data-index="0"></div>
+                <div class="banner-dot" data-index="1"></div>
+                <div class="banner-dot" data-index="2"></div>
+            </div>
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════
+         TAB 내비게이션
+    ══════════════════════════════════════════ -->
     <div id="search">
         <p>퍼스널 컬러로 탐색하기</p>
         <nav>
             <ul id="tab_button">
-                <li data-tab="neutral"      class="active"><span class="tab-emoji">🌫️</span>#뉴트럴컬러</li>
-                <li data-tab="spring_warm">              <span class="tab-emoji">🌸</span># 스프링 웜</li>
-                <li data-tab="summer_cool">              <span class="tab-emoji">🌊</span># 써머 쿨</li>
-                <li data-tab="autumn_warm">              <span class="tab-emoji">🍂</span># 어텀 웜</li>
-                <li data-tab="winter_cool">              <span class="tab-emoji">❄️</span># 윈터 쿨</li>
+                <li data-tab="neutral"     class="active"><span class="tab-emoji">🌫️</span>#뉴트럴컬러</li>
+                <li data-tab="spring_warm">               <span class="tab-emoji">🌸</span># 스프링 웜</li>
+                <li data-tab="summer_cool">               <span class="tab-emoji">🌊</span># 써머 쿨</li>
+                <li data-tab="autumn_warm">               <span class="tab-emoji">🍂</span># 어텀 웜</li>
+                <li data-tab="winter_cool">               <span class="tab-emoji">❄️</span># 윈터 쿨</li>
             </ul>
         </nav>
     </div>
 
     <div id="content_area">
 
+        <!-- ══════════════════════════════════════
+             ① 뉴트럴
+        ══════════════════════════════════════ -->
         <div id="neutral" data-tab-content="neutral" class="content active">
 
             <div class="pc-intro-section pc-neutral">
@@ -521,73 +110,43 @@
                     </div>
                 </div>
             </div>
+
+            <!-- BEST PICKS — 뉴트럴 -->
             <div class="best-products-section">
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">뉴트럴 컬러</h2></div>
+                        <div class="bp-title-row">
+                            <span class="bp-count" th:text="${#temporals.format(#temporals.createNow(), 'MMMM')}">April</span>
+                            <h2 class="section-main-title">뉴트럴 컬러</h2>
+                        </div>
                         <p class="section-sub-title">모든 색을 소화하는 당신에게</p>
                     </div>
-                    <div class="bp-header-right">
-                        <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
-                    </div>
+                    <div class="bp-header-right"><a th:href="@{/store}" class="bp-view-all">전체보기 →</a></div>
                 </div>
                 <div class="bp-grid">
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/hoodie/h700_sky.jpg}" alt="">
-                        <span class="bp-num">01</span>
-                        <span class="bp-new">NEW</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Basics</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">H200 Hoodie — Cyan</span>
-                                <span class="bp-color">· Aqua Cyan</span>
-                                <span class="bp-price">₩89,000</span>
+                    <th:block th:each="p, stat : ${bestNeutral}">
+                        <div class="bp-card" th:onclick="|location.href='/itemDetail?id=${p.id}'|" style="cursor:pointer;">
+                            <img th:src="${p.imageUrl}" th:alt="${p.name}">
+                            <span class="bp-num" th:text="${'0' + stat.count}">01</span>
+                            <span class="bp-new" th:if="${stat.first}">NEW</span>
+                            <div class="bp-info">
+                                <div class="bp-brand" th:text="${p.category}">OnFit</div>
+                                <div class="bp-info-text">
+                                    <span class="bp-name" th:text="${p.name}">상품명</span>
+                                    <span class="bp-color" th:text="'· ' + ${p.color}">· Color</span>
+                                    <span class="bp-price" th:text="'₩' + ${#numbers.formatInteger(p.price, 1, 'COMMA')}">₩0</span>
+                                </div>
+                                <button class="bp-cart"
+                                        th:data-product-id="${p.id}"
+                                        th:data-product-name="${p.name}"
+                                        th:data-available-sizes="${p.availableSizes}"
+                                        onclick="event.stopPropagation(); openCartModal(this)">장바구니 담기</button>
                             </div>
-                            <button class="bp-cart">장바구니 담기</button>
                         </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/shirt/sc_mint.jpg}" alt="">
-                        <span class="bp-num">02</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Standard</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">이너체크 셔츠</span>
-                                <span class="bp-color">· Mint Check</span>
-                                <span class="bp-price">₩33,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/jacket/fit_j200_blue.jpg}" alt="">
-                        <span class="bp-num">03</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">Fit Studio</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">아이스 블루 자켓</span>
-                                <span class="bp-color">· Ice Blue</span>
-                                <span class="bp-price">₩85,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/jacket/fit_j100_white.jpg}" alt="">
-                        <span class="bp-num">04</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">Fit Studio</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">미니멀 투포켓 집업 자켓</span>
-                                <span class="bp-color">· Off White</span>
-                                <span class="bp-price">₩79,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
+                    </th:block>
+                    <!-- DB에 데이터가 없을 때 안내 -->
+                    <div th:if="${#lists.isEmpty(bestNeutral)}" class="bp-empty">등록된 상품이 없습니다.</div>
                 </div>
                 <div id="one_button_wrap">
                     <button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button>
@@ -595,114 +154,75 @@
                 </div>
             </div>
 
+            <!-- OUTFIT — 뉴트럴 -->
             <div class="style-section">
                 <p class="section-label">뉴트럴 스타일</p>
                 <h2 class="section-main-title">추천하는 패션조합</h2>
                 <p class="section-sub-title">뉴트럴한 당신을 위해</p>
                 <div class="outfit-grid">
-                    <div class="outfit-set">
-                        <div class="outfit-num">01</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/jacket/j700_green.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p700_green.png}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Outer</div>
-                                    <div class="outfit-item-name">기능성 러너자켓</div>
-                                    <div class="outfit-item-price">₩49,000</div>
+                    <!--
+                        outfit 컬럼 규칙: "neutral_set01_top", "neutral_set01_bottom",
+                                          "neutral_set02_top", "neutral_set02_bottom", ...
+                        findTop6ByOutfitStartingWith("neutral") → 6개 반환
+                        짝수 인덱스(0,2,4) = TOP / 홀수 인덱스(1,3,5) = BOTTOM
+                    -->
+                    <th:block th:each="i : ${#numbers.sequence(0, 2)}">
+                        <th:block th:if="${outfitNeutral.size() > i * 2 + 1}">
+                            <div class="outfit-set">
+                                <div class="outfit-num" th:text="${'0' + (i + 1)}">01</div>
+                                <div class="outfit-imgs">
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitNeutral[__${i * 2}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">TOP</span>
+                                        <img th:src="${outfitNeutral[__${i * 2}__].imageUrl}"
+                                             th:alt="${outfitNeutral[__${i * 2}__].name}">
+                                    </div>
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitNeutral[__${i * 2 + 1}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">BOTTOM</span>
+                                        <img th:src="${outfitNeutral[__${i * 2 + 1}__].imageUrl}"
+                                             th:alt="${outfitNeutral[__${i * 2 + 1}__].name}">
+                                    </div>
                                 </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">기능성 러너팬츠</div>
-                                    <div class="outfit-item-price">₩29,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">02</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/shirt/sn_white.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p300_black.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Top</div>
-                                    <div class="outfit-item-name">아우터 탱크탑</div>
-                                    <div class="outfit-item-price">₩19,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">하프 팬츠</div>
-                                    <div class="outfit-item-price">₩19,000</div>
+                                <div class="outfit-info">
+                                    <div class="outfit-pair">
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Top</div>
+                                            <div class="outfit-item-name" th:text="${outfitNeutral[__${i * 2}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitNeutral[__${i * 2}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                        <div class="outfit-sep"></div>
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Bottom</div>
+                                            <div class="outfit-item-name" th:text="${outfitNeutral[__${i * 2 + 1}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitNeutral[__${i * 2 + 1}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                    </div>
+                                    <div class="outfit-actions">
+                                        <button class="outfit-add"
+                                                th:data-top-id="${outfitNeutral[__${i * 2}__].id}"
+                                                th:data-bottom-id="${outfitNeutral[__${i * 2 + 1}__].id}"
+                                                th:data-top-sizes="${outfitNeutral[__${i * 2}__].availableSizes}"
+                                                th:data-bottom-sizes="${outfitNeutral[__${i * 2 + 1}__].availableSizes}"
+                                                onclick="openOutfitCartModal(this)">
+                                            장바구니 담기
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">03</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/jacket/fit_j200_white.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p900_denim.png}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Jacket</div>
-                                    <div class="outfit-item-name">유틸리티 자켓</div>
-                                    <div class="outfit-item-price">₩85,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">숏 데님 팬츠</div>
-                                    <div class="outfit-item-price">₩29,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
+                        </th:block>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(outfitNeutral)}" class="bp-empty">등록된 아웃핏이 없습니다.</div>
                 </div>
                 <div id="banner_button_wrap" style="margin-top:40px;display:flex;justify-content:center;gap:12px;">
-                    <button id="banner_button_left" onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button id="banner_button_left"  onclick="location.href='/AIStyler'">AI로 입어보기</button>
                     <button id="banner_button_right" onclick="location.href='/store'">스토어 더보기</button>
                 </div>
             </div>
 
+            <!-- 트렌드 섹션 -->
             <div class="neutral-trend-section">
                 <div class="neutral-trend-header">
                     <h2>이번 시즌의<br>뉴트럴 트렌드</h2>
@@ -711,13 +231,19 @@
                 <div class="trend-single-img" onclick="openColorTrendPopup('neutral')">
                     <img th:src="@{/img/Main/ss.png}" alt="뉴트럴 트렌드">
                     <div class="trend-single-overlay">
-                        <div class="trend-single-chips"><div class="trend-chip-dot" style="background:#555"></div><div class="trend-chip-dot" style="background:#888"></div><div class="trend-chip-dot" style="background:#ccc"></div><div class="trend-chip-dot" style="background:#f0f0f0"></div></div>
+                        <div class="trend-single-chips">
+                            <div class="trend-chip-dot" style="background:#555"></div>
+                            <div class="trend-chip-dot" style="background:#888"></div>
+                            <div class="trend-chip-dot" style="background:#ccc"></div>
+                            <div class="trend-chip-dot" style="background:#f0f0f0"></div>
+                        </div>
                         <span class="trend-single-label">이번 시즌 뉴트럴 트렌드</span>
                         <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
                     </div>
                 </div>
             </div>
 
+            <!-- 시즌 컬러 -->
             <div class="seasonal-colors-section" id="seasonalColorsSection">
                 <div class="season-meta">
                     <div class="season-month-label">THIS MONTH</div>
@@ -741,272 +267,212 @@
                     </div>
                     <div class="fitbti-right">
                         <div class="bti-type-pills">
-                            <span class="bti-pill">미니멀리스트</span>
-                            <span class="bti-pill">스트리터</span>
-                            <span class="bti-pill">클래식맨</span>
-                            <span class="bti-pill">보헤미안</span>
+                            <span class="bti-pill">미니멀리스트</span><span class="bti-pill">스트리터</span>
+                            <span class="bti-pill">클래식맨</span><span class="bti-pill">보헤미안</span>
                         </div>
                         <span class="fitbti-btn">검사하기 →</span>
                     </div>
                 </div>
             </a>
-
-        </div><div id="spring_warm" data-tab-content="spring_warm" class="content">
-        <div class="pc-intro-section pc-spring-warm">
-            <div class="pc-intro-inner">
-                <div class="pc-intro-text">
-                    <p class="pc-intro-label">PERSONAL COLOR</p>
-                    <h2 class="pc-intro-title">스프링 웜톤이란?</h2>
-                    <p class="pc-intro-desc">스프링 웜톤은 피부에 노란 기운이 돌고, 봄처럼 밝고 화사한 인상을 가진 타입입니다. 코랄, 살구, 복숭아, 연한 아이보리 등 따뜻하면서도 밝고 선명한 색상이 잘 어울립니다. 어둡거나 차가운 색상보다 가볍고 생동감 있는 컬러로 코디하면 피부가 더욱 화사하게 빛납니다.</p>
-                    <div class="pc-intro-tips">
-                        <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>코랄·살구·피치 계열을 메인으로 활용하세요</span></div>
-                        <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>아이보리·연한 크림을 베이스로 가볍게 매치하세요</span></div>
-                        <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>어둡거나 차가운 색상은 피하세요</span></div>
-                    </div>
-                </div>
-                <div class="pc-intro-palette">
-                    <p class="pc-palette-label">대표 컬러</p>
-                    <div class="pc-color-circles">
-                        <div class="pc-circle-wrap"><div class="pc-circle" style="background:#f48fb1;"></div><span>Pink</span></div>
-                        <div class="pc-circle-wrap"><div class="pc-circle" style="background:#ff8a65;"></div><span>Coral</span></div>
-                        <div class="pc-circle-wrap"><div class="pc-circle" style="background:#ffab91;"></div><span>Apricot</span></div>
-                        <div class="pc-circle-wrap"><div class="pc-circle" style="background:#ffe0b2;border:1px solid #ecc;"></div><span>Peach</span></div>
-                        <div class="pc-circle-wrap"><div class="pc-circle" style="background:#fff8e1;border:1px solid #eed;"></div><span>Ivory</span></div>
-                        <div class="pc-circle-wrap"><div class="pc-circle" style="background:#f8bbd0;"></div><span>Blush</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="best-products-section">
-            <div class="bp-header">
-                <div class="bp-header-left">
-                    <p class="section-label">BEST PICKS</p>
-                    <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">스프링 웜</h2></div>
-                    <p class="section-sub-title">가볍게, 화사하게</p>
-                </div>
-                <div class="bp-header-right">
-                    <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
-                </div>
-            </div>
-            <div class="bp-grid">
-                <div class="bp-card">
-                    <img th:src="@{/img/product/jacket/fit_j200_blue.jpg}" alt="">
-                    <span class="bp-num">01</span>
-                    <span class="bp-new">NEW</span>
-                    <div class="bp-info">
-                        <div class="bp-brand">Fit Studio</div>
-                        <div class="bp-info-text">
-                            <span class="bp-name">S300 Shirt — Ivory</span>
-                            <span class="bp-color">· Ivory White</span>
-                            <span class="bp-price">₩79,000</span>
-                        </div>
-                        <button class="bp-cart">장바구니 담기</button>
-                    </div>
-                </div>
-                <div class="bp-card">
-                    <img th:src="@{/img/product/shirt/s600_green.jpg}" alt="">
-                    <span class="bp-num">02</span>
-
-                    <div class="bp-info">
-                        <div class="bp-brand">OnFit Premium</div>
-                        <div class="bp-info-text">
-                            <span class="bp-name">Fit J100 — Brown</span>
-                            <span class="bp-color">· Warm Brown</span>
-                            <span class="bp-price">₩189,000</span>
-                        </div>
-                        <button class="bp-cart">장바구니 담기</button>
-                    </div>
-                </div>
-                <div class="bp-card">
-                    <img th:src="@{/img/product/pants/p900_light.png}" alt="">
-                    <span class="bp-num">03</span>
-
-                    <div class="bp-info">
-                        <div class="bp-brand">OnFit Basics</div>
-                        <div class="bp-info-text">
-                            <span class="bp-name">C450 — Ivory Green</span>
-                            <span class="bp-color">· Ivory Green</span>
-                            <span class="bp-price">₩49,000</span>
-                        </div>
-                        <button class="bp-cart">장바구니 담기</button>
-                    </div>
-                </div>
-                <div class="bp-card">
-                    <img th:src="@{/img/product/pants/p300_mint.jpg}" alt="">
-                    <span class="bp-num">04</span>
-                    <div class="bp-info">
-                        <div class="bp-brand">OnFit Basics</div>
-                        <div class="bp-info-text">
-                            <span class="bp-name">H600 Hoodie — Orange</span>
-                            <span class="bp-color">· Peach Orange</span>
-                            <span class="bp-price">₩99,000</span>
-                        </div>
-                        <button class="bp-cart">장바구니 담기</button>
-                    </div>
-                </div>
-            </div>
-            <div id="one_button_wrap_sw"><button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button><button class="one_button" onclick="location.href='/store'">스토어 더보기</button></div>
         </div>
 
-        <div class="style-section">
-            <p class="section-label">스프링 스타일</p>
-            <h2 class="section-main-title">추천하는 패션조합</h2>
-            <p class="section-sub-title">화사한 당신을 위해</p>
-            <div class="outfit-grid">
-                <div class="outfit-set">
-                    <div class="outfit-num">01</div>
-                    <div class="outfit-imgs">
-                        <div class="outfit-img-wrap">
-                            <span class="outfit-part">TOP</span>
-                            <img th:src="@{/img/product/shirt/s200_yellow.jpg}" alt="">
-                        </div>
-                        <div class="outfit-img-wrap">
-                            <span class="outfit-part">BOTTOM</span>
-                            <img th:src="@{/img/product/pants/p900_light.png}" alt="">
-                        </div>
-                    </div>
-                    <div class="outfit-info">
-                        <div class="outfit-pair">
-                            <div class="outfit-item">
-                                <div class="outfit-item-label">Top</div>
-                                <div class="outfit-item-name">S300 — Ivory</div>
-                                <div class="outfit-item-price">₩79,000</div>
-                            </div>
-                            <div class="outfit-sep"></div>
-                            <div class="outfit-item">
-                                <div class="outfit-item-label">Bottom</div>
-                                <div class="outfit-item-name">라이트 팬츠</div>
-                                <div class="outfit-item-price">₩79,000</div>
-                            </div>
-                        </div>
-                        <div class="outfit-actions">
-                            <button class="outfit-add">장바구니 담기</button>
-
+        <!-- ══════════════════════════════════════
+             ② 스프링 웜
+        ══════════════════════════════════════ -->
+        <div id="spring_warm" data-tab-content="spring_warm" class="content">
+            <div class="pc-intro-section pc-spring-warm">
+                <div class="pc-intro-inner">
+                    <div class="pc-intro-text">
+                        <p class="pc-intro-label">PERSONAL COLOR</p>
+                        <h2 class="pc-intro-title">스프링 웜톤이란?</h2>
+                        <p class="pc-intro-desc">스프링 웜톤은 피부에 노란 기운이 돌고, 봄처럼 밝고 화사한 인상을 가진 타입입니다. 코랄, 살구, 복숭아, 연한 아이보리 등 따뜻하면서도 밝고 선명한 색상이 잘 어울립니다.</p>
+                        <div class="pc-intro-tips">
+                            <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>코랄·살구·피치 계열을 메인으로 활용하세요</span></div>
+                            <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>아이보리·연한 크림을 베이스로 가볍게 매치하세요</span></div>
+                            <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>어둡거나 차가운 색상은 피하세요</span></div>
                         </div>
                     </div>
-                </div>
-                <div class="outfit-set">
-                    <div class="outfit-num">02</div>
-                    <div class="outfit-imgs">
-                        <div class="outfit-img-wrap">
-                            <span class="outfit-part">TOP</span>
-                            <img th:src="@{/img/product/jacket/fit_j100_brown.jpg}" alt="">
-                        </div>
-                        <div class="outfit-img-wrap">
-                            <span class="outfit-part">BOTTOM</span>
-                            <img th:src="@{/img/product/pants/p600_beige.jpg}" alt="">
-                        </div>
-                    </div>
-                    <div class="outfit-info">
-                        <div class="outfit-pair">
-                            <div class="outfit-item">
-                                <div class="outfit-item-label">Jacket</div>
-                                <div class="outfit-item-name">J100 — Brown</div>
-                                <div class="outfit-item-price">₩189,000</div>
-                            </div>
-                            <div class="outfit-sep"></div>
-                            <div class="outfit-item">
-                                <div class="outfit-item-label">Bottom</div>
-                                <div class="outfit-item-name">베이지 팬츠</div>
-                                <div class="outfit-item-price">₩99,000</div>
-                            </div>
-                        </div>
-                        <div class="outfit-actions">
-                            <button class="outfit-add">장바구니 담기</button>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="outfit-set">
-                    <div class="outfit-num">03</div>
-                    <div class="outfit-imgs">
-                        <div class="outfit-img-wrap">
-                            <span class="outfit-part">TOP</span>
-                            <img th:src="@{/img/product/hoodie/h700_coral.jpg}" alt="">
-                        </div>
-                        <div class="outfit-img-wrap">
-                            <span class="outfit-part">BOTTOM</span>
-                            <img th:src="@{/img/product/pants/p300_mint.jpg}" alt="">
-                        </div>
-                    </div>
-                    <div class="outfit-info">
-                        <div class="outfit-pair">
-                            <div class="outfit-item">
-                                <div class="outfit-item-label">Hoodie</div>
-                                <div class="outfit-item-name">H600 — Orange</div>
-                                <div class="outfit-item-price">₩99,000</div>
-                            </div>
-                            <div class="outfit-sep"></div>
-                            <div class="outfit-item">
-                                <div class="outfit-item-label">Bottom</div>
-                                <div class="outfit-item-name">민트 팬츠</div>
-                                <div class="outfit-item-price">₩49,000</div>
-                            </div>
-                        </div>
-                        <div class="outfit-actions">
-                            <button class="outfit-add">장바구니 담기</button>
-
+                    <div class="pc-intro-palette">
+                        <p class="pc-palette-label">대표 컬러</p>
+                        <div class="pc-color-circles">
+                            <div class="pc-circle-wrap"><div class="pc-circle" style="background:#f48fb1;"></div><span>Pink</span></div>
+                            <div class="pc-circle-wrap"><div class="pc-circle" style="background:#ff8a65;"></div><span>Coral</span></div>
+                            <div class="pc-circle-wrap"><div class="pc-circle" style="background:#ffab91;"></div><span>Apricot</span></div>
+                            <div class="pc-circle-wrap"><div class="pc-circle" style="background:#ffe0b2;border:1px solid #ecc;"></div><span>Peach</span></div>
+                            <div class="pc-circle-wrap"><div class="pc-circle" style="background:#fff8e1;border:1px solid #eed;"></div><span>Ivory</span></div>
+                            <div class="pc-circle-wrap"><div class="pc-circle" style="background:#f8bbd0;"></div><span>Blush</span></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="banner_button_wrap_sw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_sw" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_sw" onclick="location.href='/store'">스토어 더보기</button></div>
+
+            <!-- BEST PICKS — 스프링 웜 -->
+            <div class="best-products-section">
+                <div class="bp-header">
+                    <div class="bp-header-left">
+                        <p class="section-label">BEST PICKS</p>
+                        <div class="bp-title-row">
+                            <span class="bp-count" th:text="${#temporals.format(#temporals.createNow(), 'MMMM')}">April</span>
+                            <h2 class="section-main-title">스프링 웜</h2>
+                        </div>
+                        <p class="section-sub-title">가볍게, 화사하게</p>
+                    </div>
+                    <div class="bp-header-right"><a th:href="@{/store}" class="bp-view-all">전체보기 →</a></div>
+                </div>
+                <div class="bp-grid">
+                    <th:block th:each="p, stat : ${bestSpringWarm}">
+                        <div class="bp-card" th:onclick="|location.href='/itemDetail?id=${p.id}'|" style="cursor:pointer;">
+                            <img th:src="${p.imageUrl}" th:alt="${p.name}">
+                            <span class="bp-num" th:text="${'0' + stat.count}">01</span>
+                            <span class="bp-new" th:if="${stat.first}">NEW</span>
+                            <div class="bp-info">
+                                <div class="bp-brand" th:text="${p.category}">OnFit</div>
+                                <div class="bp-info-text">
+                                    <span class="bp-name" th:text="${p.name}">상품명</span>
+                                    <span class="bp-color" th:text="'· ' + ${p.color}">· Color</span>
+                                    <span class="bp-price" th:text="'₩' + ${#numbers.formatInteger(p.price, 1, 'COMMA')}">₩0</span>
+                                </div>
+                                <button class="bp-cart"
+                                        th:data-product-id="${p.id}"
+                                        th:data-product-name="${p.name}"
+                                        th:data-available-sizes="${p.availableSizes}"
+                                        onclick="event.stopPropagation(); openCartModal(this)">장바구니 담기</button>
+                            </div>
+                        </div>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(bestSpringWarm)}" class="bp-empty">등록된 상품이 없습니다.</div>
+                </div>
+                <div id="one_button_wrap_sw">
+                    <button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button class="one_button" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
+            </div>
+
+            <!-- OUTFIT — 스프링 웜 -->
+            <div class="style-section">
+                <p class="section-label">스프링 스타일</p>
+                <h2 class="section-main-title">추천하는 패션조합</h2>
+                <p class="section-sub-title">화사한 당신을 위해</p>
+                <div class="outfit-grid">
+                    <th:block th:each="i : ${#numbers.sequence(0, 2)}">
+                        <th:block th:if="${outfitSpringWarm.size() > i * 2 + 1}">
+                            <div class="outfit-set">
+                                <div class="outfit-num" th:text="${'0' + (i + 1)}">01</div>
+                                <div class="outfit-imgs">
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitSpringWarm[__${i * 2}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">TOP</span>
+                                        <img th:src="${outfitSpringWarm[__${i * 2}__].imageUrl}"
+                                             th:alt="${outfitSpringWarm[__${i * 2}__].name}">
+                                    </div>
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitSpringWarm[__${i * 2 + 1}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">BOTTOM</span>
+                                        <img th:src="${outfitSpringWarm[__${i * 2 + 1}__].imageUrl}"
+                                             th:alt="${outfitSpringWarm[__${i * 2 + 1}__].name}">
+                                    </div>
+                                </div>
+                                <div class="outfit-info">
+                                    <div class="outfit-pair">
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Top</div>
+                                            <div class="outfit-item-name" th:text="${outfitSpringWarm[__${i * 2}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitSpringWarm[__${i * 2}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                        <div class="outfit-sep"></div>
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Bottom</div>
+                                            <div class="outfit-item-name" th:text="${outfitSpringWarm[__${i * 2 + 1}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitSpringWarm[__${i * 2 + 1}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                    </div>
+                                    <div class="outfit-actions">
+                                        <button class="outfit-add"
+                                                th:data-top-id="${outfitSpringWarm[__${i * 2}__].id}"
+                                                th:data-bottom-id="${outfitSpringWarm[__${i * 2 + 1}__].id}"
+                                                th:data-top-sizes="${outfitSpringWarm[__${i * 2}__].availableSizes}"
+                                                th:data-bottom-sizes="${outfitSpringWarm[__${i * 2 + 1}__].availableSizes}"
+                                                onclick="openOutfitCartModal(this)">
+                                            장바구니 담기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(outfitSpringWarm)}" class="bp-empty">등록된 아웃핏이 없습니다.</div>
+                </div>
+                <div id="banner_button_wrap_sw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;">
+                    <button id="banner_button_left_sw"  onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button id="banner_button_right_sw" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
+            </div>
+
+            <div class="neutral-trend-section">
+                <div class="neutral-trend-header">
+                    <h2>이번 시즌의<br>스프링 웜 트렌드</h2>
+                    <p>살구, 코랄, 아이보리를 중심으로 한 스프링.<br>따뜻하고 생기 넘치는 봄의 스타일링.</p>
+                </div>
+                <div class="trend-single-img" onclick="openColorTrendPopup('spring_warm')">
+                    <img th:src="@{/img/Main/sp_img.jpg}" alt="봄 웜 트렌드">
+                    <div class="trend-single-overlay">
+                        <div class="trend-single-chips">
+                            <div class="trend-chip-dot" style="background:#ff8a65"></div>
+                            <div class="trend-chip-dot" style="background:#ffab91"></div>
+                            <div class="trend-chip-dot" style="background:#ffe0b2"></div>
+                            <div class="trend-chip-dot" style="background:#fff8e1"></div>
+                        </div>
+                        <span class="trend-single-label">이번 시즌 스프링 웜 트렌드</span>
+                        <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seasonal-colors-section" id="seasonalColorsSW">
+                <div class="season-meta">
+                    <div class="season-month-label">THIS MONTH</div>
+                    <div class="season-month-name" id="scMonthSW"></div>
+                    <span class="season-badge" id="scBadgeSW"></span>
+                </div>
+                <div class="season-divider"></div>
+                <div class="season-palette-wrap" id="scPaletteSW"></div>
+                <div class="season-keyword-wrap">
+                    <div class="season-keyword" id="scKeywordSW"></div>
+                </div>
+            </div>
+
+            <a th:href="@{/Ask}" style="text-decoration:none;">
+                <div class="fitbti-section" style="background:linear-gradient(135deg,#fff0f5 0%,#ffe4ef 100%);border-color:#f4b8d0;">
+                    <div class="fitbti-left">
+                        <div class="fitbti-eyebrow" style="color:#c0306a;">STYLE PERSONALITY TEST</div>
+                        <div class="fitbti-title" style="color:#111;">Fit BTI</div>
+                        <div class="fitbti-subtitle" style="color:#888;">봄 웜톤의 당신에게 어울리는 스타일은?</div>
+                    </div>
+                    <div class="fitbti-right">
+                        <div class="bti-type-pills">
+                            <span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">캐주얼</span>
+                            <span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">로맨틱</span>
+                            <span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">스포티</span>
+                            <span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">아티스틱</span>
+                        </div>
+                        <span class="fitbti-btn" style="background:#d43070;color:white;">검사하기 →</span>
+                    </div>
+                </div>
+            </a>
         </div>
 
-        <div class="neutral-trend-section">
-            <div class="neutral-trend-header">
-                <h2>이번 시즌의<br>스프링 웜 트렌드</h2>
-                <p>살구, 코랄, 아이보리를 중심으로 한 스프링.<br>따뜻하고 생기 넘치는 봄의 스타일링.</p>
-            </div>
-            <div class="trend-single-img" onclick="openColorTrendPopup('spring_warm')">
-                <img th:src="@{/img/Main/sp_img.jpg}" alt="봄 웜 트렌드">
-                <div class="trend-single-overlay">
-                    <div class="trend-single-chips"><div class="trend-chip-dot" style="background:#ff8a65"></div><div class="trend-chip-dot" style="background:#ffab91"></div><div class="trend-chip-dot" style="background:#ffe0b2"></div><div class="trend-chip-dot" style="background:#fff8e1"></div></div>
-                    <span class="trend-single-label">이번 시즌 스프링 웜 트렌드</span>
-                    <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="seasonal-colors-section" id="seasonalColorsSW">
-            <div class="season-meta">
-                <div class="season-month-label">THIS MONTH</div>
-                <div class="season-month-name" id="scMonthSW"></div>
-                <span class="season-badge" id="scBadgeSW"></span>
-            </div>
-            <div class="season-divider"></div>
-            <div class="season-palette-wrap" id="scPaletteSW"></div>
-            <div class="season-keyword-wrap">
-                <div class="season-keyword" id="scKeywordSW"></div>
-                <div class="season-season-text" id="scSeasonTextSW"></div>
-            </div>
-        </div>
-
-        <a th:href="@{/Ask}" style="text-decoration:none;">
-            <div class="fitbti-section" style="background: linear-gradient(135deg, #fff0f5 0%, #ffe4ef 100%); border-color: #f4b8d0;">
-                <div class="fitbti-left">
-                    <div class="fitbti-eyebrow" style="color:#c0306a;">STYLE PERSONALITY TEST</div>
-                    <div class="fitbti-title" style="color:#111;">Fit BTI</div>
-                    <div class="fitbti-subtitle" style="color:#888;">봄 웜톤의 당신에게 어울리는 스타일은?</div>
-                </div>
-                <div class="fitbti-right">
-                    <div class="bti-type-pills">
-                        <span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">캐주얼</span><span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">로맨틱</span>
-                        <span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">스포티</span><span class="bti-pill" style="background:rgba(200,60,120,0.08);border-color:rgba(200,60,120,0.22);color:#c0306a;">아티스틱</span>
-                    </div>
-                    <span class="fitbti-btn" style="background:#d43070;color:white;">검사하기 →</span>
-                </div>
-            </div>
-        </a>
-    </div>
-
+        <!-- ══════════════════════════════════════
+             ③ 써머 쿨
+        ══════════════════════════════════════ -->
         <div id="summer_cool" data-tab-content="summer_cool" class="content">
             <div class="pc-intro-section pc-summer-cool">
                 <div class="pc-intro-inner">
                     <div class="pc-intro-text">
                         <p class="pc-intro-label">PERSONAL COLOR</p>
                         <h2 class="pc-intro-title">써머 쿨톤이란?</h2>
-                        <p class="pc-intro-desc">써머 쿨톤은 피부에 핑크·블루 기운이 돌며, 부드럽고 우아한 인상을 가진 타입입니다. 라벤더, 파우더 블루, 로즈 핑크 등 채도가 낮고 청량한 색상이 잘 어울립니다. 강렬한 원색보다 살짝 흐린 뮤트 톤을 활용하면 더욱 세련된 코디가 완성됩니다.</p>
+                        <p class="pc-intro-desc">써머 쿨톤은 피부에 핑크·블루 기운이 돌며, 부드럽고 우아한 인상을 가진 타입입니다. 라벤더, 파우더 블루, 로즈 핑크 등 채도가 낮고 청량한 색상이 잘 어울립니다.</p>
                         <div class="pc-intro-tips">
                             <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>라벤더·파우더 블루 등 뮤트 쿨톤을 활용하세요</span></div>
                             <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>화이트보다 오프화이트·라이트 그레이가 잘 어울려요</span></div>
@@ -1026,180 +492,109 @@
                     </div>
                 </div>
             </div>
+
+            <!-- BEST PICKS — 써머 쿨 -->
             <div class="best-products-section">
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">Summer Cool</h2></div>
+                        <div class="bp-title-row">
+                            <span class="bp-count" th:text="${#temporals.format(#temporals.createNow(), 'MMMM')}">April</span>
+                            <h2 class="section-main-title">Summer Cool</h2>
+                        </div>
                         <p class="section-sub-title">선명하고 시원하게</p>
                     </div>
-                    <div class="bp-header-right">
-                        <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
-                    </div>
+                    <div class="bp-header-right"><a th:href="@{/store}" class="bp-view-all">전체보기 →</a></div>
                 </div>
                 <div class="bp-grid">
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/shirt/s500_denim_short.png}" alt="">
-                        <span class="bp-num">01</span>
-                        <span class="bp-new">NEW</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Basics</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">P600 — Beige</span>
-                                <span class="bp-color">· Warm Beige</span>
-                                <span class="bp-price">₩59,000</span>
+                    <th:block th:each="p, stat : ${bestSummerCool}">
+                        <div class="bp-card" th:onclick="|location.href='/itemDetail?id=${p.id}'|" style="cursor:pointer;">
+                            <img th:src="${p.imageUrl}" th:alt="${p.name}">
+                            <span class="bp-num" th:text="${'0' + stat.count}">01</span>
+                            <span class="bp-new" th:if="${stat.first}">NEW</span>
+                            <div class="bp-info">
+                                <div class="bp-brand" th:text="${p.category}">OnFit</div>
+                                <div class="bp-info-text">
+                                    <span class="bp-name" th:text="${p.name}">상품명</span>
+                                    <span class="bp-color" th:text="'· ' + ${p.color}">· Color</span>
+                                    <span class="bp-price" th:text="'₩' + ${#numbers.formatInteger(p.price, 1, 'COMMA')}">₩0</span>
+                                </div>
+                                <button class="bp-cart"
+                                        th:data-product-id="${p.id}"
+                                        th:data-product-name="${p.name}"
+                                        th:data-available-sizes="${p.availableSizes}"
+                                        onclick="event.stopPropagation(); openCartModal(this)">장바구니 담기</button>
                             </div>
-                            <button class="bp-cart">장바구니 담기</button>
                         </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/cap/c500_blue.png}" alt="">
-                        <span class="bp-num">02</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Acc</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">C500 Cap — Blue</span>
-                                <span class="bp-color">· Marine Blue</span>
-                                <span class="bp-price">₩55,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/hoodie/h700_sky.jpg}" alt="">
-                        <span class="bp-num">03</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Basics</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">H200 Hoodie — Cyan</span>
-                                <span class="bp-color">· Aqua Cyan</span>
-                                <span class="bp-price">₩89,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/pants/p900_denim_sand.png}" alt="">
-                        <span class="bp-num">04</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Denim</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">H500 Hoodie — Khaki</span>
-                                <span class="bp-color">· Sand Khaki</span>
-                                <span class="bp-price">₩95,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(bestSummerCool)}" class="bp-empty">등록된 상품이 없습니다.</div>
                 </div>
-                <div id="one_button_wrap_sc"><button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button><button class="one_button" onclick="location.href='/store'">스토어 더보기</button></div>
+                <div id="one_button_wrap_sc">
+                    <button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button class="one_button" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
             </div>
 
+            <!-- OUTFIT — 써머 쿨 -->
             <div class="style-section">
                 <p class="section-label">SUMMER STYLE</p>
                 <h2 class="section-main-title">추천하는 패션조합</h2>
                 <p class="section-sub-title">써머 쿨톤의 당신을 위해</p>
                 <div class="outfit-grid">
-                    <div class="outfit-set">
-                        <div class="outfit-num">01</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/shirt/s450_blue.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p100_blue.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Top</div>
-                                    <div class="outfit-item-name">S500 Denim</div>
-                                    <div class="outfit-item-price">₩99,000</div>
+                    <th:block th:each="i : ${#numbers.sequence(0, 2)}">
+                        <th:block th:if="${outfitSummerCool.size() > i * 2 + 1}">
+                            <div class="outfit-set">
+                                <div class="outfit-num" th:text="${'0' + (i + 1)}">01</div>
+                                <div class="outfit-imgs">
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitSummerCool[__${i * 2}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">TOP</span>
+                                        <img th:src="${outfitSummerCool[__${i * 2}__].imageUrl}"
+                                             th:alt="${outfitSummerCool[__${i * 2}__].name}">
+                                    </div>
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitSummerCool[__${i * 2 + 1}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">BOTTOM</span>
+                                        <img th:src="${outfitSummerCool[__${i * 2 + 1}__].imageUrl}"
+                                             th:alt="${outfitSummerCool[__${i * 2 + 1}__].name}">
+                                    </div>
                                 </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">블루 팬츠</div>
-                                    <div class="outfit-item-price">₩79,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">02</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/hoodie/h200_cyan.png}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p900_denim_sand.png}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Hoodie</div>
-                                    <div class="outfit-item-name">H200 — Cyan</div>
-                                    <div class="outfit-item-price">₩89,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">샌드 데님</div>
-                                    <div class="outfit-item-price">₩95,000</div>
+                                <div class="outfit-info">
+                                    <div class="outfit-pair">
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Top</div>
+                                            <div class="outfit-item-name" th:text="${outfitSummerCool[__${i * 2}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitSummerCool[__${i * 2}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                        <div class="outfit-sep"></div>
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Bottom</div>
+                                            <div class="outfit-item-name" th:text="${outfitSummerCool[__${i * 2 + 1}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitSummerCool[__${i * 2 + 1}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                    </div>
+                                    <div class="outfit-actions">
+                                        <button class="outfit-add"
+                                                th:data-top-id="${outfitSummerCool[__${i * 2}__].id}"
+                                                th:data-bottom-id="${outfitSummerCool[__${i * 2 + 1}__].id}"
+                                                th:data-top-sizes="${outfitSummerCool[__${i * 2}__].availableSizes}"
+                                                th:data-bottom-sizes="${outfitSummerCool[__${i * 2 + 1}__].availableSizes}"
+                                                onclick="openOutfitCartModal(this)">
+                                            장바구니 담기
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">03</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/jacket/fit_j200_blue.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p100_blue.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Jacket</div>
-                                    <div class="outfit-item-name">아이스 블루 자켓</div>
-                                    <div class="outfit-item-price">₩55,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">블루 팬츠</div>
-                                    <div class="outfit-item-price">₩79,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
+                        </th:block>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(outfitSummerCool)}" class="bp-empty">등록된 아웃핏이 없습니다.</div>
                 </div>
-                <div id="banner_button_wrap_sc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_sc" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_sc" onclick="location.href='/store'">스토어 더보기</button></div>
+                <div id="banner_button_wrap_sc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;">
+                    <button id="banner_button_left_sc"  onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button id="banner_button_right_sc" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
             </div>
 
             <div class="neutral-trend-section">
@@ -1210,14 +605,19 @@
                 <div class="trend-single-img" onclick="openColorTrendPopup('summer_cool')">
                     <img th:src="@{/img/Main/s_img.jpg}" alt="써머 쿨 트렌드">
                     <div class="trend-single-overlay">
-                        <div class="trend-single-chips"><div class="trend-chip-dot" style="background:#00bcd4"></div><div class="trend-chip-dot" style="background:#80deea"></div><div class="trend-chip-dot" style="background:#b2ebf2"></div><div class="trend-chip-dot" style="background:#e0f7fa"></div></div>
+                        <div class="trend-single-chips">
+                            <div class="trend-chip-dot" style="background:#00bcd4"></div>
+                            <div class="trend-chip-dot" style="background:#80deea"></div>
+                            <div class="trend-chip-dot" style="background:#b2ebf2"></div>
+                            <div class="trend-chip-dot" style="background:#e0f7fa"></div>
+                        </div>
                         <span class="trend-single-label">이번 시즌 써머 쿨 트렌드</span>
                         <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
                     </div>
                 </div>
             </div>
 
-            <div class="seasonal-colors-section" id="seasonalColorsSC" style="--season-glow: radial-gradient(ellipse 60% 80% at 30% 50%, rgba(0,188,212,0.25) 0%, transparent 70%);">
+            <div class="seasonal-colors-section" id="seasonalColorsSC">
                 <div class="season-meta">
                     <div class="season-month-label">THIS MONTH</div>
                     <div class="season-month-name" id="scMonthSC"></div>
@@ -1232,7 +632,7 @@
             </div>
 
             <a th:href="@{/Ask}" style="text-decoration:none;">
-                <div class="fitbti-section" style="background: linear-gradient(135deg, #f0faff 0%, #e0f5ff 100%); border-color: #b0dff5;">
+                <div class="fitbti-section" style="background:linear-gradient(135deg,#f0faff 0%,#e0f5ff 100%);border-color:#b0dff5;">
                     <div class="fitbti-left">
                         <div class="fitbti-eyebrow" style="color:#006d82;">STYLE PERSONALITY TEST</div>
                         <div class="fitbti-title" style="color:#111;">Fit BTI</div>
@@ -1240,8 +640,10 @@
                     </div>
                     <div class="fitbti-right">
                         <div class="bti-type-pills">
-                            <span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">클린</span><span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">스포티</span>
-                            <span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">모던</span><span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">마린</span>
+                            <span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">클린</span>
+                            <span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">스포티</span>
+                            <span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">모던</span>
+                            <span class="bti-pill" style="background:rgba(0,109,130,0.08);border-color:rgba(0,109,130,0.22);color:#006d82;">마린</span>
                         </div>
                         <span class="fitbti-btn" style="background:#006d82;color:white;">검사하기 →</span>
                     </div>
@@ -1249,13 +651,16 @@
             </a>
         </div>
 
+        <!-- ══════════════════════════════════════
+             ④ 어텀 웜
+        ══════════════════════════════════════ -->
         <div id="autumn_warm" data-tab-content="autumn_warm" class="content">
             <div class="pc-intro-section pc-autumn-warm">
                 <div class="pc-intro-inner">
                     <div class="pc-intro-text">
                         <p class="pc-intro-label">PERSONAL COLOR</p>
                         <h2 class="pc-intro-title">어텀 웜톤이란?</h2>
-                        <p class="pc-intro-desc">어텀 웜톤은 피부에 깊고 따뜻한 황금빛·올리브 기운이 돌며, 원숙하고 중후한 인상을 가진 타입입니다. 번트 오렌지, 카멜, 올리브 그린, 머스타드 등 채도가 낮으면서도 깊이감 있는 어스 톤이 가장 잘 어울립니다. 차갑거나 밝은 파스텔은 피하고, 자연에서 온 듯한 풍부한 색감으로 코디하세요.</p>
+                        <p class="pc-intro-desc">어텀 웜톤은 피부에 깊고 따뜻한 황금빛·올리브 기운이 돌며, 원숙하고 중후한 인상을 가진 타입입니다. 번트 오렌지, 카멜, 올리브 그린, 머스타드 등 어스 톤이 잘 어울립니다.</p>
                         <div class="pc-intro-tips">
                             <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>번트 오렌지·러스트·카멜을 메인으로 활용하세요</span></div>
                             <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>올리브 그린·머스타드로 어스 톤 조화를 만드세요</span></div>
@@ -1275,176 +680,109 @@
                     </div>
                 </div>
             </div>
+
+            <!-- BEST PICKS — 어텀 웜 -->
             <div class="best-products-section">
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">어텀 웜</h2></div>
+                        <div class="bp-title-row">
+                            <span class="bp-count" th:text="${#temporals.format(#temporals.createNow(), 'MMMM')}">April</span>
+                            <h2 class="section-main-title">어텀 웜</h2>
+                        </div>
                         <p class="section-sub-title">깊고 풍성하게</p>
                     </div>
-                    <div class="bp-header-right">
-                        <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
-                    </div>
+                    <div class="bp-header-right"><a th:href="@{/store}" class="bp-view-all">전체보기 →</a></div>
                 </div>
                 <div class="bp-grid">
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/shirt/s200_green.jpg}" alt="">
-                        <span class="bp-num">01</span>
-                        <span class="bp-new">NEW</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Standard</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">S200 Shirt — Olive</span>
-                                <span class="bp-color">· Forest Olive</span>
-                                <span class="bp-price">₩45,000</span>
+                    <th:block th:each="p, stat : ${bestAutumnWarm}">
+                        <div class="bp-card" th:onclick="|location.href='/itemDetail?id=${p.id}'|" style="cursor:pointer;">
+                            <img th:src="${p.imageUrl}" th:alt="${p.name}">
+                            <span class="bp-num" th:text="${'0' + stat.count}">01</span>
+                            <span class="bp-new" th:if="${stat.first}">NEW</span>
+                            <div class="bp-info">
+                                <div class="bp-brand" th:text="${p.category}">OnFit</div>
+                                <div class="bp-info-text">
+                                    <span class="bp-name" th:text="${p.name}">상품명</span>
+                                    <span class="bp-color" th:text="'· ' + ${p.color}">· Color</span>
+                                    <span class="bp-price" th:text="'₩' + ${#numbers.formatInteger(p.price, 1, 'COMMA')}">₩0</span>
+                                </div>
+                                <button class="bp-cart"
+                                        th:data-product-id="${p.id}"
+                                        th:data-product-name="${p.name}"
+                                        th:data-available-sizes="${p.availableSizes}"
+                                        onclick="event.stopPropagation(); openCartModal(this)">장바구니 담기</button>
                             </div>
-                            <button class="bp-cart">장바구니 담기</button>
                         </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/hoodie/h600_orange.png}" alt="">
-                        <span class="bp-num">02</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Basics</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">H600 Hoodie — Orange</span>
-                                <span class="bp-color">· Peach Orange</span>
-                                <span class="bp-price">₩99,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/pants/p600_beige.jpg}" alt="">
-                        <span class="bp-num">03</span>
-
-                        <div class="bp-info">
-                            <span class="bp-name">S300 Shirt — Ivory</span>
-                            <span class="bp-price">₩79,000</span>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/pants/p500_brown.jpg}" alt="">
-                        <span class="bp-num">04</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Standard</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">P500 — Brown</span>
-                                <span class="bp-color">· Deep Brown</span>
-                                <span class="bp-price">₩79,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(bestAutumnWarm)}" class="bp-empty">등록된 상품이 없습니다.</div>
                 </div>
-                <div id="one_button_wrap_aw"><button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button><button class="one_button" onclick="location.href='/store'">스토어 더보기</button></div>
+                <div id="one_button_wrap_aw">
+                    <button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button class="one_button" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
             </div>
 
+            <!-- OUTFIT — 어텀 웜 -->
             <div class="style-section">
                 <p class="section-label">AUTUMN STYLE</p>
                 <h2 class="section-main-title">추천하는 패션조합</h2>
                 <p class="section-sub-title">어텀 웜톤의 당신을 위해</p>
                 <div class="outfit-grid">
-                    <div class="outfit-set">
-                        <div class="outfit-num">01</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/jacket/j700_mincho.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p700_mincho.png}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Outer</div>
-                                    <div class="outfit-item-name">러너 자켓</div>
-                                    <div class="outfit-item-price">₩99,000</div>
+                    <th:block th:each="i : ${#numbers.sequence(0, 2)}">
+                        <th:block th:if="${outfitAutumnWarm.size() > i * 2 + 1}">
+                            <div class="outfit-set">
+                                <div class="outfit-num" th:text="${'0' + (i + 1)}">01</div>
+                                <div class="outfit-imgs">
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitAutumnWarm[__${i * 2}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">TOP</span>
+                                        <img th:src="${outfitAutumnWarm[__${i * 2}__].imageUrl}"
+                                             th:alt="${outfitAutumnWarm[__${i * 2}__].name}">
+                                    </div>
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitAutumnWarm[__${i * 2 + 1}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">BOTTOM</span>
+                                        <img th:src="${outfitAutumnWarm[__${i * 2 + 1}__].imageUrl}"
+                                             th:alt="${outfitAutumnWarm[__${i * 2 + 1}__].name}">
+                                    </div>
                                 </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">민초 팬츠</div>
-                                    <div class="outfit-item-price">₩99,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">02</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/jacket/fit_j200_brown (2).jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p500_brown.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Jacket</div>
-                                    <div class="outfit-item-name">J200 — Brown</div>
-                                    <div class="outfit-item-price">₩215,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">브라운 팬츠</div>
-                                    <div class="outfit-item-price">₩79,000</div>
+                                <div class="outfit-info">
+                                    <div class="outfit-pair">
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Top</div>
+                                            <div class="outfit-item-name" th:text="${outfitAutumnWarm[__${i * 2}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitAutumnWarm[__${i * 2}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                        <div class="outfit-sep"></div>
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Bottom</div>
+                                            <div class="outfit-item-name" th:text="${outfitAutumnWarm[__${i * 2 + 1}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitAutumnWarm[__${i * 2 + 1}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                    </div>
+                                    <div class="outfit-actions">
+                                        <button class="outfit-add"
+                                                th:data-top-id="${outfitAutumnWarm[__${i * 2}__].id}"
+                                                th:data-bottom-id="${outfitAutumnWarm[__${i * 2 + 1}__].id}"
+                                                th:data-top-sizes="${outfitAutumnWarm[__${i * 2}__].availableSizes}"
+                                                th:data-bottom-sizes="${outfitAutumnWarm[__${i * 2 + 1}__].availableSizes}"
+                                                onclick="openOutfitCartModal(this)">
+                                            장바구니 담기
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">03</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/hoodie/h700_beige.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p600_beige.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Hoodie</div>
-                                    <div class="outfit-item-name">베이지 후디</div>
-                                    <div class="outfit-item-price">₩79,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">베이지 팬츠</div>
-                                    <div class="outfit-item-price">₩99,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
+                        </th:block>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(outfitAutumnWarm)}" class="bp-empty">등록된 아웃핏이 없습니다.</div>
                 </div>
-                <div id="banner_button_wrap_aw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_aw" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_aw" onclick="location.href='/store'">스토어 더보기</button></div>
+                <div id="banner_button_wrap_aw" style="margin-top:40px;display:flex;justify-content:center;gap:12px;">
+                    <button id="banner_button_left_aw"  onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button id="banner_button_right_aw" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
             </div>
 
             <div class="neutral-trend-section">
@@ -1455,14 +793,19 @@
                 <div class="trend-single-img" onclick="openColorTrendPopup('autumn_warm')">
                     <img th:src="@{/img/Main/f_img.jpg}" alt="어텀 웜 트렌드">
                     <div class="trend-single-overlay">
-                        <div class="trend-single-chips"><div class="trend-chip-dot" style="background:#bf360c"></div><div class="trend-chip-dot" style="background:#e64a19"></div><div class="trend-chip-dot" style="background:#ff8a65"></div><div class="trend-chip-dot" style="background:#fbe9e7"></div></div>
+                        <div class="trend-single-chips">
+                            <div class="trend-chip-dot" style="background:#bf360c"></div>
+                            <div class="trend-chip-dot" style="background:#e64a19"></div>
+                            <div class="trend-chip-dot" style="background:#ff8a65"></div>
+                            <div class="trend-chip-dot" style="background:#fbe9e7"></div>
+                        </div>
                         <span class="trend-single-label">이번 시즌 어텀 웜 트렌드</span>
                         <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
                     </div>
                 </div>
             </div>
 
-            <div class="seasonal-colors-section" id="seasonalColorsAW" style="--season-glow: radial-gradient(ellipse 60% 80% at 30% 50%, rgba(191,54,12,0.25) 0%, transparent 70%);">
+            <div class="seasonal-colors-section" id="seasonalColorsAW">
                 <div class="season-meta">
                     <div class="season-month-label">THIS MONTH</div>
                     <div class="season-month-name" id="scMonthAW"></div>
@@ -1477,7 +820,7 @@
             </div>
 
             <a th:href="@{/Ask}" style="text-decoration:none;">
-                <div class="fitbti-section" style="background: linear-gradient(135deg, #fff7f0 0%, #fff0e4 100%); border-color: #f5c8a0;">
+                <div class="fitbti-section" style="background:linear-gradient(135deg,#fff7f0 0%,#fff0e4 100%);border-color:#f5c8a0;">
                     <div class="fitbti-left">
                         <div class="fitbti-eyebrow" style="color:#c07040;">STYLE PERSONALITY TEST</div>
                         <div class="fitbti-title" style="color:#111;">Fit BTI</div>
@@ -1485,8 +828,10 @@
                     </div>
                     <div class="fitbti-right">
                         <div class="bti-type-pills">
-                            <span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">어스톤</span><span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">빈티지</span>
-                            <span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">클래식</span><span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">아웃도어</span>
+                            <span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">어스톤</span>
+                            <span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">빈티지</span>
+                            <span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">클래식</span>
+                            <span class="bti-pill" style="background:rgba(192,112,64,0.1);border-color:rgba(192,112,64,0.25);color:#a05020;">아웃도어</span>
                         </div>
                         <span class="fitbti-btn" style="background:#bf4e0c;color:white;">검사하기 →</span>
                     </div>
@@ -1494,13 +839,16 @@
             </a>
         </div>
 
+        <!-- ══════════════════════════════════════
+             ⑤ 윈터 쿨
+        ══════════════════════════════════════ -->
         <div id="winter_cool" data-tab-content="winter_cool" class="content">
             <div class="pc-intro-section pc-winter-cool">
                 <div class="pc-intro-inner">
                     <div class="pc-intro-text">
                         <p class="pc-intro-label">PERSONAL COLOR</p>
                         <h2 class="pc-intro-title">윈터 쿨톤이란?</h2>
-                        <p class="pc-intro-desc">윈터 쿨톤은 피부에 차갑고 선명한 블루·핑크 기운이 돌며, 뚜렷하고 강인한 인상을 가진 타입입니다. 순백, 미드나잇 블루, 블랙, 아이시 핑크 등 명도 차이가 분명하고 선명한 색상이 가장 잘 어울립니다. 흐린 뮤트 톤보다 강렬하고 대비가 뚜렷한 배색으로 에디토리얼한 룩을 완성하세요.</p>
+                        <p class="pc-intro-desc">윈터 쿨톤은 피부에 차갑고 선명한 블루·핑크 기운이 돌며, 뚜렷하고 강인한 인상을 가진 타입입니다. 순백, 미드나잇 블루, 블랙, 아이시 핑크 등 명도 차이가 분명한 색상이 잘 어울립니다.</p>
                         <div class="pc-intro-tips">
                             <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>화이트·블랙 대비로 선명한 인상을 살리세요</span></div>
                             <div class="pc-tip"><span class="pc-tip-icon">✓</span><span>인디고·미드나잇 블루로 깊이감을 더하세요</span></div>
@@ -1520,180 +868,109 @@
                     </div>
                 </div>
             </div>
+
+            <!-- BEST PICKS — 윈터 쿨 -->
             <div class="best-products-section">
                 <div class="bp-header">
                     <div class="bp-header-left">
                         <p class="section-label">BEST PICKS</p>
-                        <div class="bp-title-row"><span class="bp-count">April</span><h2 class="section-main-title">윈터 쿨</h2></div>
+                        <div class="bp-title-row">
+                            <span class="bp-count" th:text="${#temporals.format(#temporals.createNow(), 'MMMM')}">April</span>
+                            <h2 class="section-main-title">윈터 쿨</h2>
+                        </div>
                         <p class="section-sub-title">차갑고 선명하게</p>
                     </div>
-                    <div class="bp-header-right">
-                        <a th:href="@{/store}" class="bp-view-all">전체보기 →</a>
-                    </div>
+                    <div class="bp-header-right"><a th:href="@{/store}" class="bp-view-all">전체보기 →</a></div>
                 </div>
                 <div class="bp-grid">
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/pants/p600_blue.jpg}" alt="">
-                        <span class="bp-num">01</span>
-                        <span class="bp-new">NEW</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Premium</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">Fit J100 — Black</span>
-                                <span class="bp-color">· Pure Black</span>
-                                <span class="bp-price">₩189,000</span>
+                    <th:block th:each="p, stat : ${bestWinterCool}">
+                        <div class="bp-card" th:onclick="|location.href='/itemDetail?id=${p.id}'|" style="cursor:pointer;">
+                            <img th:src="${p.imageUrl}" th:alt="${p.name}">
+                            <span class="bp-num" th:text="${'0' + stat.count}">01</span>
+                            <span class="bp-new" th:if="${stat.first}">NEW</span>
+                            <div class="bp-info">
+                                <div class="bp-brand" th:text="${p.category}">OnFit</div>
+                                <div class="bp-info-text">
+                                    <span class="bp-name" th:text="${p.name}">상품명</span>
+                                    <span class="bp-color" th:text="'· ' + ${p.color}">· Color</span>
+                                    <span class="bp-price" th:text="'₩' + ${#numbers.formatInteger(p.price, 1, 'COMMA')}">₩0</span>
+                                </div>
+                                <button class="bp-cart"
+                                        th:data-product-id="${p.id}"
+                                        th:data-product-name="${p.name}"
+                                        th:data-available-sizes="${p.availableSizes}"
+                                        onclick="event.stopPropagation(); openCartModal(this)">장바구니 담기</button>
                             </div>
-                            <button class="bp-cart">장바구니 담기</button>
                         </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/hoodie/h200_black.png}" alt="">
-                        <span class="bp-num">02</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Basics</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">H200 Hoodie — Black</span>
-                                <span class="bp-color">· Jet Black</span>
-                                <span class="bp-price">₩89,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/shirt/s500_denim_black.png}" alt="">
-                        <span class="bp-num">03</span>
-
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Denim</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">S500 Denim — Black</span>
-                                <span class="bp-color">· Ink Black</span>
-                                <span class="bp-price">₩99,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
-                    <div class="bp-card">
-                        <img th:src="@{/img/product/pants/p800_black.png}" alt="">
-                        <span class="bp-num">04</span>
-                        <div class="bp-info">
-                            <div class="bp-brand">OnFit Standard</div>
-                            <div class="bp-info-text">
-                                <span class="bp-name">Fit J100 — White</span>
-                                <span class="bp-color">· Snow White</span>
-                                <span class="bp-price">₩189,000</span>
-                            </div>
-                            <button class="bp-cart">장바구니 담기</button>
-                        </div>
-                    </div>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(bestWinterCool)}" class="bp-empty">등록된 상품이 없습니다.</div>
                 </div>
-                <div id="one_button_wrap_wc"><button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button><button class="one_button" onclick="location.href='/store'">스토어 더보기</button></div>
+                <div id="one_button_wrap_wc">
+                    <button class="one_button primary" onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button class="one_button" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
             </div>
 
+            <!-- OUTFIT — 윈터 쿨 -->
             <div class="style-section">
                 <p class="section-label">WINTER STYLE</p>
                 <h2 class="section-main-title">추천하는 패션조합</h2>
                 <p class="section-sub-title">윈터 쿨톤의 당신을 위해</p>
                 <div class="outfit-grid">
-                    <div class="outfit-set">
-                        <div class="outfit-num">01</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/jacket/fit_j100_black.jpg}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p500_black.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Jacket</div>
-                                    <div class="outfit-item-name">J100 — Black</div>
-                                    <div class="outfit-item-price">₩189,000</div>
+                    <th:block th:each="i : ${#numbers.sequence(0, 2)}">
+                        <th:block th:if="${outfitWinterCool.size() > i * 2 + 1}">
+                            <div class="outfit-set">
+                                <div class="outfit-num" th:text="${'0' + (i + 1)}">01</div>
+                                <div class="outfit-imgs">
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitWinterCool[__${i * 2}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">TOP</span>
+                                        <img th:src="${outfitWinterCool[__${i * 2}__].imageUrl}"
+                                             th:alt="${outfitWinterCool[__${i * 2}__].name}">
+                                    </div>
+                                    <div class="outfit-img-wrap"
+                                         th:onclick="|location.href='/itemDetail?id=${outfitWinterCool[__${i * 2 + 1}__].id}'|"
+                                         style="cursor:pointer;">
+                                        <span class="outfit-part">BOTTOM</span>
+                                        <img th:src="${outfitWinterCool[__${i * 2 + 1}__].imageUrl}"
+                                             th:alt="${outfitWinterCool[__${i * 2 + 1}__].name}">
+                                    </div>
                                 </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">P500 — Black</div>
-                                    <div class="outfit-item-price">₩189,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">02</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/hoodie/h200_black.png}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p800_black.png}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Hoodie</div>
-                                    <div class="outfit-item-name">H200 — Black</div>
-                                    <div class="outfit-item-price">₩89,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">블랙 팬츠</div>
-                                    <div class="outfit-item-price">₩79,000</div>
+                                <div class="outfit-info">
+                                    <div class="outfit-pair">
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Top</div>
+                                            <div class="outfit-item-name" th:text="${outfitWinterCool[__${i * 2}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitWinterCool[__${i * 2}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                        <div class="outfit-sep"></div>
+                                        <div class="outfit-item">
+                                            <div class="outfit-item-label">Bottom</div>
+                                            <div class="outfit-item-name" th:text="${outfitWinterCool[__${i * 2 + 1}__].name}">상품명</div>
+                                            <div class="outfit-item-price" th:text="'₩' + ${#numbers.formatInteger(outfitWinterCool[__${i * 2 + 1}__].price, 1, 'COMMA')}">₩0</div>
+                                        </div>
+                                    </div>
+                                    <div class="outfit-actions">
+                                        <button class="outfit-add"
+                                                th:data-top-id="${outfitWinterCool[__${i * 2}__].id}"
+                                                th:data-bottom-id="${outfitWinterCool[__${i * 2 + 1}__].id}"
+                                                th:data-top-sizes="${outfitWinterCool[__${i * 2}__].availableSizes}"
+                                                th:data-bottom-sizes="${outfitWinterCool[__${i * 2 + 1}__].availableSizes}"
+                                                onclick="openOutfitCartModal(this)">
+                                            장바구니 담기
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outfit-set">
-                        <div class="outfit-num">03</div>
-                        <div class="outfit-imgs">
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">TOP</span>
-                                <img th:src="@{/img/product/shirt/s500_denim_black.png}" alt="">
-                            </div>
-                            <div class="outfit-img-wrap">
-                                <span class="outfit-part">BOTTOM</span>
-                                <img th:src="@{/img/product/pants/p600_blue.jpg}" alt="">
-                            </div>
-                        </div>
-                        <div class="outfit-info">
-                            <div class="outfit-pair">
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Shirt</div>
-                                    <div class="outfit-item-name">S500 Denim</div>
-                                    <div class="outfit-item-price">₩99,000</div>
-                                </div>
-                                <div class="outfit-sep"></div>
-                                <div class="outfit-item">
-                                    <div class="outfit-item-label">Bottom</div>
-                                    <div class="outfit-item-name">블루 팬츠</div>
-                                    <div class="outfit-item-price">₩79,000</div>
-                                </div>
-                            </div>
-                            <div class="outfit-actions">
-                                <button class="outfit-add">장바구니 담기</button>
-
-                            </div>
-                        </div>
-                    </div>
+                        </th:block>
+                    </th:block>
+                    <div th:if="${#lists.isEmpty(outfitWinterCool)}" class="bp-empty">등록된 아웃핏이 없습니다.</div>
                 </div>
-                <div id="banner_button_wrap_wc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;"><button id="banner_button_left_wc" onclick="location.href='/AIStyler'">AI로 입어보기</button><button id="banner_button_right_wc" onclick="location.href='/store'">스토어 더보기</button></div>
+                <div id="banner_button_wrap_wc" style="margin-top:40px;display:flex;justify-content:center;gap:12px;">
+                    <button id="banner_button_left_wc"  onclick="location.href='/AIStyler'">AI로 입어보기</button>
+                    <button id="banner_button_right_wc" onclick="location.href='/store'">스토어 더보기</button>
+                </div>
             </div>
 
             <div class="neutral-trend-section">
@@ -1704,14 +981,19 @@
                 <div class="trend-single-img" onclick="openColorTrendPopup('winter_cool')">
                     <img th:src="@{/img/Main/w_img.jpg}" alt="윈터 쿨 트렌드">
                     <div class="trend-single-overlay">
-                        <div class="trend-single-chips"><div class="trend-chip-dot" style="background:#1a1a2e"></div><div class="trend-chip-dot" style="background:#3f51b5"></div><div class="trend-chip-dot" style="background:#7986cb"></div><div class="trend-chip-dot" style="background:#e8eaf6"></div></div>
+                        <div class="trend-single-chips">
+                            <div class="trend-chip-dot" style="background:#1a1a2e"></div>
+                            <div class="trend-chip-dot" style="background:#3f51b5"></div>
+                            <div class="trend-chip-dot" style="background:#7986cb"></div>
+                            <div class="trend-chip-dot" style="background:#e8eaf6"></div>
+                        </div>
                         <span class="trend-single-label">이번 시즌 윈터 쿨 트렌드</span>
                         <span class="trend-single-hint">클릭하여 자세히 보기 →</span>
                     </div>
                 </div>
             </div>
 
-            <div class="seasonal-colors-section" id="seasonalColorsWC" style="--season-glow: radial-gradient(ellipse 60% 80% at 30% 50%, rgba(63,81,181,0.25) 0%, transparent 70%);">
+            <div class="seasonal-colors-section" id="seasonalColorsWC">
                 <div class="season-meta">
                     <div class="season-month-label">THIS MONTH</div>
                     <div class="season-month-name" id="scMonthWC"></div>
@@ -1726,7 +1008,7 @@
             </div>
 
             <a th:href="@{/Ask}" style="text-decoration:none;">
-                <div class="fitbti-section" style="background: linear-gradient(135deg, #f0f2ff 0%, #e8eaff 100%); border-color: #c0c8ff;">
+                <div class="fitbti-section" style="background:linear-gradient(135deg,#f0f2ff 0%,#e8eaff 100%);border-color:#c0c8ff;">
                     <div class="fitbti-left">
                         <div class="fitbti-eyebrow" style="color:#5356b0;">STYLE PERSONALITY TEST</div>
                         <div class="fitbti-title" style="color:#111;">Fit BTI</div>
@@ -1734,8 +1016,10 @@
                     </div>
                     <div class="fitbti-right">
                         <div class="bti-type-pills">
-                            <span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">모노크롬</span><span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">럭셔리</span>
-                            <span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">시크</span><span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">에디토리얼</span>
+                            <span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">모노크롬</span>
+                            <span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">럭셔리</span>
+                            <span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">시크</span>
+                            <span class="bti-pill" style="background:rgba(83,86,200,0.08);border-color:rgba(83,86,200,0.2);color:#3a3da0;">에디토리얼</span>
                         </div>
                         <span class="fitbti-btn" style="background:#3f51b5;color:white;">검사하기 →</span>
                     </div>
@@ -1743,7 +1027,11 @@
             </a>
         </div>
 
-    </div></div><footer>
+    </div><!-- /#content_area -->
+</div><!-- /#wrap -->
+
+<!-- 푸터 -->
+<footer>
     <div id="f_left">
         <a href="#wrap"><img th:src="@{/img/interface/LOGO_W.png}" alt="OnFit 로고"></a>
         <p id="f_tagline">Mens Fashion Solution</p>
@@ -1769,6 +1057,7 @@
     </div>
 </footer>
 
+<!-- 플로팅 FAQ -->
 <button id="floating_button" aria-label="FAQ 열기">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -1787,27 +1076,19 @@
         </div>
         <div class="faq-list">
             <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    <span class="faq-num">01</span><span class="faq-text">환불 & 교환 정책</span><span class="faq-icon">+</span>
-                </button>
+                <button class="faq-q" onclick="toggleFaq(this)"><span class="faq-num">01</span><span class="faq-text">환불 &amp; 교환 정책</span><span class="faq-icon">+</span></button>
                 <div class="faq-a">구매 후 <strong>7일 이내</strong>, 미착용·태그 부착 상태에서 환불 가능합니다.<br>세일 상품은 동일 상품 교환만 가능하며, 배송비는 고객 부담입니다.</div>
             </div>
             <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    <span class="faq-num">02</span><span class="faq-text">배송 기간</span><span class="faq-icon">+</span>
-                </button>
+                <button class="faq-q" onclick="toggleFaq(this)"><span class="faq-num">02</span><span class="faq-text">배송 기간</span><span class="faq-icon">+</span></button>
                 <div class="faq-a">주문 확인 후 <strong>1–3 영업일</strong> 내 출고됩니다.<br>제주·도서산간 지역은 1–2일 추가 소요될 수 있습니다.</div>
             </div>
             <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    <span class="faq-num">03</span><span class="faq-text">가상 피팅 이용법</span><span class="faq-icon">+</span>
-                </button>
+                <button class="faq-q" onclick="toggleFaq(this)"><span class="faq-num">03</span><span class="faq-text">가상 피팅 이용법</span><span class="faq-icon">+</span></button>
                 <div class="faq-a">상품 페이지 내 <strong>'가상피팅하기'</strong> 버튼을 클릭 후<br>사진을 업로드하면 AI가 착용 이미지를 생성해드립니다.</div>
             </div>
             <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    <span class="faq-num">04</span><span class="faq-text">Fit BTI란?</span><span class="faq-icon">+</span>
-                </button>
+                <button class="faq-q" onclick="toggleFaq(this)"><span class="faq-num">04</span><span class="faq-text">Fit BTI란?</span><span class="faq-icon">+</span></button>
                 <div class="faq-a">나만의 성향을 분석하여 스타일 유형을 진단하는 테스트입니다.<br><strong>무료</strong>로 이용 가능하며 결과에 따른 나만의 스타일을 추천해줍니다.</div>
             </div>
         </div>
@@ -1815,336 +1096,79 @@
     </div>
 </div>
 
-<script>
-    function toggleFaq(btn) {
-        const item = btn.closest('.faq-item');
-        const isOpen = item.classList.contains('open');
-        document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-        if (!isOpen) item.classList.add('open');
-    }
-</script>
+<!-- ══════════════════════════════════════════
+     장바구니 담기 모달 (BEST PICKS - 단일 상품)
+══════════════════════════════════════════ -->
+<div id="cart-modal-overlay" onclick="closeCartModal(event)">
+    <div class="cart-modal" id="cartModal">
+        <button class="cart-modal-close" onclick="closeCartModalForce()">✕</button>
+        <div class="cart-modal-header">
+            <p class="cart-modal-label">CART</p>
+            <h3 class="cart-modal-title" id="cartModalProductName">상품명</h3>
+        </div>
+        <div class="cart-modal-body">
+            <div class="cart-modal-size-section" id="cartModalSizeSection">
+                <p class="cart-modal-size-label">사이즈 선택</p>
+                <div class="cart-modal-size-btns" id="cartModalSizeBtns"></div>
+            </div>
+            <div class="cart-modal-qty-section">
+                <p class="cart-modal-size-label">수량</p>
+                <div class="cart-modal-qty-wrap">
+                    <button class="cart-modal-qty-btn" onclick="changeQty(-1)">−</button>
+                    <span class="cart-modal-qty-val" id="cartModalQty">1</span>
+                    <button class="cart-modal-qty-btn" onclick="changeQty(1)">+</button>
+                </div>
+            </div>
+        </div>
+        <button class="cart-modal-submit" id="cartModalSubmit" onclick="submitCartModal()">장바구니 담기</button>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     장바구니 담기 모달 (OUTFIT - TOP+BOTTOM 동시)
+══════════════════════════════════════════ -->
+<div id="outfit-modal-overlay" onclick="closeOutfitModal(event)">
+    <div class="cart-modal" id="outfitModal">
+        <button class="cart-modal-close" onclick="closeOutfitModalForce()">✕</button>
+        <div class="cart-modal-header">
+            <p class="cart-modal-label">OUTFIT SET</p>
+            <h3 class="cart-modal-title">코디 세트 담기</h3>
+            <p class="cart-modal-subtitle">상의와 하의가 함께 담깁니다</p>
+        </div>
+        <div class="cart-modal-body">
+            <!-- TOP -->
+            <div class="outfit-modal-item" id="outfitModalTopSection">
+                <p class="cart-modal-size-label outfit-modal-part-label">👕 TOP</p>
+                <div class="cart-modal-size-section" id="outfitTopSizeSection">
+                    <p class="cart-modal-size-label">사이즈 선택</p>
+                    <div class="cart-modal-size-btns" id="outfitTopSizeBtns"></div>
+                </div>
+            </div>
+            <div class="outfit-modal-divider"></div>
+            <!-- BOTTOM -->
+            <div class="outfit-modal-item" id="outfitModalBottomSection">
+                <p class="cart-modal-size-label outfit-modal-part-label">👖 BOTTOM</p>
+                <div class="cart-modal-size-section" id="outfitBottomSizeSection">
+                    <p class="cart-modal-size-label">사이즈 선택</p>
+                    <div class="cart-modal-size-btns" id="outfitBottomSizeBtns"></div>
+                </div>
+            </div>
+            <div class="cart-modal-qty-section">
+                <p class="cart-modal-size-label">수량 (세트 공통)</p>
+                <div class="cart-modal-qty-wrap">
+                    <button class="cart-modal-qty-btn" onclick="changeOutfitQty(-1)">−</button>
+                    <span class="cart-modal-qty-val" id="outfitModalQty">1</span>
+                    <button class="cart-modal-qty-btn" onclick="changeOutfitQty(1)">+</button>
+                </div>
+            </div>
+        </div>
+        <button class="cart-modal-submit" id="outfitModalSubmit" onclick="submitOutfitModal()">코디 세트 담기</button>
+    </div>
+</div>
+
+<!-- 장바구니 토스트 메시지 -->
+<div id="main-cart-toast"></div>
 
 <script th:src="@{/js/Main.js}"></script>
-
-<script>
-    /* ── 배너 슬라이드쇼 ── */
-    (function() {
-        const slides = document.querySelectorAll('#banner .slide');
-        const dots   = document.querySelectorAll('.banner-dot');
-        let current  = 0, timer = null;
-        function goTo(idx) {
-            slides[current].classList.remove('active'); dots[current].classList.remove('active');
-            current = (idx + slides.length) % slides.length;
-            slides[current].classList.add('active'); dots[current].classList.add('active');
-        }
-        function startAuto() { clearInterval(timer); timer = setInterval(() => goTo(current + 1), 4000); }
-        dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAuto(); }));
-        const banner = document.getElementById('banner');
-        banner.addEventListener('mouseenter', () => clearInterval(timer));
-        banner.addEventListener('mouseleave', startAuto);
-        startAuto();
-    })();
-</script>
-
-<script>
-    /* ================================================================
-       월별 데이터
-    ================================================================ */
-    const MONTHLY_OUTFIT = {
-        1:  { label:'JAN', season:'WINTER', keyword:'딥 윈터 무드', colors:['#1a1a2e','#16213e','#4fc3f7','#e8eaf6'], names:['미드나잇','딥 인디고','아이시 블루','오프 화이트'], accent:'#4fc3f7', bg:'linear-gradient(135deg,#0d1117 0%,#1a1a2e 100%)' },
-        2:  { label:'FEB', season:'WINTER', keyword:'크리미 윈터', colors:['#f5e6d3','#d4a574','#8b6914','#2c2c2c'], names:['크림','카멜','버번','차콜'], accent:'#d4a574', bg:'linear-gradient(135deg,#1a1510 0%,#2c2416 100%)' },
-        3:  { label:'MAR', season:'SPRING', keyword:'얼리 스프링', colors:['#a8d5a2','#f8f9e8','#c8e6c9','#558b2f'], names:['세이지','오트밀','민트','포레스트'], accent:'#a8d5a2', bg:'linear-gradient(135deg,#0d1a0d 0%,#1a2e1a 100%)' },
-        4:  { label:'APR', season:'SPRING', keyword:'블로섬 봄', colors:['#f8c8d4','#e91e8c','#ffecd2','#ff6b9d'], names:['핑크블러쉬','로즈','피치','코랄핑크'], accent:'#f8c8d4', bg:'linear-gradient(135deg,#1a0d12 0%,#2e1a20 100%)' },
-        5:  { label:'MAY', season:'SPRING', keyword:'라이트 스프링', colors:['#fff176','#ffcc02','#ffe0b2','#ff8f00'], names:['선샤인','버터','피치','탠저린'], accent:'#ffcc02', bg:'linear-gradient(135deg,#1a1500 0%,#2e2600 100%)' },
-        6:  { label:'JUN', season:'SUMMER', keyword:'써머 쿨', colors:['#00bcd4','#e0f7fa','#006064','#ffffff'], names:['아쿠아','아이스','딥 틸','화이트'], accent:'#00bcd4', bg:'linear-gradient(135deg,#001a1e 0%,#002b33 100%)' },
-        7:  { label:'JUL', season:'SUMMER', keyword:'비비드 써머', colors:['#ff5722','#ff9800','#ffeb3b','#4caf50'], names:['레드오렌지','오렌지','옐로','그린'], accent:'#ff5722', bg:'linear-gradient(135deg,#1a0800 0%,#2e1400 100%)' },
-        8:  { label:'AUG', season:'SUMMER', keyword:'트로피컬', colors:['#26a69a','#80cbc4','#fff8e1','#ff8a65'], names:['틸','라이트 틸','크림','코랄'], accent:'#26a69a', bg:'linear-gradient(135deg,#001a18 0%,#002e2b 100%)' },
-        9:  { label:'SEP', season:'AUTUMN', keyword:'얼리 어텀', colors:['#bf8040','#8d6e63','#d7ccc8','#4e342e'], names:['어텀 골드','코코아','베이지','초코'], accent:'#bf8040', bg:'linear-gradient(135deg,#1a0f00 0%,#2e1e00 100%)' },
-        10: { label:'OCT', season:'AUTUMN', keyword:'딥 어텀', colors:['#d84315','#bf360c','#e65100','#ff8f00'], names:['번트 레드','딥 오렌지','러스트','앰버'], accent:'#d84315', bg:'linear-gradient(135deg,#1a0800 0%,#3d1200 100%)' },
-        11: { label:'NOV', season:'AUTUMN', keyword:'어텀 뉴트럴', colors:['#795548','#bcaaa4','#efebe9','#4e342e'], names:['웜 브라운','로즈 베이지','오트밀','다크 브라운'], accent:'#795548', bg:'linear-gradient(135deg,#120d0a 0%,#1e1510 100%)' },
-        12: { label:'DEC', season:'WINTER', keyword:'홀리데이 윈터', colors:['#c62828','#b71c1c','#f5f5f5','#212121'], names:['크리스마스 레드','딥 레드','스노우','블랙'], accent:'#c62828', bg:'linear-gradient(135deg,#0d0000 0%,#1a0000 100%)' },
-    };
-
-    /* 월별 색상 섹션 렌더링 */
-    function renderSeasonalColors(monthLabelId, badgeId, paletteId, keywordId, seasonTextId) {
-        const month = new Date().getMonth() + 1;
-        const d = MONTHLY_OUTFIT[month];
-
-        const mlEl = document.getElementById(monthLabelId);
-        const bdEl = document.getElementById(badgeId);
-        const plEl = document.getElementById(paletteId);
-        const kwEl = document.getElementById(keywordId);
-        const stEl = document.getElementById(seasonTextId);
-
-        if (!mlEl || !plEl) return;
-
-        if (mlEl) mlEl.textContent = d.label;
-        if (bdEl) { bdEl.textContent = d.season; bdEl.style.borderColor = d.accent; bdEl.style.color = d.accent; }
-        if (kwEl) { kwEl.textContent = d.keyword; kwEl.style.color = d.accent; }
-        if (stEl) stEl.textContent = d.season;
-
-        const section = plEl.closest('.seasonal-colors-section');
-        if (section) {
-            section.style.setProperty('--season-glow',
-                `radial-gradient(ellipse 60% 80% at 30% 50%, ${d.accent}44 0%, transparent 70%)`);
-        }
-
-        plEl.innerHTML = d.colors.map((c, i) => `
-            <div class="season-chip-group">
-                <div class="season-chip" style="background:${c}"></div>
-                <span class="season-chip-name">${d.names[i]}</span>
-            </div>
-        `).join('');
-    }
-
-    /* ================================================================
-       탭 전환 + 마이크로 인터랙션 (요청 1)
-    ================================================================ */
-    const MICRO_THEMES = {
-        neutral:     null,
-        spring_warm: 'spring',
-        summer_cool: 'summer',
-        autumn_warm: 'autumn',
-        winter_cool: 'winter',
-    };
-
-    const TAB_THEME = {
-        neutral:     null,
-        spring_warm: { bg:'rgba(255,220,235,0.35)', border:'rgba(230,80,150,0.35)',  shadow:'rgba(230,80,150,0.15)' },
-        summer_cool: { bg:'rgba(200,235,255,0.35)', border:'rgba(0,180,220,0.35)',   shadow:'rgba(0,180,220,0.15)' },
-        autumn_warm: { bg:'rgba(255,210,170,0.35)', border:'rgba(210,100,30,0.35)',  shadow:'rgba(210,100,30,0.15)' },
-        winter_cool: { bg:'rgba(200,215,255,0.35)', border:'rgba(80,100,220,0.35)',  shadow:'rgba(80,100,220,0.15)' },
-    };
-
-    let microTimer = null;
-
-    function launchMicro(season, tabEl) {
-        // 이전 파티클 제거
-        const old = tabEl.querySelector('.tab-particles');
-        if (old) old.remove();
-        if (microTimer) clearTimeout(microTimer);
-
-        const cont = document.createElement('div');
-        cont.className = 'tab-particles';
-        tabEl.appendChild(cont);
-
-        const W = tabEl.offsetWidth;
-
-        function mkParticle(cls, extra) {
-            const p = document.createElement('span');
-            p.className = 'tab-p ' + cls;
-            p.style.left = (Math.random() * W) + 'px';
-            p.style.setProperty('--dx', ((Math.random()-0.5)*36)+'px');
-            p.style.animationDelay = (Math.random()*0.4)+'s';
-            if (extra) Object.assign(p.style, extra);
-            cont.appendChild(p);
-        }
-
-        if (season === 'spring') {
-            for (let i=0; i<12; i++) mkParticle('tp-petal');
-        } else if (season === 'summer') {
-            for (let i=0; i<14; i++) mkParticle('tp-drop');
-        } else if (season === 'autumn') {
-            const cols=['#d84315','#e65100','#ff8f00','#795548'];
-            for (let i=0; i<10; i++) mkParticle('tp-leaf',{background:cols[i%4]});
-        } else if (season === 'winter') {
-            const fl=['❄','❅','❆','✦'];
-            for (let i=0; i<12; i++) {
-                const p = document.createElement('span');
-                p.className = 'tab-p tp-snow';
-                p.textContent = fl[i%4];
-                p.style.left = (Math.random()*W)+'px';
-                p.style.setProperty('--dx', ((Math.random()-0.5)*30)+'px');
-                p.style.animationDelay = (Math.random()*0.4)+'s';
-                cont.appendChild(p);
-            }
-            const snowman = document.getElementById('snowmanEmoji');
-            snowman.classList.add('active');
-            setTimeout(()=>snowman.classList.remove('active'), 600);
-        }
-        microTimer = setTimeout(()=>cont.remove(), 1500);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const header   = document.querySelector('#header');
-        const tabs     = document.querySelectorAll('#tab_button li');
-        const contents = document.querySelectorAll('.content');
-
-        /* 월별 색상 렌더 */
-        renderSeasonalColors('scMonthName', 'scBadge', 'scPalette', 'scKeyword', 'scSeasonText');
-        renderSeasonalColors('scMonthSW', 'scBadgeSW', 'scPaletteSW', 'scKeywordSW', null);
-        renderSeasonalColors('scMonthSC', 'scBadgeSC', 'scPaletteSC', 'scKeywordSC', null);
-        renderSeasonalColors('scMonthAW', 'scBadgeAW', 'scPaletteAW', 'scKeywordAW', null);
-        renderSeasonalColors('scMonthWC', 'scBadgeWC', 'scPaletteWC', 'scKeywordWC', null);
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const target = this.getAttribute('data-tab');
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                contents.forEach(c => c.classList.remove('active'));
-                const show = document.querySelector(`[data-tab-content="${target}"]`);
-                if (show) show.classList.add('active');
-
-                /* GNB 색상 */
-                const theme = TAB_THEME[target];
-                if (theme) {
-                    header.style.background  = theme.bg;
-                    header.style.borderColor = theme.border;
-                    header.style.boxShadow   = `0 15px 40px -10px ${theme.shadow}`;
-                } else {
-                    header.style.background  = 'rgba(255,255,255,0.3)';
-                    header.style.borderColor = 'rgba(255,255,255,0.4)';
-                    header.style.boxShadow   = '0 10px 50px -10px rgba(0,0,0,0.1)';
-                }
-
-                /* 마이크로 인터랙션 */
-                const season = MICRO_THEMES[target];
-                if (season) launchMicro(season, this);
-            });
-        });
-    });
-
-    /* ================================================================
-       컬러별 트렌드 팝업
-    ================================================================ */
-    const COLOR_TREND_DATA = {
-        neutral: {
-            badge: 'NEUTRAL',
-            badgeColor: '#555',
-            img: '/img/Main/ss.png',
-            title: '뉴트럴 트렌드',
-            desc: '블랙, 그레이, 크림 무채색 팔레트로 완성하는 이번 시즌의 핵심. 오버사이즈 실루엣과 모노크로매틱 레이어드로 깊이감을 더하고, 소재의 질감 차이만으로 스타일을 완성하는 미니멀리즘의 정수.',
-            palette: [
-                { color: '#212121', name: 'Noir' },
-                { color: '#555555', name: 'Charcoal' },
-                { color: '#999999', name: 'Gray' },
-                { color: '#cccccc', name: 'Silver' },
-                { color: '#f5f5f5', name: 'Cream' },
-            ],
-            tags: ['# 오버핏', '# 모노톤', '# 미니멀', '# 레이어드', '# 클린'],
-            keywords: [
-                { text: '블랙&그레이 톤온톤으로 세련된 깊이감', color: '#333' },
-                { text: '오버사이즈 실루엣으로 현대적 볼륨 연출', color: '#555' },
-                { text: '소재 질감 차이로 포인트 레이어드', color: '#888' },
-            ],
-        },
-        spring_warm: {
-            badge: 'SPRING WARM',
-            badgeColor: '#e05a00',
-            img: '/img/Main/sp_img.jpg',
-            title: '봄 웜 트렌드',
-            desc: '코랄, 살구, 아이보리가 물드는 봄 시즌. 린넨 소재의 가벼운 레이어드와 플로럴 패턴이 만나 화사함을 극대화합니다. 피부를 밝고 생기있게 빛내는 봄의 웜한 에너지.',
-            palette: [
-                { color: '#ff8a65', name: 'Coral' },
-                { color: '#ffb74d', name: 'Apricot' },
-                { color: '#ffe0b2', name: 'Peach' },
-                { color: '#fff8e1', name: 'Ivory' },
-                { color: '#d7ccc8', name: 'Sand' },
-            ],
-            tags: ['# 플로럴', '# 코랄', '# 아이보리', '# 린넨', '# 캐주얼'],
-            keywords: [
-                { text: '코랄·살구 투톤 레이어드로 화사함 연출', color: '#e05a00' },
-                { text: '린넨·면 소재로 봄 특유의 가벼움 표현', color: '#c07040' },
-                { text: '아이보리 베이스에 코랄 포인트 매치', color: '#a06030' },
-            ],
-        },
-        summer_cool: {
-            badge: 'SUMMER COOL',
-            badgeColor: '#006d82',
-            img: '/img/Main/s_img.jpg',
-            title: '써머 쿨 트렌드',
-            desc: '아쿠아, 아이시 블루, 라벤더가 어우러지는 여름 쿨톤의 계절. 마린 룩의 선명한 청량감과 뮤트 쿨 팔레트가 피부를 맑고 투명하게 빛나게 합니다. 이번 시즌 청량함의 기준.',
-            palette: [
-                { color: '#00bcd4', name: 'Aqua' },
-                { color: '#26c6da', name: 'Teal' },
-                { color: '#80deea', name: 'Ice Blue' },
-                { color: '#b2ebf2', name: 'Mist' },
-                { color: '#e0f7fa', name: 'Frost' },
-            ],
-            tags: ['# 아이시블루', '# 마린룩', '# 버뮤다', '# 쿨톤', '# 청량감'],
-            keywords: [
-                { text: '아이시 블루·라벤더 뮤트 쿨 팔레트 활용', color: '#006d82' },
-                { text: '린넨·코튼 소재로 청량한 여름 질감 표현', color: '#00838f' },
-                { text: '마린 스트라이프로 써머 포인트 연출', color: '#0097a7' },
-            ],
-        },
-        autumn_warm: {
-            badge: 'AUTUMN WARM',
-            badgeColor: '#bf4e0c',
-            img: '/img/Main/f_img.jpg',
-            title: '어텀 웜 트렌드',
-            desc: '번트 오렌지, 러스트, 어스톤이 깊어지는 가을. 빈티지 아웃도어 무드의 체크 패턴과 울 소재 레이어드로 풍성한 가을 감성을 완성합니다. 깊고 따뜻한 색채가 계절을 지배합니다.',
-            palette: [
-                { color: '#bf360c', name: 'Burnt' },
-                { color: '#e64a19', name: 'Rust' },
-                { color: '#ff8a65', name: 'Amber' },
-                { color: '#a1887f', name: 'Mocha' },
-                { color: '#fbe9e7', name: 'Blush' },
-            ],
-            tags: ['# 번트오렌지', '# 러스트', '# 어스톤', '# 레이어드', '# 빈티지'],
-            keywords: [
-                { text: '번트 오렌지·러스트 어스톤 딥 레이어드', color: '#bf360c' },
-                { text: '체크·헤링본 패턴으로 가을 무드 강조', color: '#a04000' },
-                { text: '울·코듀로이 소재로 보온성과 질감 동시에', color: '#795548' },
-            ],
-        },
-        winter_cool: {
-            badge: 'WINTER COOL',
-            badgeColor: '#3f51b5',
-            img: '/img/Main/w_img.jpg',
-            title: '윈터 쿨 트렌드',
-            desc: '미드나잇 블루, 인디고, 아이시 화이트의 에디토리얼 팔레트. 오버코트의 날카로운 실루엣과 터틀넥 레이어드가 겨울의 선명함을 완성합니다. 차갑고 강렬한 대비가 이번 시즌의 언어.',
-            palette: [
-                { color: '#1a1a2e', name: 'Midnight' },
-                { color: '#3f51b5', name: 'Indigo' },
-                { color: '#7986cb', name: 'Slate' },
-                { color: '#b0bec5', name: 'Ash' },
-                { color: '#e8eaf6', name: 'Ice' },
-            ],
-            tags: ['# 모노크롬', '# 인디고', '# 오버코트', '# 에디토리얼', '# 시크'],
-            keywords: [
-                { text: '미드나잇·인디고 딥톤 에디토리얼 레이어드', color: '#3f51b5' },
-                { text: '오버코트 실루엣으로 윈터 무드 완성', color: '#5c6bc0' },
-                { text: '터틀넥 니트로 블랙·화이트 대비 연출', color: '#7986cb' },
-            ],
-        },
-    };
-
-    function openColorTrendPopup(colorKey) {
-        const d = COLOR_TREND_DATA[colorKey];
-        if (!d) return;
-        document.getElementById('ctpopupImg').src = d.img;
-        const badge = document.getElementById('ctpopupBadge');
-        badge.textContent = d.badge;
-        badge.style.borderColor = d.badgeColor;
-        badge.style.color = d.badgeColor;
-        document.getElementById('ctpopupTitle').textContent = d.title;
-        document.getElementById('ctpopupDesc').textContent = d.desc;
-        document.getElementById('ctpopupPalette').innerHTML = d.palette.map(p =>
-            `<div class="ctpopup-swatch"><div class="ctpopup-swatch-dot" style="background:${p.color}"></div><span class="ctpopup-swatch-name">${p.name}</span></div>`
-        ).join('');
-        document.getElementById('ctpopupTags').innerHTML = d.tags.map(t =>
-            `<span class="ctpopup-tag">${t}</span>`
-        ).join('');
-        document.getElementById('ctpopupKeywords').innerHTML = d.keywords.map(k =>
-            `<div class="ctpopup-kw-row"><div class="ctpopup-kw-dot" style="background:${k.color}"></div><span>${k.text}</span></div>`
-        ).join('');
-        document.getElementById('color-trend-popup-overlay').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeColorTrendPopup(e) {
-        if (!e) return;
-        if (e.forceClose || e.target === document.getElementById('color-trend-popup-overlay')) {
-            document.getElementById('color-trend-popup-overlay').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    }
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeColorTrendPopup({ forceClose: true });
-    });
-</script>
 </body>
 </html>

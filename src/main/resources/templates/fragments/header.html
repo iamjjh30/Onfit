@@ -2,330 +2,703 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="header">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Pretendard:wght@300;400;500;600;700&display=swap');
+
         /* ====================================================
-           GNB — Main.css 완전 덮어쓰기 + 검색 수직 확장
-           Main.css의 #header { height:50px; display:flex; overflow:visible }
-           를 모두 override 해야 함
+           GNB — Modern Redesign (투명도 최적화 버전)
            ==================================================== */
 
-        /* Main.css의 #header flex 레이아웃을 block으로 바꿔서
-           세로 확장이 가능하도록 전환 */
+        * { box-sizing: border-box; }
+
         #header {
             position: fixed !important;
-            top: 12px !important;
-            left: 5vw !important;
-            right: 5vw !important;
+            top: 14px !important;
+            left: 4vw !important;
+            right: 4vw !important;
             z-index: 9999 !important;
             width: auto !important;
-            height: auto !important;        /* ← 50px 고정 해제 */
-            border-radius: 25px !important;
-            background: rgba(255,255,255,0.25) !important;
-            backdrop-filter: blur(30px) saturate(220%) !important;
-            -webkit-backdrop-filter: blur(30px) saturate(220%) !important;
-            border: 1px solid rgba(255,255,255,0.45) !important;
-            box-shadow: 0 10px 50px -10px rgba(0,0,0,0.1) !important;
-            display: block !important;      /* ← flex → block (내부에서 직접 flex 처리) */
-            overflow: hidden !important;    /* ← visible → hidden (확장 패널 클리핑) */
-            transition: background     0.6s cubic-bezier(0.16,1,0.3,1),
-                        border-color   0.6s cubic-bezier(0.16,1,0.3,1),
-                        box-shadow     0.6s cubic-bezier(0.16,1,0.3,1),
-                        border-radius  0.45s cubic-bezier(0.16,1,0.3,1) !important;
+            height: auto !important;
+            border-radius: 10px !important;
+
+            /* [수정] 배경을 더 투명하게(0.72 -> 0.4) 변경하여 흰색 겹침 현상 해결 */
+            background: rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+
+            /* [수정] 테두리를 더 은은하게 조정 */
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+
+            box-shadow:
+                0 2px 0 0 rgba(255,255,255,0.5) inset,
+                0 8px 32px -4px rgba(0,0,0,0.06),
+                0 2px 8px -2px rgba(0,0,0,0.02) !important;
+            display: block !important;
+            transition:
+                background 0.5s cubic-bezier(0.16,1,0.3,1),
+                border-color 0.5s cubic-bezier(0.16,1,0.3,1),
+                box-shadow 0.5s cubic-bezier(0.16,1,0.3,1),
+                border-radius 0.4s cubic-bezier(0.16,1,0.3,1) !important;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }
 
-        /* 검색 열렸을 때 */
-        #header.search-open {
-            border-radius: 25px 25px 20px 20px !important;
-            background: rgba(255,255,255,0.97) !important;
-            border-color: rgba(210,210,210,0.8) !important;
-            box-shadow: 0 24px 70px -10px rgba(0,0,0,0.2) !important;
+        #header.search-open, #header.icon-open {
+            overflow: hidden !important;
+            border-radius: 20px 20px 16px 16px !important;
+            /* 패널이 열렸을 때는 가독성을 위해 배경을 조금 더 채움 */
+            background: rgba(255, 255, 255, 0.92) !important;
+            border-color: rgba(220, 220, 220, 0.5) !important;
+            box-shadow:
+                0 2px 0 0 rgba(255,255,255,1) inset,
+                0 32px 80px -8px rgba(0,0,0,0.12),
+                0 8px 24px -4px rgba(0,0,0,0.05) !important;
         }
 
-        /* ── GNB 기본 바 (50px 높이 flex 행) ── */
+        /* ── Header Bar ── */
         #header-bar {
-            height: 50px;
+            height: 54px;
             display: flex;
             align-items: center;
             width: 100%;
+            padding: 0 4px;
         }
 
-        /* ── 로고 ── */
-        #logo { width: auto; flex-shrink: 0; }
+        /* ── Logo ── */
+        #logo {
+            display: flex;
+            align-items: center;
+            padding: 0 8px 0 14px;
+            flex-shrink: 0;
+        }
         #logo img {
-            width: 40px; height: 40px; margin: 0 20px; display: block;
-            transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+            cursor: pointer;
         }
-        #logo img:hover { transform: rotate(45deg); }
+        #logo img:hover {
+            transform: rotate(50deg) scale(1.08);
+            filter: drop-shadow(0 2px 8px rgba(255, 184, 52, 0.4));
+        }
 
-        /* ── 네비게이션 ── */
-        #header-bar > nav { flex-shrink: 0; }
-        #header-bar > nav ul { display: flex; margin: 0; padding: 0; }
-        #header-bar > nav ul li {
-            float: none; margin-left: 30px;
-            line-height: 50px; cursor: pointer; white-space: nowrap;
+        /* ── Nav ── */
+        #header-bar > nav {
+            margin-left: 6px;
+        }
+        #header-bar > nav ul {
+            display: flex;
+            margin: 0;
+            padding: 0;
             list-style: none;
+            gap: 2px;
         }
-        #header-bar > nav ul li a { text-decoration: none; color: black; }
-        #header-bar > nav ul li a:visited { color: black; }
-        #header-bar > nav ul li:hover a { color: #FFB834; font-weight: bold; transition: 0.3s ease; }
+        #header-bar > nav ul li {
+            position: relative;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        #header-bar > nav ul li a {
+            display: block;
+            text-decoration: none;
+            color: rgba(0, 0, 0, 0.7);
+            font-size: 17px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            padding: 6px 14px;
+            border-radius: 10px;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+        #header-bar > nav ul li a:hover {
+            color: rgba(0, 0, 0, 0.95);
+        }
+        #header-bar > nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 14px;
+            right: 14px;
+            height: 2px;
+            background: #FFB834;
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #header-bar > nav ul li a:hover::after {
+            transform: scaleX(1);
+        }
 
-        /* ── 검색 트리거 박스 ── */
+        /* ── Search Box ── */
         #header-search-inline {
             flex: 1;
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            padding-right: 12px;
-            min-width: 0;
+            padding-right: 6px;
         }
         #header-search-box {
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 260px;
-            height: 36px;
+            width: 220px;
+            height: 34px;
             border-radius: 50px;
-            padding: 0 16px;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(40px) saturate(250%);
-            -webkit-backdrop-filter: blur(40px) saturate(250%);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.07);
+            padding: 0 14px;
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
             cursor: pointer;
-            transition: background 0.25s ease, box-shadow 0.25s ease;
-            /* width 확장 트랜지션 제거 — 클릭 시 패널로 전환하므로 불필요 */
+            transition: background 0.2s ease, border-color 0.2s ease, width 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         #header-search-box:hover {
-            background: rgba(255,255,255,0.72);
+            width: 240px;
         }
-        #search-icon { flex-shrink: 0; pointer-events: none; }
         #header-search-placeholder {
-            flex: 1; font-size: 13px; color: #999; font-weight: 400;
-            pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-size: 12.5px;
+            color: rgba(0, 0, 0, 0.38);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* ── 아이콘 ── */
+        /* ── Icon Buttons ── */
         .header_icon {
             flex-shrink: 0;
-            width: auto; height: 50px;
-            padding: 0 16px; position: relative;
-            display: flex; align-items: center;
+            width: auto;
+            height: 54px;
+            padding: 0 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
             cursor: pointer;
         }
-        .header_icon img { width: 25px; height: 25px; display: block; }
-        .header_icon:hover > .header_icon_hover1,
-        .header_icon:hover > .header_icon_hover2 { display: block !important; }
-
-        .header_icon_hover1,
-        .header_icon_hover2 {
-            display: none; position: absolute; width: 160px;
-            border-radius: 12px; background-color: white;
-            border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-            right: 0; left: auto; z-index: 100; top: 48px;
+        .header_icon-btn {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: background 0.2s ease;
         }
-        .header_icon_hover1 nav ul,
-        .header_icon_hover2 nav ul { display: block; padding: 8px 0; }
-        .header_icon_hover1 nav ul li,
-        .header_icon_hover2 nav ul li { float: none; line-height: 40px; padding: 0 16px; list-style: none; }
-        .header_icon_hover1 nav ul li a,
-        .header_icon_hover2 nav ul li a { text-decoration: none; color: black; display: block; }
-        .header_icon_hover1 nav ul li a:hover,
-        .header_icon_hover2 nav ul li a:hover { color: #FFB834; }
+        .header_icon img {
+            width: 22px;
+            height: 22px;
+            display: block;
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), filter 0.25s ease;
+        }
+        .header_icon:hover img {
+            transform: scale(1.1);
+            filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.0);
+        }
 
-        /* ================================================================
-           검색 확장 패널 — GNB 하단에 수직 확장
-        ================================================================ */
+        /* ── Icon Panel ── */
+        .header_icon.icon-open .header_icon-btn {
+            background: rgba(0, 0, 0, 0.06);
+        }
+        .header_icon.icon-open img {
+            transform: scale(1.1);
+            filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.0);
+        }
+
+        #icon-panel {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.45s cubic-bezier(0.16,1,0.3,1), opacity 0.28s ease;
+        }
+        #header.icon-open #icon-panel {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        #icon-panel-inner {
+            padding: 0 24px 22px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .icon-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0 14px;
+            margin-bottom: 16px;
+            border-bottom: 1.5px solid #111;
+        }
+        .icon-panel-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: -0.02em;
+        }
+        .icon-panel-close {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #aaa;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: color 0.2s ease, background 0.2s ease;
+            letter-spacing: -0.01em;
+        }
+        .icon-panel-close:hover { color: #333; background: rgba(0,0,0,0.05); }
+
+        .icon-panel-content { display: none; }
+        .icon-panel-content.active { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .icon-panel-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 13px;
+            border: 1px solid rgba(0,0,0,0.07);
+            background: rgba(0,0,0,0.02);
+            text-decoration: none;
+            color: rgba(0,0,0,0.72);
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+            white-space: nowrap;
+        }
+        .icon-panel-item:hover {
+            background: rgba(255,184,52,0.1);
+            border-color: rgba(255,184,52,0.25);
+            color: #C8860A;
+            font-weight: 600;
+            transform: translateY(-1px);
+        }
+
+        .icon-panel-welcome {
+            font-size: 17px;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: -0.01em;
+            padding: 4px 0 12px;
+            width: 100%;
+        }
+        .icon-panel-welcome strong {
+            color: #111;
+            font-weight: 700;
+        }
+
+        /* ── Search Panel ── */
         #search-panel {
             max-height: 0;
             overflow: hidden;
             opacity: 0;
-            transition: max-height 0.55s cubic-bezier(0.16,1,0.3,1),
-                        opacity     0.35s ease;
+            transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
         }
         #header.search-open #search-panel {
-            max-height: 280px;
+            max-height: 440px;
             opacity: 1;
         }
 
         #search-panel-inner {
-            padding: 0 28px 26px;
-            border-top: 1px solid rgba(0,0,0,0.07);
+            padding: 0 24px 24px;
+            border-top: 1px solid rgba(0,0,0,0.06);
         }
 
         .sp-input-row {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 18px 0 14px;
-            border-bottom: 2px solid #111;
-            margin-bottom: 22px;
+            gap: 12px;
+            padding: 16px 0 14px;
+            border-bottom: 1.5px solid #111;
+            margin-bottom: 20px;
         }
+
         #sp-input {
-            flex: 1; border: none; outline: none;
+            flex: 1;
+            border: none;
+            outline: none;
             background: transparent;
-            font-size: 20px; font-weight: 700; color: #111;
-            letter-spacing: -0.01em;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            letter-spacing: -0.02em;
         }
-        #sp-input::placeholder { color: #ccc; font-weight: 500; }
+        #sp-input::placeholder { color: #ccc; font-weight: 400; }
+
         #sp-cancel {
-            flex-shrink: 0; font-size: 13px; font-weight: 600; color: #999;
-            cursor: pointer; padding: 4px 0 4px 10px; transition: color 0.18s;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #aaa;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: color 0.2s ease, background 0.2s ease;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
         }
-        #sp-cancel:hover { color: #111; }
+        #sp-cancel:hover { color: #333; background: rgba(0,0,0,0.05); }
+
+        #sp-results-content { display: none; margin-top: 8px; }
+        .search-result-container { display: flex; gap: 32px; }
+        .result-left { width: 132px; flex-shrink: 0; }
 
         .sp-section-label {
-            font-size: 10px; font-weight: 700;
-            letter-spacing: 0.13em; text-transform: uppercase;
-            color: #bbb; margin-bottom: 13px;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: #c0c0c0;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-family: 'Syne', sans-serif;
         }
-        .sp-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .sp-tag {
-            padding: 7px 18px; border-radius: 50px;
-            border: 1px solid #e8e8e8; font-size: 13px; color: #444;
-            background: #f9f9f9; cursor: pointer;
-            transition: background 0.18s, color 0.18s, border-color 0.18s;
-        }
-        .sp-tag:hover { background: #111; color: #fff; border-color: #111; }
 
-        /* 배경 마스크 */
+        .filter-buttons { display: flex; flex-direction: column; gap: 6px; }
+
+        .res-btn {
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: 12px;
+            border: 1px solid #eeeeee;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+            letter-spacing: -0.01em;
+            color: #333;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .res-btn:hover { border-color: #ddd; background: #f8f8f8; }
+        .res-btn.active { background: #111; color: #fff; border-color: #111; }
+
+        .result-right { flex: 1; overflow: hidden; }
+        .product-grid { display: flex; gap: 14px; justify-content: flex-start; }
+
+        .prod-card {
+            width: 140px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .prod-card:hover { transform: translateY(-3px); }
+
+        .prod-img {
+            width: 100%;
+            height: 170px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            margin-bottom: 9px;
+            overflow: hidden;
+        }
+        .prod-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .prod-card:hover .prod-img img { transform: scale(1.06); }
+
+        .p-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: -0.01em;
+        }
+        .p-price { font-size: 12px; color: #999; margin-top: 3px; font-weight: 400; }
+
+        .sp-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+        .sp-tag {
+            padding: 7px 16px;
+            border-radius: 50px;
+            border: 1px solid #ebebeb;
+            font-size: 13px;
+            font-weight: 500;
+            background: #fafafa;
+            cursor: pointer;
+            color: rgba(0,0,0,0.65);
+            letter-spacing: -0.01em;
+            transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+        .sp-tag:hover {
+            background: #111;
+            color: #fff;
+            border-color: #111;
+            transform: translateY(-1px);
+        }
+
+        /* ── Mask ── */
         #header-mask {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.15);
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.12);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s;
             z-index: 9998;
         }
         #header-mask.active { opacity: 1; visibility: visible; }
+
+        /* Scrolled */
+        #header.scrolled {
+            background: rgba(255,255,255,0.7) !important; /* 스크롤 시에도 투명도 유지 */
+            box-shadow:
+                0 2px 0 0 rgba(255,255,255,0.5) inset,
+                0 12px 40px -6px rgba(0,0,0,0.08),
+                0 3px 10px -3px rgba(0,0,0,0.04) !important;
+        }
     </style>
 
     <div id="header-mask"></div>
-
     <div id="header">
-
-        <!-- GNB 기본 바 -->
         <div id="header-bar">
-            <a th:href="@{/}">
-                <div id="logo">
-                    <img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit 로고">
-                </div>
+            <a th:href="@{/}" style="text-decoration:none; display:flex; align-items:center;">
+                <div id="logo"><img th:src="@{/img/interface/LOGO_B.png}" alt="OnFit 로고"></div>
             </a>
 
             <nav>
                 <ul>
                     <li><a th:href="@{/AIStyler}">AI진단</a></li>
                     <li><a th:href="@{/store}">스토어</a></li>
-                    <li><a th:href="@{/Community}">커뮤니티</a></li>
+                    <li><a th:href="@{/community}">커뮤니티</a></li>
                     <li><a th:href="@{/MyPalette}">내 팔레트</a></li>
                 </ul>
             </nav>
 
             <div id="header-search-inline">
                 <div id="header-search-box">
-                    <svg id="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <span id="header-search-placeholder">Mens Fashion Solution</span>
                 </div>
             </div>
 
-            <!-- 프로필 -->
-            <div class="header_icon">
-                <img th:src="@{/img/Main/icon_profile.png}" alt="프로필">
-                <div class="header_icon_hover1">
-                    <nav>
-                        <ul>
-                            <th:block th:unless="${session.loginMember != null}">
-                                <li><a th:href="@{/login}">로그인</a></li>
-                                <li><a th:href="@{/join}">회원가입</a></li>
-                                <li><a th:href="@{/find}">ID 찾기</a></li>
-                            </th:block>
-                            <th:block th:if="${session.loginMember != null}">
-                                <li style="padding: 11px 18px; font-weight: bold; color: #111;">
-                                    <span th:text="${session.loginMember.name} + '님 환영해요!'">홍길동님 환영해요!</span>
-                                </li>
-                                <li><a th:href="@{/mypalette}">마이페이지</a></li>
-                                <li><a th:href="@{/logout}">로그아웃</a></li>
-                            </th:block>
-                        </ul>
-                    </nav>
+            <div class="header_icon" id="icon-profile" data-panel="profile">
+                <div class="header_icon-btn">
+                    <img th:src="@{/img/Main/icon_profile.png}" alt="프로필">
                 </div>
             </div>
 
-            <!-- 장바구니 -->
-            <div class="header_icon">
-                <img th:src="@{/img/Main/icon_cart (1).png}" alt="장바구니">
-                <div class="header_icon_hover2">
-                    <nav>
-                        <ul>
-                            <li><a th:href="@{/Cart}">장바구니</a></li>
-                            <li><a th:href="@{/OrderInfo}">주문내역</a></li>
-                            <li><a th:href="@{/store}">스토어</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div><!-- /#header-bar -->
-
-        <!-- 검색 확장 패널 -->
-        <div id="search-panel">
-            <div id="search-panel-inner">
-                <div class="sp-input-row">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                         stroke="#111" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
-                    <input type="search" id="sp-input" placeholder="OnFit.com 검색하기" autocomplete="off">
-                    <span id="sp-cancel">취소</span>
-                </div>
-                <div class="sp-section-label">Popular Keywords</div>
-                <div class="sp-tags">
-                    <div class="sp-tag">#퍼스널컬러</div>
-                    <div class="sp-tag">#봄웜톤 코디</div>
-                    <div class="sp-tag">#와이드데님</div>
-                    <div class="sp-tag">#오버핏셔츠</div>
-                    <div class="sp-tag">#겨울 레이어드</div>
+            <div class="header_icon" id="icon-cart" data-panel="cart" style="padding-right: 14px;">
+                <div class="header_icon-btn">
+                    <img th:src="@{/img/Main/icon_cart (1).png}" alt="장바구니">
                 </div>
             </div>
         </div>
 
-    </div><!-- /#header -->
+        <div id="icon-panel">
+            <div id="icon-panel-inner">
+                <div class="icon-panel-header">
+                    <span class="icon-panel-title" id="icon-panel-title"></span>
+                    <span class="icon-panel-close" id="icon-panel-close">닫기</span>
+                </div>
 
-    <script>
+                <div class="icon-panel-content" id="panel-profile-guest">
+                    <a th:href="@{/login}" class="icon-panel-item">🔑 로그인</a>
+                    <a th:href="@{/join}" class="icon-panel-item">✨ 회원가입</a>
+                    <a th:href="@{/Find}" class="icon-panel-item">🔍 찾기</a>
+                </div>
+
+                <div class="icon-panel-content" id="panel-profile-member">
+                    <div class="icon-panel-welcome" th:if="${session.loginMember != null}">
+                        안녕하세요, <strong th:text="${session.loginMember.name}">사용자</strong>님 👋
+                    </div>
+                    <a th:href="@{/mypalette}" class="icon-panel-item">🎨 마이페이지</a>
+                    <a th:href="@{/logout}" class="icon-panel-item">👋 로그아웃</a>
+                </div>
+
+                <div class="icon-panel-content" id="panel-cart">
+                    <a th:href="@{/Cart}" class="icon-panel-item">🛒 장바구니</a>
+                    <a th:href="@{/OrderInfo}" class="icon-panel-item">📦 주문내역</a>
+                    <a th:href="@{/store}" class="icon-panel-item">🛍️ 스토어</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="search-panel">
+            <div id="search-panel-inner">
+                <div class="sp-input-row">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="search" id="sp-input" placeholder="OnFit.com 검색하기" autocomplete="off">
+                    <span id="sp-cancel">취소</span>
+                </div>
+                <div id="sp-initial-content">
+                    <div class="sp-section-label">Popular Keywords</div>
+                    <div class="sp-tags">
+                        <div class="sp-tag">#퍼스널컬러</div>
+                        <div class="sp-tag">#봄웜톤 코디</div>
+                        <div class="sp-tag">#와이드데님</div>
+                    </div>
+                </div>
+                <div id="sp-results-content">
+                    <div class="search-result-container">
+                        <div class="result-left">
+                            <div class="sp-section-label">페이지 이동</div>
+                            <div class="filter-buttons"></div>
+                        </div>
+                        <div class="result-right">
+                            <div class="sp-section-label">상품 검색 결과</div>
+                            <div class="product-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
-            const header     = document.getElementById('header');
-            const triggerBox = document.getElementById('header-search-box');
-            const cancelBtn  = document.getElementById('sp-cancel');
-            const mask       = document.getElementById('header-mask');
-            const spInput    = document.getElementById('sp-input');
+            const header = document.getElementById('header');
+            const mask = document.getElementById('header-mask');
 
+            // 스크롤 이벤트
+            window.addEventListener('scroll', () => {
+                if(header) header.classList.toggle('scrolled', window.scrollY > 20);
+            }, { passive: true });
+
+            const triggerBox = document.getElementById('header-search-box');
+            const cancelBtn = document.getElementById('sp-cancel');
+            const spInput = document.getElementById('sp-input');
+            const initialContent = document.getElementById('sp-initial-content');
+            const resultsContent = document.getElementById('sp-results-content');
+            const menuContainer = document.querySelector('.filter-buttons');
+            const productGrid = document.querySelector('.product-grid');
+
+            // 검색창 열기/닫기
             function openSearch() {
-                header.classList.add('search-open');
-                mask.classList.add('active');
-                setTimeout(function () { spInput.focus(); }, 400);
+                closeIconPanel();
+                if(header) header.classList.add('search-open');
+                if(mask) mask.classList.add('active');
+                setTimeout(() => { if(spInput) spInput.focus(); }, 420);
             }
             function closeSearch() {
-                header.classList.remove('search-open');
-                mask.classList.remove('active');
-                spInput.value = '';
+                if(header) header.classList.remove('search-open');
+                if(mask) mask.classList.remove('active');
+                if(spInput) spInput.value = '';
+                if(initialContent) initialContent.style.display = 'block';
+                if(resultsContent) resultsContent.style.display = 'none';
             }
 
-            triggerBox.addEventListener('click', openSearch);
-            cancelBtn.addEventListener('click', closeSearch);
-            mask.addEventListener('click', closeSearch);
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') closeSearch();
-            });
+            if(triggerBox) triggerBox.onclick = openSearch;
+            if(cancelBtn) cancelBtn.onclick = closeSearch;
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSearch(); closeIconPanel(); } });
 
-            document.querySelectorAll('.sp-tag').forEach(function (tag) {
-                tag.addEventListener('click', function () {
-                    spInput.value = this.textContent.replace(/^#/, '').trim();
-                    spInput.focus();
+            // 라이브 검색 로직
+            if(spInput) {
+                spInput.oninput = function () {
+                    const keyword = this.value.trim();
+                    if (keyword.length > 0) {
+                        fetch(`/api/search/live?keyword=${encodeURIComponent(keyword)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if(menuContainer) menuContainer.innerHTML = '';
+                                if (data.menus && data.menus.length > 0) {
+                                    data.menus.forEach((menu, idx) => {
+                                        const btn = document.createElement('button');
+                                        btn.className = `res-btn ${idx === 0 ? 'active' : ''}`;
+                                        btn.textContent = menu.name;
+                                        btn.onclick = () => location.href = menu.url;
+                                        menuContainer.appendChild(btn);
+                                    });
+                                } else if(menuContainer) { menuContainer.innerHTML = '<p style="font-size:12px;color:#ccc;">결과 없음</p>'; }
+
+                                if(productGrid) productGrid.innerHTML = '';
+                                if (data.products && data.products.length > 0) {
+                                    data.products.forEach(p => {
+                                        productGrid.insertAdjacentHTML('beforeend', `
+                                            <div class="prod-card" onclick="location.href='/itemDetail?id=${p.id}'">
+                                                <div class="prod-img"><img src="${p.imgPath || '/img/no-image.png'}" alt="${p.name}"></div>
+                                                <div class="prod-info">
+                                                    <p class="p-name">${p.name}</p>
+                                                    <p class="p-price">${Number(p.price).toLocaleString()}원</p>
+                                                </div>
+                                            </div>`);
+                                    });
+                                } else if(productGrid) { productGrid.innerHTML = '<p style="font-size:12px;color:#ccc;">상품 없음</p>'; }
+
+                                if(initialContent) initialContent.style.display = 'none';
+                                if(resultsContent) resultsContent.style.display = 'block';
+                            })
+                            .catch(err => console.error("Search API Error:", err));
+                    } else {
+                        if(initialContent) initialContent.style.display = 'block';
+                        if(resultsContent) resultsContent.style.display = 'none';
+                    }
+                };
+            }
+
+            const iconPanelTitle = document.getElementById('icon-panel-title');
+            const iconPanelClose = document.getElementById('icon-panel-close');
+
+            // 패널 설정
+            const panelConfig = {
+                profile: {
+                    title: '계정',
+                    getContentId: () => 'panel-profile-guest' // 기본값 (아래 함수에서 동적 변경)
+                },
+                cart: {
+                    title: '장바구니',
+                    getContentId: () => 'panel-cart'
+                }
+            };
+
+            let currentPanel = null;
+
+            window.openIconPanel = function(panelKey) {
+                closeSearch();
+                const config = panelConfig[panelKey];
+                if (!config) return;
+
+                if (currentPanel === panelKey) {
+                    closeIconPanel();
+                    return;
+                }
+
+                // 모든 패널 비활성화
+                document.querySelectorAll('.icon-panel-content').forEach(el => el.classList.remove('active'));
+
+                // 로그인 여부에 따른 프로필 패널 분기 (타임리프 인라인 적용)
+                let contentId = config.getContentId();
+                if (panelKey === 'profile') {
+                    var isLogin = /*[[${session.loginMember != null}]]*/ false;
+                    contentId = isLogin ? 'panel-profile-member' : 'panel-profile-guest';
+                }
+
+                const content = document.getElementById(contentId);
+                if (content) content.classList.add('active');
+
+                if(iconPanelTitle) iconPanelTitle.textContent = config.title;
+                if(header) header.classList.add('icon-open');
+                if(mask) mask.classList.add('active');
+
+                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
+                const currentIcon = document.getElementById(`icon-${panelKey}`);
+                if (currentIcon) currentIcon.classList.add('icon-open');
+
+                currentPanel = panelKey;
+            }
+
+            window.closeIconPanel = function() {
+                if(header) header.classList.remove('icon-open');
+                if(mask) mask.classList.remove('active');
+                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
+                currentPanel = null;
+            }
+
+            // 아이콘 클릭 이벤트 연결
+            document.querySelectorAll('.header_icon[data-panel]').forEach(iconEl => {
+                iconEl.addEventListener('click', () => {
+                    openIconPanel(iconEl.dataset.panel);
                 });
             });
+
+            if(iconPanelClose) iconPanelClose.onclick = closeIconPanel;
+            if(mask) mask.onclick = () => { closeSearch(); closeIconPanel(); };
         });
     </script>
-
 </div>
 </html>

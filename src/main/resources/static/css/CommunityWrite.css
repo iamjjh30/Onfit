@@ -35,7 +35,7 @@ a { text-decoration: none; color: inherit; }
 
 #wrap {
     max-width: 760px;
-    margin: 0 auto;
+    margin: 80px auto;
     padding: 0 24px 80px;
     opacity: 0;
     animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
