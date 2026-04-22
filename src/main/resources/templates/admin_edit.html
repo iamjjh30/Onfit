@@ -33,6 +33,19 @@
         <label>스타일 태그</label>
         <input type="text" name="styleTags" th:value="${product.styleTags}">
 
+        <label>퍼스널 컬러 — BEST PICKS 노출 기준</label>
+        <select name="isfeared">
+            <option value="">— 미설정 —</option>
+            <option value="NEUTRAL"     th:selected="${product.isfeared == 'NEUTRAL'}">🌫️ NEUTRAL (뉴트럴)</option>
+            <option value="SPRING_WARM" th:selected="${product.isfeared == 'SPRING_WARM'}">🌸 SPRING_WARM (스프링 웜)</option>
+            <option value="SUMMER_COOL" th:selected="${product.isfeared == 'SUMMER_COOL'}">🌊 SUMMER_COOL (써머 쿨)</option>
+            <option value="AUTUMN_WARM" th:selected="${product.isfeared == 'AUTUMN_WARM'}">🍂 AUTUMN_WARM (어텀 웜)</option>
+            <option value="WINTER_COOL" th:selected="${product.isfeared == 'WINTER_COOL'}">❄️ WINTER_COOL (윈터 쿨)</option>
+        </select>
+
+        <label>사이즈 (availableSizes) — 쉼표로 구분 예: S,M,L,XL</label>
+        <input type="text" name="availableSizes" th:value="${product.availableSizes}" placeholder="예: S,M,L,XL">
+
         <label>상세 설명</label>
         <textarea name="description" rows="5">[[${product.description}]]</textarea>
 

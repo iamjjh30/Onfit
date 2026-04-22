@@ -276,7 +276,7 @@ function toggleLike(postId) {
     })
         .then(function (r) {
             if (r.status === 401) {
-                alert('로그인이 필요합니다.');
+                toast('로그인이 필요합니다.');
                 return null;
             }
             return r.json();
@@ -299,4 +299,12 @@ function toggleLike(postId) {
 function escHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, success = true) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast-show' + (success ? '' : ' toast-error');
+    setTimeout(() => { toast.className = ''; location.href = '/login';}, 1200);
 }

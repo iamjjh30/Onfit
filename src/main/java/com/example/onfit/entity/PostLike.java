@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "post_like",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "user_id"}))
+       uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "member_id"}))
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder

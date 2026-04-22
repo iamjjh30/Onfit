@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ds.postId = parseInt(parts[parts.length - 1]);
 
     if (!ds.postId) {
-        alert('잘못된 접근입니다.');
+        toast('잘못된 접근입니다.');
         window.location.href = '/community';
         return;
     }
@@ -66,7 +66,7 @@ function fetchPost() {
             renderPost(post);
         })
         .catch(function () {
-            alert('게시글을 불러올 수 없습니다.');
+            toast('게시글을 불러올 수 없습니다.');
             window.location.href = '/community';
         });
 }
@@ -222,7 +222,7 @@ function renderPostMenu(post) {
         })
             .then(function (r) { if (!r.ok) throw new Error(); })
             .then(function () { window.location.href = '/community'; })
-            .catch(function () { alert('삭제에 실패했습니다.'); });
+            .catch(function () { toast('삭제에 실패했습니다.'); });
     });
 }
 
@@ -252,7 +252,7 @@ function handleLike() {
         credentials: 'include'          // ✅ 세션 쿠키 포함
     })
         .then(function (r) {
-            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
             return r.json();
         })
         .then(function (data) {
@@ -334,6 +334,12 @@ function buildCommentHTML(c) {
 }
 
 function buildReplyHTML(r, parentId) {
+    // ✅ 본인 확인
+    var isOwner = ds.currentUser && ds.currentUser.id === r.memberId;
+    var deleteBtn = isOwner
+        ? '<button class="action-btn" data-action="delete-comment" data-comment-id="' + r.commentId + '">삭제</button>'
+        : '';
+
     return '<div class="reply">' +
         '<div class="comment-avatar"><img src="' + (r.profileImg || '/img/interface/ProfileDefault.png') + '" alt="author"></div>' +
         '<div class="comment-body">' +
@@ -342,6 +348,13 @@ function buildReplyHTML(r, parentId) {
         '<span class="comment-date">' + formatDate(r.createdAt) + '</span>' +
         '</div>' +
         '<p class="comment-text">' + highlightMention(escHtml(r.content || '')) + '</p>' +
+        // ✅ 액션 버튼 추가
+        '<div class="comment-actions">' +
+        '<button class="action-btn' + (r.liked ? ' liked' : '') + '" data-action="like-comment" data-comment-id="' + r.commentId + '">' +
+        '♥ ' + (r.likeCount || 0) +
+        '</button>' +
+        deleteBtn +
+        '</div>' +
         '</div>' +
         '</div>';
 }
@@ -402,12 +415,12 @@ function submitReply(commentId) {
         body: JSON.stringify({ content: input.value.trim(), parentId: commentId })
     })
         .then(function (r) {
-            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
             if (!r.ok) throw new Error();
             return r.json();
         })
         .then(function (data) { if (data) fetchComments(); })
-        .catch(function () { alert('답글 등록에 실패했습니다.'); });
+        .catch(function () { toast('답글 등록에 실패했습니다.'); });
 }
 
 function toggleCommentLike(commentId) {
@@ -416,7 +429,7 @@ function toggleCommentLike(commentId) {
         credentials: 'include'          // ✅ 세션 쿠키 포함
     })
         .then(function (r) {
-            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
             return r.json();
         })
         .then(function (data) { if (data) fetchComments(); })
@@ -431,7 +444,7 @@ function deleteComment(commentId) {
     })
         .then(function (r) { if (!r.ok) throw new Error(); })
         .then(function () { fetchComments(); })
-        .catch(function () { alert('삭제에 실패했습니다.'); });
+        .catch(function () { toast('삭제에 실패했습니다.'); });
 }
 
 /* ── 댓글 입력 ── */
@@ -453,12 +466,12 @@ function submitComment() {
         body: JSON.stringify({ content: input.value.trim(), parentId: null })
     })
         .then(function (r) {
-            if (r.status === 401) { alert('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
             if (!r.ok) throw new Error();
             return r.json();
         })
         .then(function (data) { if (data) { input.value = ''; fetchComments(); } })
-        .catch(function () { alert('댓글 등록에 실패했습니다.'); });
+        .catch(function () { toast('댓글 등록에 실패했습니다.'); });
 }
 
 /* ── 유틸 ── */
@@ -473,5 +486,14 @@ function highlightMention(text) {
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
-    return dateStr.substring(0, 10);
+    return dateStr.substring(0, 16).replace('T', ' ');
+}
+
+function toast(msg, success = true) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast-show' + (success ? '' : ' toast-error');
+    setTimeout(() => { toast.className = ''; }, 1200);
+
 }

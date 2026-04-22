@@ -43,7 +43,7 @@ a:visited { color: black; }
 /* ====================================================
    BANNER — wrap 내 신박한 디자인
    ==================================================== */
-#banner-outer { display: none; }
+#banner-outer { display: block; }
 
 #banner {
     width: 100%;
@@ -58,9 +58,9 @@ a:visited { color: black; }
     cursor: pointer;
     background: #111;
     box-shadow:
-        0 2px 0 rgba(255,255,255,0.8) inset,
-        0 30px 60px -15px rgba(0,0,0,0.3),
-        0 0 0 1px rgba(0,0,0,0.06);
+            0 2px 0 rgba(255,255,255,0.8) inset,
+            0 30px 60px -15px rgba(0,0,0,0.3),
+            0 0 0 1px rgba(0,0,0,0.06);
 }
 
 .slide {
@@ -470,23 +470,7 @@ a:visited { color: black; }
 /* ====================================================
    STYLE SECTION (셋째 단 — 패션 코디 추천) 요청 7
    ==================================================== */
-.style-section { padding: 80px 0 60px; }
-.style-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-.style-grid .product-card {
-    aspect-ratio: 2/3;
-}
-
-/* 스타일 세컨드 로우 (4컬럼) */
-.style-grid-row2 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-top: 16px;
-}
+/* [중복 제거] */
 
 /* ====================================================
    TREND SECTION (넷째 단) 요청 7
@@ -1036,13 +1020,7 @@ footer {
    NEW ADDITIONS — 완전 재설계
    ===================================================== */
 
-/* ─── 탭 이모지 hover ─── */
-#tab_button li .tab-emoji {
-    display: inline-block; margin-right: 5px;
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-}
-#tab_button li:hover .tab-emoji,
-#tab_button li.active .tab-emoji { transform: scale(1.3) rotate(-5deg); }
+/* [중복 제거] */
 
 /* ─────────────────────────────────────────────
    BEST PRODUCTS SECTION — 신박 매거진 레이아웃
@@ -1182,14 +1160,7 @@ footer {
 /* ─────────────────────────────────────────────
    추천 패션조합 — 상/하의 동시 상하 배치
 ───────────────────────────────────────────── */
-.style-section { padding: 80px 0 50px; }
-.style-section .section-label { text-align: left; }
-.style-section .section-main-title {
-    font-family: 'Playfair Display', serif;
-    text-align: left; font-size: clamp(1.9rem, 4vw, 3rem);
-    margin-bottom: 6px;
-}
-.style-section .section-sub-title { text-align: left; margin-bottom: 40px; }
+/* [중복 제거] */
 
 /* 구형 rail 숨김 */
 .fashion-combo-rail { display: none !important; }
@@ -1283,24 +1254,7 @@ footer {
 /* ─────────────────────────────────────────────
    컬러별 트렌드 — 5장 이미지 세로 순서대로
 ───────────────────────────────────────────── */
-.neutral-trend-section { margin-top: 80px; }
-.neutral-trend-header {
-    display: flex; justify-content: space-between;
-    align-items: flex-end; margin-bottom: 28px;
-}
-.neutral-trend-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
-    font-weight: 900; letter-spacing: -1.5px;
-    line-height: 1.1; color: #111;
-}
-.neutral-trend-header p {
-    color: #888;
-    font-size: 0.9rem;
-    max-width: 390px;
-    text-align: right;
-    line-height: 1.6;
-}
+/* [중복 제거] */
 
 
 /* ─────────────────────────────────────────────
@@ -1352,123 +1306,11 @@ footer {
 /* ─────────────────────────────────────────────
    Seasonal Colors 섹션 — 완전 재설계
 ───────────────────────────────────────────── */
-.seasonal-colors-section {
-    margin-top: 60px;
-    border-radius: 22px;
-    background: #ffffff;
-    border: 1.5px solid #ebebeb;
-    box-shadow: 0 4px 28px rgba(0,0,0,0.06);
-    position: relative; overflow: hidden;
-    padding: 36px 44px;
-    display: flex; align-items: center; gap: 40px;
-}
-.seasonal-colors-section::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: var(--season-glow, radial-gradient(ellipse 60% 80% at 25% 50%, rgba(150,150,150,0.22) 0%, transparent 70%));
-    pointer-events: none;
-}
-.season-meta { flex-shrink: 0; z-index: 1; }
-.season-month-label {
-    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.22em;
-    color: #aaa; text-transform: uppercase; margin-bottom: 4px;
-}
-.season-month-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem; font-weight: 900;
-    color: #111; letter-spacing: -2px; line-height: 1;
-}
-.season-badge {
-    display: inline-block; margin-top: 8px;
-    padding: 3px 10px; border-radius: 50px; border: 1px solid;
-    font-size: 0.58rem; font-weight: 700;
-    letter-spacing: 0.12em; opacity: 0.85;
-}
-.season-divider {
-    width: 1px; align-self: stretch;
-    background: rgba(0,0,0,0.08); flex-shrink: 0; z-index: 1;
-}
-.season-palette-wrap {
-    flex: 1; display: flex; align-items: center;
-    gap: 12px; z-index: 1; overflow: hidden;
-}
-.season-chip-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.season-chip {
-    width: 38px; height: 38px; border-radius: 50%;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.3);
-    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
-}
-.season-chip:hover { transform: scale(1.22) translateY(-3px); }
-.season-chip-name {
-    font-size: 0.52rem; color: #aaa;
-    letter-spacing: 0.03em; white-space: nowrap; text-align: center;
-}
-.season-keyword-wrap { margin-left: auto; text-align: right; flex-shrink: 0; z-index: 1; }
-.season-keyword { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; color: #111; }
-.season-season-text {
-    font-size: 0.66rem; font-weight: 500;
-    color: #aaa; letter-spacing: 0.06em; margin-top: 4px;
-}
-
+/* [중복 제거] */
 /* ─────────────────────────────────────────────
    Fit BTI 섹션 — 완전 재설계
 ───────────────────────────────────────────── */
-.fitbti-section {
-    margin-top: 14px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 100%);
-    border: 1.5px solid #d6deff;
-    position: relative; overflow: hidden;
-    display: flex; align-items: center;
-    padding: 32px 44px; gap: 32px;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-    text-decoration: none;
-}
-.fitbti-section:hover { box-shadow: 0 18px 48px rgba(99,102,241,0.15); }
-.fitbti-section::before {
-    content: ''; position: absolute;
-    right: -80px; top: 50%; transform: translateY(-50%);
-    width: 320px; height: 320px;
-    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 65%);
-    pointer-events: none;
-}
-.fitbti-left { z-index: 2; flex: 1; }
-.fitbti-eyebrow {
-    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.22em;
-    color: #9699cc; text-transform: uppercase; margin-bottom: 7px;
-}
-.fitbti-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.1rem; font-weight: 900; color: #111;
-    letter-spacing: -1.5px; line-height: 1; margin-bottom: 8px;
-}
-.fitbti-subtitle { font-size: 0.82rem; color: #666; letter-spacing: 0.02em; }
-.fitbti-right { z-index: 2; display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
-.bti-type-pills { display: flex; gap: 7px; flex-wrap: wrap; }
-.bti-pill {
-    padding: 5px 13px; border-radius: 50px;
-    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
-    background: rgba(99,102,241,0.08);
-    border: 1px solid rgba(99,102,241,0.2);
-    color: #5356b0; white-space: nowrap;
-    transition: all 0.22s;
-}
-.bti-pill:hover { background: rgba(99,102,241,0.18); border-color: rgba(99,102,241,0.4); color: #3334a8; }
-.fitbti-btn {
-    padding: 11px 26px; background: #5356c8; color: white;
-    border: none; border-radius: 50px; font-size: 0.84rem;
-    font-weight: 700; cursor: pointer; white-space: nowrap;
-    transition: transform 0.22s, box-shadow 0.22s;
-    letter-spacing: -0.01em; display: inline-block; text-decoration: none;
-}
-.fitbti-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(83,86,200,0.3); color: white; }
-
-/* AI 섹션 숨김 */
-.ai { display: none !important; }
-/* Stay Neutral 등 섹션 숨김 */
-#summer, #summer_sw, #summer_sc, #summer_aw, #summer_wc { display: none !important; }
-
+/* [중복 제거] */
 /* ─────────────────────────────────────────────
    트렌드 팝업
 ───────────────────────────────────────────── */
@@ -1659,27 +1501,21 @@ body {
     letter-spacing: 0.3em;
     font-size: 0.68rem;
     color: #bbb;
+    text-align: left;
 }
 .style-section .section-main-title {
     font-family: 'Playfair Display', serif;
     font-size: clamp(2rem, 4.5vw, 3.2rem);
     letter-spacing: -1px;
+    text-align: left;
 }
 .style-section .section-sub-title {
     margin-bottom: 40px;
+    text-align: left;
 }
 
 /* 가로 스크롤 카드 레이아웃 */
-.fashion-combo-rail {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 12px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-.fashion-combo-rail::-webkit-scrollbar { display: none; }
+/* [중복 제거] */
 
 .combo-card {
     flex: 0 0 260px;
@@ -2026,8 +1862,6 @@ body {
 ===================================================== */
 
 
-
-
 /* =====================================================
    trend-section 모던화
 ===================================================== */
@@ -2124,18 +1958,382 @@ body {
     font-size: 13px !important; color: #888; letter-spacing: 0.04em;
     text-align: center; max-width: 55px; line-height: 1.2;
 }
-    /* 헤더를 최상위 레이어로 고정 */
-    #header {
-        z-index: 10000 !important;
-    }
+/* 헤더를 최상위 레이어로 고정 */
+#header {
+    z-index: 10000 !important;
+}
 
-    /* 검색 아이콘 및 우측 아이콘 클릭 활성화 */
-    .header_search, .header_icon, .header_icon[data-panel] {
-        cursor: pointer !important;
-        pointer-events: auto !important;
-    }
+/* 검색 아이콘 및 우측 아이콘 클릭 활성화 */
+.header_search, .header_icon, .header_icon[data-panel] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
 
-    /* 배경 오버레이(마스크)가 헤더를 가리지 않게 조정 */
-    .header-mask {
-        z-index: 9998 !important;
-    }
+/* 배경 오버레이(마스크)가 헤더를 가리지 않게 조정 */
+.header-mask {
+    z-index: 9998 !important;
+}
+
+/* ============================================================
+          BEST PICKS: 카드 — 이미지 + 하단 정보패널 (상시 노출)
+          ============================================================ */
+.bp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: start;    /* 카드 높이 개별 유지 */
+}
+/* 카드 전체: flex 세로 배치 */
+.bp-card {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    position: relative !important;
+    border-radius: 16px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08) !important;
+    transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.32s !important;
+    height: auto !important;
+}
+.bp-card:hover {
+    transform: translateY(-6px) scale(1.013) !important;
+    box-shadow: 0 22px 50px rgba(0,0,0,0.13) !important;
+    z-index: 2;
+}
+/* 이미지: 고정 비율, 꽉 채움 */
+.bp-card > img {
+    width: 100% !important;
+    aspect-ratio: 3 / 4 !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+    background: #f3f3f3 !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.55s ease !important;
+}
+.bp-card:hover > img { transform: scale(1.05) !important; }
+
+/* 카드 번호/NEW 배지는 이미지 위에 absolute */
+.bp-num {
+    position: absolute !important;
+    top: 12px !important; left: 12px !important;
+    z-index: 3 !important;
+}
+.bp-new {
+    position: absolute !important;
+    top: 12px !important; right: 12px !important;
+    z-index: 3 !important;
+}
+
+/* 정보 패널: 상시 노출, 이미지 아래에 붙음 */
+.bp-info {
+    position: static !important;    /* absolute 덮어쓰기 */
+    transform: none !important;     /* translateY(100%) 제거 */
+    background: #fff !important;
+    border-top: 1px solid #f0f0f0 !important;
+    padding: 14px 14px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    flex-shrink: 0 !important;
+}
+.bp-info-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+}
+/* 텍스트 색상: 흰색 → 어두운색 */
+.bp-name { color: #111 !important; font-size: 0.87rem !important; font-weight: 700 !important; }
+.bp-price { color: #111 !important; font-size: 0.87rem !important; font-weight: 700 !important; margin-top: 2px !important; }
+/* 브랜드/컬러 서브텍스트 */
+.bp-brand { font-size: 0.64rem !important; font-weight: 700 !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; color: #bbb !important; }
+.bp-color { font-size: 0.72rem !important; color: #999 !important; }
+/* 버튼: full-width, 카드 패널 내부에 자연스럽게 */
+.bp-cart {
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    background: #111 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 14px !important;
+    font-size: 0.73rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    letter-spacing: 0.02em !important;
+    transition: background 0.2s !important;
+    flex-shrink: 0 !important;
+}
+.bp-cart:hover { background: #333 !important; }
+
+/* ============================================================
+   FIX 2 ─ 패션조합: TOP/BOTTOM 이미지 상/하 분리, blank 없음
+   ============================================================ */
+.outfit-imgs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: unset !important;
+    height: auto !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    background: #e8e8e6;
+}
+.outfit-img-wrap {
+    position: relative;
+    overflow: hidden;
+    flex: unset !important;
+    flex-direction: unset !important;
+    align-items: unset !important;
+    min-height: unset !important;
+    gap: unset !important;
+}
+.outfit-img-wrap img {
+    width: 100% !important;
+    aspect-ratio: 2 / 3 !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+    background: #f7f7f7 !important;
+    border-radius: 0 !important;
+    display: block !important;
+    transition: transform 0.55s ease;
+}
+.outfit-set:hover .outfit-img-wrap img { transform: scale(1.05); }
+/* outfit-set 전체 높이 자동 확장, overflow 정상화 */
+.outfit-set {
+    overflow: hidden !important;
+}
+
+/* ============================================================
+   FIX 3 ─ 트렌드 섹션: 단일 이미지 + 클릭 팝업
+   ============================================================ */
+
+/* 단일 이미지 래퍼 */
+.trend-single-img {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+.trend-single-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.trend-single-img:hover img {
+    transform: scale(1.04);
+}
+/* 하단 그라디언트 오버레이 */
+.trend-single-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 40px 36px 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.28) 65%, transparent 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: padding 0.3s;
+}
+.trend-single-img:hover .trend-single-overlay {
+    padding-bottom: 34px;
+}
+.trend-single-chips {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 4px;
+}
+.trend-chip-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.trend-single-label {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+.trend-single-hint {
+    font-size: 12px;
+    opacity: 0.65;
+    letter-spacing: 0.04em;
+    transition: opacity 0.2s;
+}
+.trend-single-img:hover .trend-single-hint {
+    opacity: 1;
+}
+
+/* ── 컬러 트렌드 팝업 ── */
+#color-trend-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+#color-trend-popup-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.color-trend-popup {
+    position: relative;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    max-width: 860px;
+    width: 92vw;
+    max-height: 90vh;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.28);
+    transform: translateY(24px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#color-trend-popup-overlay.active .color-trend-popup {
+    transform: translateY(0) scale(1);
+}
+.ctpopup-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.12);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
+}
+.ctpopup-close:hover { background: rgba(0,0,0,0.28); }
+.ctpopup-img-col {
+    flex: 0 0 48%;
+    position: relative;
+    overflow: hidden;
+}
+.ctpopup-img-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.ctpopup-info-col {
+    flex: 1;
+    padding: 40px 36px 36px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.ctpopup-season-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1.5px solid;
+    align-self: flex-start;
+}
+.ctpopup-title {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #111;
+    margin: 0;
+}
+.ctpopup-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+    margin: 0;
+}
+.ctpopup-palette {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.ctpopup-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.ctpopup-swatch-dot {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.ctpopup-swatch-name {
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 0.04em;
+    text-align: center;
+    max-width: 72px;
+    line-height: 1.2;
+}
+.ctpopup-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.ctpopup-tag {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #f5f5f5;
+    color: #444;
+    border: 1px solid #e8e8e8;
+}
+.ctpopup-keywords {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ctpopup-kw-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+    color: #333;
+}
+.ctpopup-kw-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.ctpopup-cta {
+    margin-top: auto;
+    padding: 14px 24px;
+    border-radius: 12px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    align-self: stretch;
+    text-align: center;
+}
+.ctpopup-cta:hover {
+    background: #333;
+    transform: translateY(-1px);
+}
