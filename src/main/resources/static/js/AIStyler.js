@@ -362,42 +362,51 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    // ==============================================================
+    // [드롭다운] 드롭다운 메뉴 채우기 & 열기/닫기 로직
+    // ==============================================================
     function fillDropdown(prefix, products) {
         const trigger  = document.getElementById(`${prefix}-select-trigger`);
         const dropdown = document.getElementById(`${prefix}-select-dropdown`);
         const wrap     = document.getElementById(`${prefix}-select-wrap`);
         if (!trigger || !dropdown) return;
 
-        // 드롭다운 옵션 렌더링
-        dropdown.innerHTML = '';
+        // 🚨 데이터가 아예 없을 경우 빈칸 방지 (이게 없으면 안 열리는 것처럼 보임)
+        if (!products || products.length === 0) {
+            dropdown.innerHTML = `<div style="padding: 15px; text-align: center; color: #999; font-size: 0.9rem;">상품이 없습니다.</div>`;
+            return;
+        }
+
+        dropdown.innerHTML = ''; // 초기화
         products.forEach(p => {
+            // 🚨 DB 컬럼명이 imageUrl인지 imgUrl인지, id인지 productId인지 헷갈려도 무조건 작동하게 방어막 설치
+            const imgTarget = p.imageUrl || p.imgUrl || '/img/default_product.png';
+            const idTarget = p.id || p.productId;
+
             const item = document.createElement('div');
             item.className = 'custom-select-option';
             item.innerHTML = `
-            <img src="${p.imgUrl}" alt="${p.name}" onerror="this.src='/img/default_product.png'">
-            <div class="custom-select-option-info">
-                <div class="custom-select-option-name">${p.name}</div>
-                <div class="custom-select-option-price">${Number(p.price).toLocaleString()}원</div>
-            </div>
-        `;
+                <img src="${imgTarget}" alt="${p.name}" onerror="this.src='/img/default_product.png'">
+                <div class="custom-select-option-info">
+                    <div class="custom-select-option-name">${p.name}</div>
+                    <div class="custom-select-option-price">${Number(p.price).toLocaleString()}원</div>
+                </div>
+            `;
+
+            // 옵션 클릭 시 이벤트
             item.addEventListener('click', () => {
-                // 선택 상태 표시
                 dropdown.querySelectorAll('.custom-select-option').forEach(el => el.classList.remove('selected'));
                 item.classList.add('selected');
-
-                // 트리거 텍스트 업데이트
                 trigger.querySelector('span').textContent = p.name;
-
-                // 드롭다운 닫기
                 wrap.classList.remove('open');
 
-                // 피팅룸에 세팅
-                setProductForFitting(p.imgUrl, p.name, p.productId, p.category, p.price);
+                // 피팅룸 세팅 (상의/하의 구분해서 들어감)
+                setProductForFitting(imgTarget, p.name, idTarget, p.category, p.price);
             });
             dropdown.appendChild(item);
         });
 
-        // 트리거 클릭 시 열기/닫기
+        // 🌟 트리거 클릭 시 열고 닫기
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = wrap.classList.contains('open');
@@ -412,17 +421,34 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.querySelectorAll('.custom-select-wrap.open').forEach(el => el.classList.remove('open'));
     });
 
-// loadProductDropdowns 함수도 수정
+// ==============================================================
+    // [API] 백엔드에서 상품 리스트 가져오기
+    // ==============================================================
     async function loadProductDropdowns() {
         try {
             const res = await fetch('/api/products/all');
-            if (!res.ok) return;
-            const products = await res.json();
 
+            // 🚨 백엔드 API가 아직 없거나 에러가 날 때, 화면이 먹통되지 않도록 가짜(Test) 데이터 강제 주입!
+            if (!res.ok) {
+                console.warn("🚨 /api/products/all 백엔드 API가 없거나 에러가 발생했습니다!");
+                console.warn("UI 테스트를 위해 임시 데이터를 화면에 띄웁니다.");
+
+                const mockProducts = [
+                    { id: 1, name: "[테스트] 에센셜 화이트 셔츠", price: 35000, category: "SHIRT", imageUrl: "/img/product/shirt/sx_white.jpg" },
+                    { id: 2, name: "[테스트] 미니멀 블랙 하프 셔츠", price: 89000, category: "JACKET", imageUrl: "/img/product/shirt/sn_black.jpg" },
+                    { id: 3, name: "[테스트] 빈티지 그린 코튼 셔츠", price: 45000, category: "SHIRT", imageUrl: "/img/product/shirt/s450_green.jpg" }
+                ];
+
+                fillDropdown('top', mockProducts.filter(p => isTopCategory(p.category)));
+                fillDropdown('bottom', mockProducts.filter(p => isBottomCategory(p.category)));
+                return;
+            }
+
+            const products = await res.json();
             const tops    = products.filter(p => isTopCategory(p.category));
             const bottoms = products.filter(p => isBottomCategory(p.category));
 
-            fillDropdown('top', tops);       // ✅ suffix만 넘김
+            fillDropdown('top', tops);
             fillDropdown('bottom', bottoms);
 
         } catch (e) {

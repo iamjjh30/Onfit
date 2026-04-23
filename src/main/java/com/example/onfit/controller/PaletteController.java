@@ -4,6 +4,7 @@ import com.example.onfit.dto.CurationResponse;
 import com.example.onfit.entity.FittingHistory;
 import com.example.onfit.entity.Member;
 import com.example.onfit.repository.FittingHistoryRepository;
+import com.example.onfit.repository.MemberRepository;
 import com.example.onfit.service.CurationService;
 import com.example.onfit.service.MemberService;
 import com.example.onfit.service.StyleDnaService;
@@ -25,22 +26,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaletteController {
 
-    @Autowired
-    private StyleDnaService dnaService;
-
-    @Autowired
-    private CurationService curationService;
-
-    @Autowired
-    private FittingHistoryRepository fittingRepository;
+    private final StyleDnaService       dnaService;
+    private final CurationService       curationService;
+    private final FittingHistoryRepository fittingRepository;
+    private final MemberRepository      memberRepository;  // ✅ 추가
 
     @GetMapping("/MyPalette")
     public String myPalettePage(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute("loginMember");
+        Member sessionMember = (Member) session.getAttribute("loginMember");
 
-        if (loginMember == null) {
+        if (sessionMember == null) {
             return "redirect:/login";
         }
+
+        // ✅ 세션 대신 DB에서 최신 데이터 조회
+        Member loginMember = memberRepository.findById(sessionMember.getId())
+                .orElse(sessionMember);
+
+        // ✅ 세션도 최신 데이터로 업데이트
+        session.setAttribute("loginMember", loginMember);
 
         List<FittingHistory> recentFittings = fittingRepository.findByMemberOrderByCreatedAtDesc(
                 loginMember, PageRequest.of(0, 3)
@@ -48,6 +52,8 @@ public class PaletteController {
 
         // 1. 진짜 내 DNA 점수 계산해오기
         Map<String, Integer> dnaScores = dnaService.calculateDna(loginMember.getId());
+        String dnaTop = dnaService.getTopDna(dnaScores); // ✅ dnaTop도 추가
+        model.addAttribute("dnaTop", dnaTop);
 
         // 2. JSON 변환 (예외 처리 필수!)
         ObjectMapper mapper = new ObjectMapper();
