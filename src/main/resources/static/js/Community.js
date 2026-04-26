@@ -19,7 +19,22 @@ document.addEventListener('DOMContentLoaded', function () {
     setupTabListeners();
     setupSearch();
     fetchPosts(null);
+    fetchProfileImage();
 });
+
+/* ----------------------------------------------------------------
+   프로필 이미지 로드
+---------------------------------------------------------------- */
+function fetchProfileImage() {
+    fetch('/api/members/me', { credentials: 'include' })
+        .then(function (r) { if (!r.ok) return null; return r.json(); })
+        .then(function (data) {
+            if (!data || !data.profileImg) return;
+            var img = document.getElementById('userProfileImg');
+            if (img) img.src = data.profileImg;
+        })
+        .catch(function () {});
+}
 
 /* ----------------------------------------------------------------
    좋아요 로컬 캐시 로드
@@ -220,30 +235,38 @@ function cleanProductTags(content) {
 
 function fetchAndRenderProducts(ids, containerEl) {
     Promise.all(ids.map(function (id) {
-        return fetch('/api/products/' + id, {
-            credentials: 'include'  // ✅ 세션 쿠키 포함
-        })
+        return fetch('/api/products/' + id, { credentials: 'include' })
             .then(function (r) { return r.ok ? r.json() : null; })
             .catch(function () { return null; });
     })).then(function (products) {
         var valid = products.filter(Boolean);
         if (!valid.length) { containerEl.innerHTML = ''; return; }
+
         containerEl.innerHTML = valid.map(function (p) {
-            return '<a href="/product/' + p.productId + '" class="quoted-product-card" onclick="event.stopPropagation()">' +
-                '<img src="' + (p.imgUrl || '') + '" alt="' + escHtml(p.name) + '">' +
+            return '<a href="/itemDetail?id=' + p.id + '" class="quoted-product-card" onclick="event.stopPropagation()">' +
+                '<img src="' + (p.imageUrl || '') + '" alt="' + escHtml(p.name) + '" onerror="this.style.display=\'none\'">' +
                 '<div class="quoted-product-info">' +
                 '<span class="quoted-product-name">' + escHtml(p.name) + '</span>' +
                 '<span class="quoted-product-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
                 '</div></a>';
         }).join('');
+
+        addWheelScroll(containerEl);
     });
 }
 
 /* ── 이벤트 ── */
 function attachCardListeners() {
     document.querySelectorAll('.post_card').forEach(function (card) {
+        var touchStartedOnProductList = false;
+
+        card.addEventListener('touchstart', function (e) {
+            touchStartedOnProductList = !!e.target.closest('.quoted-product-list');
+        }, { passive: true });
+
         card.addEventListener('click', function (e) {
-            var btn = e.target.closest('.stat-btn, .quoted-product-card');
+            if (touchStartedOnProductList) return;
+            var btn = e.target.closest('.stat-btn, .quoted-product-card, .quoted-product-list');
             if (btn) return;
             window.location.href = '/community/' + this.getAttribute('data-post-id');
         });
@@ -276,7 +299,7 @@ function toggleLike(postId) {
     })
         .then(function (r) {
             if (r.status === 401) {
-                toast('로그인이 필요합니다.');
+                toast('로그인이 필요합니다.', '/login');
                 return null;
             }
             return r.json();
@@ -295,16 +318,57 @@ function toggleLike(postId) {
         .catch(function () {});
 }
 
+/* ── 가로 스크롤 (휠 + 마우스 드래그) ── */
+function addWheelScroll(el) {
+    if (el._scrollAdded) return;
+    el._scrollAdded = true;
+
+    // 휠
+    el.addEventListener('wheel', function (e) {
+        if (e.deltaY === 0) return;
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    // 마우스 드래그
+    var isDragging = false, startX, startScrollLeft;
+    el.addEventListener('mousedown', function (e) {
+        isDragging = true;
+        startX = e.pageX;
+        startScrollLeft = el.scrollLeft;
+        el.style.userSelect = 'none';
+        el.style.cursor = 'grabbing';
+        e.stopPropagation();
+    });
+    window.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        el.scrollLeft = startScrollLeft - (e.pageX - startX);
+    });
+    window.addEventListener('mouseup', function () {
+        if (!isDragging) return;
+        isDragging = false;
+        el.style.userSelect = '';
+        el.style.cursor = '';
+    });
+
+    // 터치 버블링 차단
+    el.addEventListener('touchstart', function (e) { e.stopPropagation(); }, { passive: true });
+    el.addEventListener('touchmove',  function (e) { e.stopPropagation(); }, { passive: true });
+}
+
 /* ── 유틸 ── */
 function escHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function toast(msg, success = true) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.className = 'toast-show' + (success ? '' : ' toast-error');
-    setTimeout(() => { toast.className = ''; location.href = '/login';}, 1200);
+function toast(msg, redirect) {
+    const toastEl = document.getElementById('toast');
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.className = 'toast-show';
+    setTimeout(() => {
+        toastEl.className = '';
+        if (redirect) window.location.href = redirect;
+    }, 1200);
 }

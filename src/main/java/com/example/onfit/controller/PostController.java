@@ -148,4 +148,27 @@ public class PostController {
         boolean liked = commentService.toggleLike(member.getId(), commentId);
         return ResponseEntity.ok(Map.of("liked", liked));
     }
+
+    // ── 내 활동 ────────────────────────────────────────────────────
+
+    @GetMapping("/my/posts")
+    public ResponseEntity<?> getMyPosts(HttpSession session) {
+        Member member = getLoginMember(session);
+        if (member == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.ok(postService.getPostsByMember(member.getId()));
+    }
+
+    @GetMapping("/my/comments")
+    public ResponseEntity<?> getMyComments(HttpSession session) {
+        Member member = getLoginMember(session);
+        if (member == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.ok(commentService.getCommentsByMember(member.getId()));
+    }
+
+    @GetMapping("/my/likes")
+    public ResponseEntity<?> getMyLikes(HttpSession session) {
+        Member member = getLoginMember(session);
+        if (member == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.ok(postService.getLikedPosts(member.getId()));
+    }
 }

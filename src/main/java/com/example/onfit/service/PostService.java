@@ -137,4 +137,22 @@ public class PostService {
                 .map(p -> PostResponse.from(p, false))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> getPostsByMember(Long memberId) {
+        return postRepository.findByMember_IdOrderByCreatedAtDesc(memberId)
+                .stream()
+                .map(p -> PostResponse.from(p,
+                        postLikeRepository.existsByPost_PostIdAndMember_Id(p.getPostId(), memberId)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> getLikedPosts(Long memberId) {
+        return postLikeRepository.findByMember_Id(memberId)
+                .stream()
+                .map(like -> PostResponse.from(like.getPost(),
+                        true))
+                .collect(Collectors.toList());
+    }
 }

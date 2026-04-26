@@ -23,7 +23,7 @@ public class PostResponse {
         r.postId = p.getPostId();
         r.memberId = p.getMember().getId();
         r.nickname = p.getMember().getName();
-        // r.profileImg = p.getMember().getProfileImg();
+        r.profileImg = p.getMember().getProfileImg();
         r.title = p.getTitle(); r.content = p.getContent();
         r.imgUrl = p.getImgUrl(); r.type = p.getType();
         r.likeCount = p.getLikeCount();

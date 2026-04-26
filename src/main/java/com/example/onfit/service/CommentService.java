@@ -63,13 +63,12 @@ public class CommentService {
     }
 
     @Transactional
-    public boolean toggleLike(Long memberId, Long commentId) {  // ✅ userId → memberId
-        Member member = memberRepository.findById(memberId)  // ✅ User → Member
+    public boolean toggleLike(Long memberId, Long commentId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> CustomException.notFound("사용자를 찾을 수 없습니다."));
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> CustomException.notFound("댓글을 찾을 수 없습니다."));
 
-        // ✅ findByCommentCommentIdAndUserUserId → findByCommentCommentIdAndMemberId
         return commentLikeRepository.findByCommentCommentIdAndMemberId(commentId, memberId)
                 .map(like -> {
                     commentLikeRepository.delete(like);
@@ -79,10 +78,26 @@ public class CommentService {
                     commentLikeRepository.save(
                             CommentLike.builder()
                                     .comment(comment)
-                                    .member(member)  // ✅ .user(user) → .member(member)
+                                    .member(member)
                                     .build()
                     );
                     return true;
                 });
+    }
+
+    @Transactional(readOnly = true)
+    public List<java.util.Map<String, Object>> getCommentsByMember(Long memberId) {
+        return commentRepository.findByMemberIdOrderByCreatedAtDesc(memberId)
+                .stream()
+                .map(c -> {
+                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("commentId",  c.getCommentId());
+                    map.put("content",    c.getContent());
+                    map.put("createdAt",  c.getCreatedAt());
+                    map.put("postId",     c.getPost().getPostId());
+                    map.put("postTitle",  c.getPost().getTitle());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }

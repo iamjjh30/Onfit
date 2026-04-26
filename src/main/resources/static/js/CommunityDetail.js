@@ -38,9 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ── 현재 유저 로드 ── */
 function loadCurrentUser() {
-    // ✅ JWT 토큰 체크 제거 — 세션 쿠키로 자동 인증
-    fetch('/api/member/me', {           // ✅ /api/users/me → /api/member/me
-        credentials: 'include'          // ✅ 세션 쿠키(JSESSIONID) 자동 포함
+    fetch('/api/members/me', {
+        credentials: 'include'
     })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (u) {
@@ -157,28 +156,66 @@ function renderProductArea(content) {
     var ids = extractProductIds(content);
     if (!ids.length) { area.innerHTML = ''; return; }
 
-    area.innerHTML = '<div class="product-area" id="productCards"><span style="font-size:0.82rem;color:#bbb;">상품 불러오는 중...</span></div>';
+    area.innerHTML = '<span class="quoted-product-loading">상품 불러오는 중...</span>';
 
     Promise.all(ids.map(function (id) {
-        return fetch('/api/products/' + id, {
-            credentials: 'include'      // ✅ 세션 쿠키 포함
-        })
+        return fetch('/api/products/' + id, { credentials: 'include' })
             .then(function (r) { return r.ok ? r.json() : null; })
             .catch(function () { return null; });
     })).then(function (products) {
         var valid = products.filter(Boolean);
-        var container = document.getElementById('productCards');
-        if (!container) return;
-        if (!valid.length) { container.innerHTML = ''; return; }
-        container.innerHTML = valid.map(function (p) {
-            return '<a href="/product/' + p.productId + '" class="product-card">' +
-                '<img src="' + (p.imgUrl || '') + '" alt="' + escHtml(p.name) + '">' +
-                '<div class="product-card-info">' +
-                '<span class="product-card-name">' + escHtml(p.name) + '</span>' +
-                '<span class="product-card-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
+        if (!valid.length) { area.innerHTML = ''; return; }
+
+        area.className = 'quoted-product-list';
+        area.innerHTML = valid.map(function (p) {
+            return '<a href="/itemDetail?id=' + p.id + '" class="quoted-product-card">' +
+                '<img src="' + (p.imageUrl || '') + '" alt="' + escHtml(p.name) + '" onerror="this.style.display=\'none\'">' +
+                '<div class="quoted-product-info">' +
+                '<span class="quoted-product-name">' + escHtml(p.name) + '</span>' +
+                '<span class="quoted-product-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
                 '</div></a>';
         }).join('');
+
+        addWheelScroll(area);
     });
+}
+
+/* ── 가로 스크롤 (휠 + 마우스 드래그) ── */
+function addWheelScroll(el) {
+    if (el._scrollAdded) return;
+    el._scrollAdded = true;
+
+    // 휠
+    el.addEventListener('wheel', function (e) {
+        if (e.deltaY === 0) return;
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    // 마우스 드래그
+    var isDragging = false, startX, startScrollLeft;
+    el.addEventListener('mousedown', function (e) {
+        isDragging = true;
+        startX = e.pageX;
+        startScrollLeft = el.scrollLeft;
+        el.style.userSelect = 'none';
+        el.style.cursor = 'grabbing';
+        e.stopPropagation();
+    });
+    window.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        el.scrollLeft = startScrollLeft - (e.pageX - startX);
+    });
+    window.addEventListener('mouseup', function () {
+        if (!isDragging) return;
+        isDragging = false;
+        el.style.userSelect = '';
+        el.style.cursor = '';
+    });
+
+    // 터치 버블링 차단
+    el.addEventListener('touchstart', function (e) { e.stopPropagation(); }, { passive: true });
+    el.addEventListener('touchmove',  function (e) { e.stopPropagation(); }, { passive: true });
 }
 
 /* ── 게시글 수정/삭제 메뉴 ── */
@@ -252,7 +289,7 @@ function handleLike() {
         credentials: 'include'          // ✅ 세션 쿠키 포함
     })
         .then(function (r) {
-            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
             return r.json();
         })
         .then(function (data) {
@@ -415,7 +452,7 @@ function submitReply(commentId) {
         body: JSON.stringify({ content: input.value.trim(), parentId: commentId })
     })
         .then(function (r) {
-            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
             if (!r.ok) throw new Error();
             return r.json();
         })
@@ -429,7 +466,7 @@ function toggleCommentLike(commentId) {
         credentials: 'include'          // ✅ 세션 쿠키 포함
     })
         .then(function (r) {
-            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
             return r.json();
         })
         .then(function (data) { if (data) fetchComments(); })
@@ -466,7 +503,7 @@ function submitComment() {
         body: JSON.stringify({ content: input.value.trim(), parentId: null })
     })
         .then(function (r) {
-            if (r.status === 401) { toast('로그인이 필요합니다.'); return null; }
+            if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
             if (!r.ok) throw new Error();
             return r.json();
         })
@@ -489,11 +526,13 @@ function formatDate(dateStr) {
     return dateStr.substring(0, 16).replace('T', ' ');
 }
 
-function toast(msg, success = true) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.className = 'toast-show' + (success ? '' : ' toast-error');
-    setTimeout(() => { toast.className = ''; }, 1200);
-
+function toast(msg, redirect) {
+    const toastEl = document.getElementById('toast');
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.className = 'toast-show';
+    setTimeout(() => {
+        toastEl.className = '';
+        if (redirect) window.location.href = redirect;
+    }, 1200);
 }

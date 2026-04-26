@@ -20,7 +20,7 @@
 *, *::before, *::after {
     margin: 0; padding: 0;
     box-sizing: border-box;
-    font-family: 'Pretendard', sans-serif;
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
     letter-spacing: -0.02em;
 }
 
@@ -368,3 +368,27 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-submit:hover { background: #333; transform: translateY(-1px); }
 .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+
+#toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #111;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .3s;
+    z-index: 9999;
+    white-space: nowrap;
+}
+#toast.toast-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+#toast.toast-error { background: #111; }
