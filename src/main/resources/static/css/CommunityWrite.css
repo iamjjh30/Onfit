@@ -20,7 +20,7 @@
 *, *::before, *::after {
     margin: 0; padding: 0;
     box-sizing: border-box;
-    font-family: 'Pretendard', sans-serif;
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
     letter-spacing: -0.02em;
 }
 
