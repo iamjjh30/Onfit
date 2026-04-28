@@ -100,7 +100,7 @@ body {
    ==================================================== */
 .sidebar {
     position: sticky;
-    top: 100px;
+    top: 140px;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -501,4 +501,219 @@ body {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
-#toast.toast-error { background: #e53935; }
+
+
+/* ── 상품 인용 카드 (하단 중복 블록 제거 — 위 스타일 사용) ── */
+
+/* ====================================================
+   탭 Sticky (데스크탑)
+   ==================================================== */
+.tab-navigation {
+    position: sticky;
+    top: 60px;
+    z-index: 100;
+    background: var(--bg-page);
+    padding: 16px 0;
+}
+
+/* ====================================================
+   모바일 전용 요소 — 기본 숨김
+   ==================================================== */
+.mobile-search-bar { display: none; }
+.mobile-tab-bar    { display: none; }
+.fab-write         { display: none; }
+
+/* ====================================================
+   반응형 — Community (768px 이하)
+   ==================================================== */
+@media (max-width: 768px) {
+
+    #wrap {
+        margin: 60px auto 0;
+        padding: 0 0 120px;
+    }
+
+    /* 데스크탑 탭 숨김 */
+    .tab-navigation { display: none; }
+
+    /* 레이아웃 1컬럼 */
+    .community-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    /* ── 사이드바 ── */
+    .sidebar {
+        position: sticky;
+        top: 68px;
+        z-index: 90;
+        background: var(--bg-page);
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-bottom: 1px solid var(--border);
+        flex-wrap: nowrap;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .sidebar-search {
+        flex-direction: row;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+        gap: 8px;
+    }
+
+    /* 데스크탑 검색창/글쓰기 숨김 */
+    .search_wrapper { display: none; }
+    .write-btn      { display: none; }
+
+    /* ── 모바일 검색바 ── */
+    .mobile-search-bar {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        height: 36px;
+        background: var(--surface);
+        border: 1.5px solid var(--border-mid);
+        border-radius: var(--radius-pill);
+        padding: 0 14px 0 10px;
+        gap: 8px;
+        transition: border-color 0.2s;
+        min-width: 0;
+    }
+    .mobile-search-bar:focus-within { border-color: var(--primary); }
+
+    .mobile-search-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .mobile-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: none;
+        font-size: 0.86rem;
+        color: var(--text-main);
+        font-family: inherit;
+        min-width: 0;
+    }
+    .mobile-search-input::placeholder { color: var(--text-muted); }
+
+    /* ── 프로필 아이콘 ── */
+    .user-profile-link,
+    .user-profile-link:visited,
+    .user-profile-link:hover {
+        display: block;
+        text-decoration: none !important;
+        flex-shrink: 0;
+    }
+    .user_profile {
+        padding: 4px;
+        border: none;
+        background: none;
+        border-radius: 50%;
+        gap: 0;
+    }
+    .user_profile:hover { box-shadow: none; border-color: transparent; }
+    .profile_info { display: none; }
+    .profile_img  { width: 32px; height: 32px; }
+
+    .user-profile-link.is-logged-out .user_profile {
+        padding: 4px;
+        border: 1.5px solid var(--border-mid);
+        border-radius: 50%;
+        width: 32px; height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface);
+    }
+    .user-profile-link.is-logged-out .profile_info { display: none; }
+    .login-icon { display: block; color: var(--text-muted); }
+
+    /* ── 게시글 목록 ── */
+    .list_container { padding: 12px 16px 0; }
+    .wrapper { padding: 16px; }
+    .post_images.count-3 { grid-template-columns: 1fr 1fr; }
+    .post_card { margin-bottom: 10px; }
+
+    /* ── 하단 탭바 ── */
+    .mobile-tab-bar {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        height: 52px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        z-index: 200;
+        padding: 0 4px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .mobile-tab-bar::-webkit-scrollbar { display: none; }
+
+    .mobile-tab {
+        flex: 1;
+        min-width: 60px;
+        height: 52px;
+        padding: 0 8px;
+        border: none;
+        background: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+        transition: color 0.18s;
+        position: relative;
+    }
+    .mobile-tab.active { color: var(--primary); }
+    .mobile-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 20%; right: 20%;
+        height: 2px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+
+    /* ── FAB ── */
+    .fab-write {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        bottom: 64px;
+        right: 16px;
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+        z-index: 9998;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .fab-write svg { stroke: #fff !important; }
+    .fab-write:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(0,0,0,0.22); }
+}
+
+@media (max-width: 480px) {
+    .post_text { font-size: 0.88rem; }
+    .quoted-product-card { min-width: 200px; max-width: 200px; }
+    .mobile-tab { font-size: 0.75rem; }
+}

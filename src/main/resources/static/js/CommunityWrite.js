@@ -8,7 +8,7 @@
    - PUT  /api/posts/{id}   (수정)
 ================================================================ */
 
-var selectedCat      = 'TF';
+var selectedCat      = '오늘의 핏';
 var imageFiles       = [];
 var imageBase64s     = [];
 var selectedProducts = [];
@@ -74,6 +74,34 @@ function loadPostForEdit(postId) {
                 imageBase64s = images.filter(Boolean);
                 imageFiles   = images.map(function () { return null; });
                 renderImagePreviews();
+            }
+
+            // 상품 인용 복원
+            var rawContent = post.content || post.title || '';
+            var productIds = [];
+            rawContent.replace(/\[상품:(\d+)\]/g, function (m, id) {
+                var n = parseInt(id);
+                if (productIds.indexOf(n) === -1) productIds.push(n);
+            });
+            rawContent.replace(/\[상품:(\d+):[^\]]+\]/g, function (m, id) {
+                var n = parseInt(id);
+                if (productIds.indexOf(n) === -1) productIds.push(n);
+            });
+
+            if (productIds.length) {
+                Promise.all(productIds.map(function (id) {
+                    return fetch('/api/products/' + id, { credentials: 'include' })
+                        .then(function (r) { return r.ok ? r.json() : null; })
+                        .catch(function () { return null; });
+                })).then(function (products) {
+                    products.filter(Boolean).forEach(function (p) {
+                        if (!selectedProducts.some(function (s) { return s.id === p.id; })) {
+                            selectedProducts.push(p);
+                        }
+                    });
+                    renderSelectedProducts();
+                    renderProductList(allProducts);
+                });
             }
         })
         .catch(function () {

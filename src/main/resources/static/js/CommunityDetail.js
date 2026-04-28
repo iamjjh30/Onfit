@@ -55,7 +55,7 @@ function loadCurrentUser() {
 /* ── 게시글 조회 ── */
 function fetchPost() {
     fetch('/api/posts/' + ds.postId, {
-        credentials: 'include'          // ✅ 세션 쿠키 포함
+        credentials: 'include'
     })
         .then(function (r) { if (!r.ok) throw new Error('조회 실패'); return r.json(); })
         .then(function (post) {
@@ -223,7 +223,7 @@ function renderPostMenu(post) {
     var anchor = document.getElementById('postMenuAnchor');
     if (!anchor) return;
 
-    // ✅ userId → memberId, currentUser.id 기준으로 본인 확인
+
     if (!ds.currentUser || ds.currentUser.id !== post.memberId) {
         anchor.innerHTML = '';
         return;
@@ -255,7 +255,7 @@ function renderPostMenu(post) {
         if (!confirm('게시글을 삭제할까요?')) return;
         fetch('/api/posts/' + ds.postId, {
             method: 'DELETE',
-            credentials: 'include'      // ✅ 세션 쿠키 포함
+            credentials: 'include'
         })
             .then(function (r) { if (!r.ok) throw new Error(); })
             .then(function () { window.location.href = '/community'; })
@@ -283,10 +283,10 @@ function updateStats() {
 }
 
 function handleLike() {
-    // ✅ getToken() 체크 제거 — 401 응답으로 로그인 여부 판단
+
     fetch('/api/posts/' + ds.postId + '/like', {
         method: 'POST',
-        credentials: 'include'          // ✅ 세션 쿠키 포함
+        credentials: 'include'
     })
         .then(function (r) {
             if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
@@ -304,7 +304,7 @@ function handleLike() {
 /* ── 댓글 ── */
 function fetchComments() {
     fetch('/api/posts/' + ds.postId + '/comments', {
-        credentials: 'include'          // ✅ 세션 쿠키 포함
+        credentials: 'include'
     })
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (data) {
@@ -336,7 +336,7 @@ function buildCommentHTML(c) {
             '</div>';
     }
 
-    // ✅ userId → memberId 기준으로 본인 확인
+
     var isOwner = ds.currentUser && ds.currentUser.id === c.memberId;
     var deleteBtn = isOwner
         ? '<button class="action-btn" data-action="delete-comment" data-comment-id="' + c.commentId + '">삭제</button>'
@@ -371,7 +371,7 @@ function buildCommentHTML(c) {
 }
 
 function buildReplyHTML(r, parentId) {
-    // ✅ 본인 확인
+
     var isOwner = ds.currentUser && ds.currentUser.id === r.memberId;
     var deleteBtn = isOwner
         ? '<button class="action-btn" data-action="delete-comment" data-comment-id="' + r.commentId + '">삭제</button>'
@@ -385,7 +385,7 @@ function buildReplyHTML(r, parentId) {
         '<span class="comment-date">' + formatDate(r.createdAt) + '</span>' +
         '</div>' +
         '<p class="comment-text">' + highlightMention(escHtml(r.content || '')) + '</p>' +
-        // ✅ 액션 버튼 추가
+
         '<div class="comment-actions">' +
         '<button class="action-btn' + (r.liked ? ' liked' : '') + '" data-action="like-comment" data-comment-id="' + r.commentId + '">' +
         '♥ ' + (r.likeCount || 0) +
@@ -447,7 +447,7 @@ function submitReply(commentId) {
 
     fetch('/api/posts/' + ds.postId + '/comments', {
         method: 'POST',
-        credentials: 'include',         // ✅ 세션 쿠키 포함
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: input.value.trim(), parentId: commentId })
     })
@@ -463,7 +463,7 @@ function submitReply(commentId) {
 function toggleCommentLike(commentId) {
     fetch('/api/posts/' + ds.postId + '/comments/' + commentId + '/like', {
         method: 'POST',
-        credentials: 'include'          // ✅ 세션 쿠키 포함
+        credentials: 'include'
     })
         .then(function (r) {
             if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
@@ -477,7 +477,7 @@ function deleteComment(commentId) {
     if (!confirm('댓글을 삭제할까요?')) return;
     fetch('/api/posts/' + ds.postId + '/comments/' + commentId, {
         method: 'DELETE',
-        credentials: 'include'          // ✅ 세션 쿠키 포함
+        credentials: 'include'
     })
         .then(function (r) { if (!r.ok) throw new Error(); })
         .then(function () { fetchComments(); })
@@ -498,7 +498,7 @@ function submitComment() {
 
     fetch('/api/posts/' + ds.postId + '/comments', {
         method: 'POST',
-        credentials: 'include',         // ✅ 세션 쿠키 포함
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: input.value.trim(), parentId: null })
     })

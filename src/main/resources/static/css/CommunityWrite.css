@@ -20,7 +20,7 @@
 *, *::before, *::after {
     margin: 0; padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     letter-spacing: -0.02em;
 }
 
@@ -154,7 +154,7 @@ a { text-decoration: none; color: inherit; }
     color: var(--text-main);
     background: #fafafa;
     outline: none;
-    resize: vertical;
+    resize: none;
     line-height: 1.7;
     transition: border-color 0.2s, background 0.2s;
     font-family: inherit;
@@ -391,4 +391,52 @@ a { text-decoration: none; color: inherit; }
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
-#toast.toast-error { background: #111; }
+
+/* ====================================================
+   반응형 — CommunityWrite
+   ==================================================== */
+
+@media (max-width: 768px) {
+    #wrap {
+        margin: 60px auto;
+        padding: 0 16px 60px;
+    }
+
+    .write-nav { padding: 20px 0 16px; }
+
+    .write-card { padding: 24px 20px; }
+    .write-title { font-size: 1.2rem; }
+
+    .cat-tabs { gap: 6px; }
+    .cat-tab { padding: 8px 14px; font-size: 0.8rem; }
+
+    .write-textarea { min-height: 160px; font-size: 0.9rem; }
+
+    /* 이미지 미리보기 그리드 */
+    .img-preview-grid { grid-template-columns: repeat(4, 1fr); }
+
+    .write-actions { gap: 8px; }
+    .btn-cancel { padding: 11px 20px; }
+    .btn-submit { padding: 11px 22px; }
+}
+
+@media (max-width: 480px) {
+    .write-card { padding: 20px 16px; }
+    .write-card-header { margin-bottom: 20px; }
+
+    .cat-tab { padding: 7px 12px; font-size: 0.78rem; }
+
+    /* 이미지 그리드 3열 */
+    .img-preview-grid { grid-template-columns: repeat(3, 1fr); }
+
+    /* 하단 버튼 전체 너비 */
+    .write-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .btn-cancel,
+    .btn-submit {
+        width: 100%;
+        text-align: center;
+    }
+}

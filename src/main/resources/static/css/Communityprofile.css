@@ -23,7 +23,7 @@ body { overflow-x: unset !important; }
 *, *::before, *::after {
     margin: 0; padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    font-family: 'Pretendard', -apple-system, sans-serif;
     letter-spacing: -0.02em;
 }
 
@@ -333,7 +333,7 @@ a { text-decoration: none; color: inherit; }
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
-#toast.toast-error { background: #e53935; }
+
 
 /* ── 크롭 모달 ── */
 .crop-modal-overlay {
@@ -432,3 +432,42 @@ a { text-decoration: none; color: inherit; }
 }
 .crop-btn-save:hover { background: var(--primary-hover); }
 .crop-btn-save:disabled { background: #ccc; cursor: not-allowed; }
+
+/* ====================================================
+   반응형 — CommunityProfile
+   ==================================================== */
+
+@media (max-width: 768px) {
+    #wrap {
+        margin: 60px auto;
+        padding: 0 16px 60px;
+    }
+
+    .profile-nav { padding: 20px 0 16px; }
+
+    .profile-card { padding: 24px 20px; }
+    .profile-avatar { width: 76px; height: 76px; }
+    .profile-avatar-wrap { width: 76px; height: 76px; }
+    .profile-name { font-size: 1.1rem; }
+
+    .profile-tabs { gap: 4px; padding: 4px; }
+    .profile-tab { padding: 9px 12px; font-size: 0.82rem; }
+
+    .post-item { padding: 16px 16px; }
+    .post-item-thumb { width: 60px; height: 60px; }
+
+    .comment-item { padding: 16px 16px; }
+
+    /* 크롭 모달 */
+    .crop-modal { width: 95%; }
+    .crop-container { height: 260px; }
+    .crop-modal-body { padding: 16px; }
+    .crop-modal-footer { padding: 12px 16px 16px; }
+}
+
+@media (max-width: 480px) {
+    .profile-stats { gap: 16px; }
+    .stat-num { font-size: 1rem; }
+    .profile-tab { font-size: 0.78rem; padding: 8px 10px; }
+    .post-item-thumb { width: 52px; height: 52px; }
+}

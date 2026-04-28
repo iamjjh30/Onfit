@@ -12,20 +12,29 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <div id="wrap">
-    <!-- ── 탭 내비게이션 (AIStyler 스타일) ── -->
-    <div class="tab-navigation">
+    <!-- 탭 내비게이션 (데스크탑) -->
+    <div class="tab-navigation" id="tabNavigation">
         <button class="tab-btn active" data-menu="ALL">전체</button>
-        <button class="tab-btn" data-menu="TF">오늘의 핏</button>
+        <button class="tab-btn" data-menu="오늘의 핏">오늘의 핏</button>
         <button class="tab-btn" data-menu="잡담">잡담</button>
         <button class="tab-btn" data-menu="추천">추천</button>
         <button class="tab-btn" data-menu="자랑">자랑</button>
-
     </div>
 
     <div class="community-layout">
-        <!-- ── 사이드바 ── -->
+        <!-- 사이드바 -->
         <aside class="sidebar">
             <div class="sidebar-search">
+                <!-- 모바일 검색창 -->
+                <div class="mobile-search-bar">
+                    <button class="mobile-search-trigger" aria-label="검색">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </button>
+                    <input type="text" placeholder="검색..." class="mobile-search-input" id="mobileSearchInput">
+                </div>
+                <!-- 데스크탑 검색창 -->
                 <div class="search_wrapper">
                     <svg class="search_icon_svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -33,7 +42,9 @@
                     <input type="text" placeholder="검색..." class="search_input" id="searchInput">
                 </div>
                 <a th:href="@{/community/write}" class="write-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
                     글쓰기
                 </a>
             </div>
@@ -44,7 +55,7 @@
                         <img th:src="@{/img/interface/ProfileDefault.png}" alt="profile" id="userProfileImg">
                     </div>
                     <div class="profile_info">
-                        <span class="user_name" id="userName" th:text="${session.loginMember.name}">사용자 이름</span>
+                        <span class="user_name" th:text="${session.loginMember.name}">사용자 이름</span>
                         <span class="user_sub">내 프로필 보기</span>
                     </div>
                 </div>
@@ -52,15 +63,18 @@
 
             <a th:unless="${session.loginMember != null}" th:href="@{/login}" class="user-profile-link is-logged-out">
                 <div class="user_profile">
+                    <svg class="login-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
                     <div class="profile_info">
-                        <span class="user_name" id="userName">로그인 해주세요</span>
+                        <span class="user_name">로그인 해주세요</span>
                         <span class="user_sub">클릭해서 로그인</span>
                     </div>
                 </div>
             </a>
         </aside>
 
-        <!-- ── 게시글 목록 ── -->
+        <!-- 게시글 목록 -->
         <main class="list_container" id="postListContainer">
             <div class="loading-state">
                 <div class="loading-spinner"></div>
@@ -70,8 +84,25 @@
     </div>
 </div>
 
+<!-- 모바일 하단 탭바 -->
+<nav class="mobile-tab-bar" id="mobileTabBar">
+    <button class="mobile-tab active" data-menu="ALL">전체</button>
+    <button class="mobile-tab" data-menu="오늘의 핏">오늘의 핏</button>
+    <button class="mobile-tab" data-menu="잡담">잡담</button>
+    <button class="mobile-tab" data-menu="추천">추천</button>
+    <button class="mobile-tab" data-menu="자랑">자랑</button>
+</nav>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 <div id="toast"></div>
+
+<!-- 모바일 FAB 글쓰기 버튼 -->
+<a th:href="@{/community/write}" class="fab-write" aria-label="글쓰기">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+</a>
+
 <script th:src="@{/js/Community.js}"></script>
 </body>
 </html>
