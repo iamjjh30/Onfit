@@ -1,100 +1,900 @@
 <!DOCTYPE html>
-<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>OnFit Admin System</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnFit · Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+    <style>
+        /* ═══════════════════════════════════════════════
+           OnFit Admin — Complete Rebuild
+           Aesthetic: Dark refined editorial / luxury utility
+           Font: Syne (display) + DM Sans (body)
+        ═══════════════════════════════════════════════ */
+
+        /* ─── Reset & Base ─── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          --bg-base:      #0c0c0e;
+          --bg-surface:   #121215;
+          --bg-elevated:  #1a1a1f;
+          --bg-hover:     #222228;
+          --bg-input:     #18181d;
+
+          --border:       rgba(255,255,255,.07);
+          --border-focus: rgba(255,255,255,.18);
+
+          --text-primary:   #f0f0f2;
+          --text-secondary: #a0a0aa;
+          --text-muted:     #5a5a66;
+
+          --accent:       #c8ff00;        /* lime-neon accent */
+          --accent-dim:   rgba(200,255,0,.12);
+          --accent-glow:  rgba(200,255,0,.25);
+
+          --red:          #ff4d6d;
+          --red-dim:      rgba(255,77,109,.12);
+          --blue:         #4d9fff;
+          --blue-dim:     rgba(77,159,255,.12);
+
+          --spring:  #ffb347;
+          --summer:  #88c9f9;
+          --autumn:  #c97b4b;
+          --winter:  #9bb8f8;
+
+          --sidebar-w: 224px;
+          --topbar-h:  56px;
+
+          --r-sm: 6px;
+          --r-md: 10px;
+          --r-lg: 14px;
+
+          --font-display: 'Syne', sans-serif;
+          --font-body:    'DM Sans', sans-serif;
+
+          --transition: 160ms cubic-bezier(.4,0,.2,1);
+        }
+
+        html, body { height: 100%; background: var(--bg-base); color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; }
+        input, select, textarea { font-family: inherit; color: inherit; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 12px; outline: none; width: 100%; font-size: 13px; transition: border-color var(--transition); }
+        input:focus, select:focus, textarea:focus { border-color: var(--border-focus); }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5a66' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+        textarea { resize: vertical; }
+        table { width: 100%; border-collapse: collapse; }
+
+        /* ─── Layout ─── */
+        .shell { display: flex; height: 100vh; overflow: hidden; }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+          width: var(--sidebar-w);
+          flex-shrink: 0;
+          background: var(--bg-surface);
+          border-right: 1px solid var(--border);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        .sidebar-top { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); }
+
+        .brand { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .brand-dot {
+          width: 8px; height: 8px; border-radius: 50%;
+          background: var(--accent);
+          box-shadow: 0 0 10px var(--accent-glow);
+          flex-shrink: 0;
+        }
+        .brand-name {
+          font-family: var(--font-display);
+          font-size: 18px; font-weight: 800;
+          letter-spacing: -.3px;
+          color: var(--text-primary);
+        }
+        .brand-sub { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; padding-left: 16px; }
+
+        /* Nav */
+        .nav { flex: 1; overflow-y: auto; padding: 12px 12px; display: flex; flex-direction: column; gap: 20px; }
+        .nav::-webkit-scrollbar { width: 0; }
+        .nav-group { display: flex; flex-direction: column; gap: 2px; }
+        .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); padding: 0 8px 6px; }
+
+        .nav-item {
+          display: flex; align-items: center; gap: 10px;
+          width: 100%; padding: 9px 10px;
+          border-radius: var(--r-md);
+          color: var(--text-secondary);
+          font-size: 13px; font-weight: 500;
+          transition: background var(--transition), color var(--transition);
+          position: relative;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav-item.active { background: var(--accent-dim); color: var(--accent); }
+        .nav-item.active::before {
+          content: '';
+          position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+          width: 3px; height: 60%; border-radius: 0 2px 2px 0;
+          background: var(--accent);
+        }
+
+        .nav-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .nav-icon svg { width: 16px; height: 16px; }
+
+        .nav-badge {
+          margin-left: auto;
+          font-size: 9px; font-weight: 700; letter-spacing: 1px;
+          padding: 2px 6px; border-radius: 4px;
+          background: var(--red-dim); color: var(--red);
+        }
+        .nav-item-access { color: var(--red) !important; }
+        .nav-item-access:hover { background: var(--red-dim) !important; }
+        .nav-item-access.active { background: var(--red-dim) !important; color: var(--red) !important; }
+        .nav-item-access.active::before { background: var(--red) !important; }
+
+        /* Sidebar footer */
+        .sidebar-footer {
+          padding: 14px 16px;
+          border-top: 1px solid var(--border);
+          display: flex; align-items: center; gap: 10px;
+        }
+        .admin-info { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .admin-avatar {
+          width: 32px; height: 32px; border-radius: 50%;
+          background: linear-gradient(135deg, var(--accent) 0%, #8bff00 100%);
+          display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-display); font-size: 13px; font-weight: 700;
+          color: #000; flex-shrink: 0;
+        }
+        .admin-nm { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-role { font-size: 10px; color: var(--text-muted); letter-spacing: .5px; }
+
+        .logout-btn {
+          width: 30px; height: 30px; border-radius: var(--r-sm);
+          display: flex; align-items: center; justify-content: center;
+          color: var(--text-muted);
+          transition: background var(--transition), color var(--transition);
+          flex-shrink: 0;
+        }
+        .logout-btn:hover { background: var(--bg-hover); color: var(--red); }
+        .logout-btn svg { width: 16px; height: 16px; }
+
+        /* ─── Main ─── */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* Topbar */
+        .topbar {
+          height: var(--topbar-h);
+          border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 28px;
+          background: var(--bg-surface);
+          flex-shrink: 0;
+        }
+        .page-crumb { font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.2px; color: var(--text-secondary); }
+        .topbar-right { display: flex; align-items: center; gap: 20px; }
+        .topbar-clock { font-size: 12px; font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+        .topbar-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: .8px; text-transform: uppercase; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+        /* Content area */
+        .content-area { flex: 1; overflow-y: auto; padding: 32px 28px; }
+        .content-area::-webkit-scrollbar { width: 5px; }
+        .content-area::-webkit-scrollbar-track { background: transparent; }
+        .content-area::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 4px; }
+
+        /* Sections */
+        .section { display: none; animation: fadeUp .25s ease both; }
+        .section.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* Page head */
+        .page-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+        .page-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; letter-spacing: -.5px; color: var(--text-primary); line-height: 1.1; }
+        .page-desc { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .page-date { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+
+        /* ─── KPI Cards ─── */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+        @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .kpi-card {
+          background: var(--bg-elevated);
+          border: 1px solid var(--border);
+          border-radius: var(--r-lg);
+          padding: 22px 22px 16px;
+          position: relative;
+          overflow: hidden;
+          transition: border-color var(--transition), transform var(--transition);
+        }
+        .kpi-card:hover { border-color: var(--border-focus); transform: translateY(-2px); }
+
+        .kpi-label { font-size: 11px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+        .kpi-value { font-family: var(--font-display); font-size: 36px; font-weight: 800; letter-spacing: -1px; line-height: 1; color: var(--text-primary); }
+        .kpi-unit { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+        .kpi-gfx { position: absolute; bottom: 8px; right: 16px; opacity: .2; }
+        .kpi-gfx svg { width: 70px; height: 35px; }
+
+        .kpi-1 .kpi-value { color: var(--accent); }
+        .kpi-1 .kpi-gfx { color: var(--accent); opacity: .3; }
+        .kpi-2 .kpi-value { color: var(--summer); }
+        .kpi-2 .kpi-gfx { color: var(--summer); opacity: .3; }
+        .kpi-3 .kpi-value { color: var(--spring); }
+        .kpi-3 { border-color: rgba(255,179,71,.2); }
+
+        .kpi-pulse {
+          position: absolute; top: 20px; right: 20px;
+          width: 10px; height: 10px;
+        }
+        .kpi-pulse::before, .kpi-pulse::after {
+          content: ''; position: absolute; inset: 0;
+          border-radius: 50%; background: var(--spring);
+        }
+        .kpi-pulse::after { animation: ripple 2s ease-out infinite; }
+        @keyframes ripple { to { transform: scale(3); opacity: 0; } }
+
+        /* ─── Dashboard grid ─── */
+        .dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+        @media (max-width: 1000px) { .dash-grid { grid-template-columns: 1fr; } }
+
+        /* ─── Card ─── */
+        .card {
+          background: var(--bg-elevated);
+          border: 1px solid var(--border);
+          border-radius: var(--r-lg);
+          overflow: hidden;
+        }
+        .card-head {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--border);
+          flex-wrap: wrap; gap: 10px;
+        }
+        .card-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.1px; }
+        .card-action { font-size: 12px; color: var(--text-muted); transition: color var(--transition); }
+        .card-action:hover { color: var(--accent); }
+
+        /* ─── Table ─── */
+        .tbl { width: 100%; }
+        .tbl thead tr { border-bottom: 1px solid var(--border); }
+        .tbl th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+        .tbl td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+        .tbl tbody tr:last-child td { border-bottom: none; }
+        .tbl tbody tr { transition: background var(--transition); }
+        .tbl tbody tr:hover { background: var(--bg-hover); }
+
+        .fw-med { font-weight: 500; }
+        .mono { font-family: 'SFMono-Regular', 'Consolas', monospace; font-size: 12px; }
+        .muted { color: var(--text-muted); }
+        .sm { font-size: 12px; }
+        .num { font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+
+        /* ─── Badges ─── */
+        .badge {
+          display: inline-flex; align-items: center;
+          padding: 3px 8px; border-radius: 4px;
+          font-size: 11px; font-weight: 600; letter-spacing: .3px;
+          white-space: nowrap;
+        }
+        .badge-warm  { background: rgba(255,179,71,.15); color: #ffb347; }
+        .badge-cool  { background: rgba(136,201,249,.15); color: #88c9f9; }
+        .badge-none  { background: var(--bg-hover); color: var(--text-muted); }
+        .badge-active { background: rgba(200,255,0,.1); color: var(--accent); }
+        .badge-admin  { background: rgba(77,159,255,.15); color: var(--blue); }
+        .badge-master { background: rgba(255,77,109,.15); color: var(--red); }
+        .badge-style  { background: var(--bg-hover); color: var(--text-secondary); }
+
+        /* ─── Color dist bars ─── */
+        .color-dist { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+        .color-bar-wrap { display: flex; align-items: center; gap: 10px; }
+        .color-bar-label { font-size: 11px; color: var(--text-muted); white-space: nowrap; width: 70px; flex-shrink: 0; }
+        .color-bar-track { flex: 1; height: 6px; background: var(--bg-hover); border-radius: 3px; overflow: hidden; }
+        .color-bar { height: 100%; border-radius: 3px; min-width: 4px; transition: width .6s ease; }
+        .color-bar.spring { background: var(--spring); }
+        .color-bar.summer { background: var(--summer); }
+        .color-bar.autumn { background: var(--autumn); }
+        .color-bar.winter { background: var(--winter); }
+        .color-bar-count { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; width: 24px; text-align: right; flex-shrink: 0; }
+
+        /* ─── Buttons ─── */
+        .btn-primary {
+          display: inline-flex; align-items: center; gap: 6px;
+          background: var(--accent); color: #000;
+          font-size: 13px; font-weight: 700;
+          padding: 9px 16px; border-radius: var(--r-md);
+          transition: opacity var(--transition), transform var(--transition);
+          white-space: nowrap;
+        }
+        .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+        .btn-primary svg { width: 16px; height: 16px; }
+        .btn-primary.w-full { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
+
+        .btn-sm {
+          display: inline-flex; align-items: center; justify-content: center;
+          padding: 5px 10px; border-radius: var(--r-sm);
+          font-size: 11px; font-weight: 600; white-space: nowrap;
+          transition: background var(--transition), opacity var(--transition);
+        }
+        .btn-sm-ghost { background: var(--bg-hover); color: var(--text-secondary); }
+        .btn-sm-ghost:hover { color: var(--text-primary); }
+        .btn-sm-danger { background: var(--red-dim); color: var(--red); }
+        .btn-sm-danger:hover { opacity: .8; }
+        .btn-sm-primary { background: var(--accent-dim); color: var(--accent); }
+        .btn-sm-primary:hover { opacity: .8; }
+
+        .btn-outline-sm {
+          padding: 5px 10px; border-radius: var(--r-sm);
+          border: 1px solid var(--border); color: var(--text-secondary);
+          font-size: 11px; font-weight: 600;
+          transition: border-color var(--transition), color var(--transition);
+          white-space: nowrap;
+        }
+        .btn-outline-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ─── Filter row ─── */
+        .filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .filter-row input, .filter-row select { width: auto; min-width: 140px; font-size: 12px; padding: 7px 10px; }
+        .filter-row select { min-width: 120px; }
+        .flex-wrap { flex-wrap: wrap; }
+
+        /* ─── Action cell ─── */
+        .action-cell { display: flex; align-items: center; gap: 6px; }
+
+        /* ─── User cell ─── */
+        .user-cell { display: flex; align-items: center; gap: 10px; }
+        .user-avatar-sm {
+          width: 28px; height: 28px; border-radius: 50%;
+          background: var(--bg-hover); border: 1px solid var(--border);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 11px; font-weight: 700; color: var(--text-secondary);
+          flex-shrink: 0;
+        }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+          display: none;
+          position: fixed; inset: 0; z-index: 1000;
+          background: rgba(0,0,0,.7);
+          backdrop-filter: blur(4px);
+          align-items: center; justify-content: center;
+          padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+          background: var(--bg-elevated);
+          border: 1px solid var(--border-focus);
+          border-radius: var(--r-lg);
+          width: 100%; max-width: 520px;
+          max-height: 90vh; overflow-y: auto;
+          animation: modalIn .2s ease;
+        }
+        .modal-box-lg { max-width: 600px; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(.96) translateY(10px); } to { opacity: 1; transform: none; } }
+
+        .modal-head {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 18px 22px;
+          border-bottom: 1px solid var(--border);
+        }
+        .modal-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
+        .modal-close-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: background var(--transition); }
+        .modal-close-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .modal-close-btn svg { width: 16px; height: 16px; }
+
+        .modal-form { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+        .modal-foot { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 480px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--text-muted); }
+        .form-optional { font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+        /* ─── Member detail modal ─── */
+        .member-detail-grid { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; padding: 22px; }
+        .member-detail-avatar {
+          width: 64px; height: 64px; border-radius: 50%;
+          background: linear-gradient(135deg, var(--accent) 0%, #8bff00 100%);
+          display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-display); font-size: 24px; font-weight: 800; color: #000;
+        }
+        .member-detail-name { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+        .member-detail-id { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; font-family: monospace; }
+        .member-detail-stats { display: flex; gap: 20px; }
+        .detail-stat { text-align: center; }
+        .detail-stat-v { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); }
+        .detail-stat-l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+        .member-detail-tags { grid-column: 1 / -1; display: flex; gap: 20px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid var(--border); }
+        .detail-tag-row { display: flex; align-items: center; gap: 8px; }
+        .detail-tag-label { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+        /* ─── Product Grid ─── */
+        .product-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+
+        .product-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; transition: border-color var(--transition), transform var(--transition); }
+        .product-card:hover { border-color: var(--border-focus); transform: translateY(-3px); }
+        .product-card:hover .product-img-overlay { opacity: 1; }
+
+        .product-img-wrap { position: relative; aspect-ratio: 3/4; background: var(--bg-hover); overflow: hidden; }
+        .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+        .product-card:hover .product-img-wrap img { transform: scale(1.04); }
+
+        .product-img-overlay {
+          position: absolute; inset: 0;
+          background: rgba(0,0,0,.6);
+          display: flex; align-items: center; justify-content: center; gap: 8px;
+          opacity: 0; transition: opacity var(--transition);
+        }
+        .product-edit-btn, .product-del-btn {
+          padding: 7px 12px; border-radius: var(--r-sm);
+          font-size: 12px; font-weight: 600;
+          transition: opacity var(--transition);
+        }
+        .product-edit-btn { background: var(--accent); color: #000; }
+        .product-del-btn { background: var(--red-dim); color: var(--red); border: 1px solid var(--red); }
+        .product-edit-btn:hover, .product-del-btn:hover { opacity: .85; }
+
+        .product-info { padding: 12px; }
+        .product-cat { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+        .product-name { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-price { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+        .product-stock-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* ─── Color Tabs (Main section) ─── */
+        .color-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+        .color-tab {
+          display: flex; align-items: center; gap: 7px;
+          padding: 8px 16px; border-radius: var(--r-md);
+          font-size: 13px; font-weight: 600;
+          background: var(--bg-elevated); border: 1px solid var(--border);
+          color: var(--text-secondary);
+          transition: background var(--transition), border-color var(--transition), color var(--transition);
+        }
+        .color-tab:hover { border-color: var(--border-focus); color: var(--text-primary); }
+        .color-tab.active { border-color: transparent; color: #000; }
+        .color-tab:nth-child(1).active { background: var(--spring); }
+        .color-tab:nth-child(2).active { background: var(--summer); color: #1a1a2e; }
+        .color-tab:nth-child(3).active { background: var(--autumn); }
+        .color-tab:nth-child(4).active { background: var(--winter); color: #1a1a2e; }
+
+        .ctab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .ctab-dot.spring { background: var(--spring); }
+        .ctab-dot.summer { background: var(--summer); }
+        .ctab-dot.autumn { background: var(--autumn); }
+        .ctab-dot.winter { background: var(--winter); }
+
+        .color-panel { display: none; }
+        .color-panel.active { display: block; }
+
+        .outfit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        @media (max-width: 900px) { .outfit-grid { grid-template-columns: 1fr; } }
+
+        .outfit-set { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; }
+        .outfit-set-head { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+
+        .outfit-slot { margin-bottom: 14px; }
+        .outfit-slot:last-child { margin-bottom: 0; }
+        .outfit-slot-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+        .outfit-select { margin-bottom: 8px; }
+        .slot-status { margin-top: 6px; }
+
+        /* ─── Project / Memo ─── */
+        .memo-card { display: flex; flex-direction: column; }
+        .memo-toolbar {
+          display: flex; align-items: center; gap: 4px;
+          padding: 10px 16px;
+          border-bottom: 1px solid var(--border);
+          flex-wrap: wrap;
+        }
+        .memo-tool {
+          width: 30px; height: 30px; border-radius: 6px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 13px; font-weight: 600; color: var(--text-muted);
+          transition: background var(--transition), color var(--transition);
+        }
+        .memo-tool:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .memo-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+
+        #adminMemoArea {
+          width: 100%; border: none; border-radius: 0;
+          background: transparent; color: var(--text-primary);
+          font-size: 14px; line-height: 1.7; padding: 20px;
+          min-height: 420px; resize: none;
+          font-family: 'SFMono-Regular', 'Consolas', monospace;
+        }
+        #adminMemoArea:focus { outline: none; }
+
+        .memo-foot {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 12px 20px;
+          border-top: 1px solid var(--border);
+        }
+        .memo-char-count { font-size: 11px; color: var(--text-muted); }
+
+        .save-status { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+        /* ─── Access ─── */
+        .master-badge {
+          display: flex; align-items: center; gap: 6px;
+          padding: 7px 14px; border-radius: var(--r-md);
+          background: var(--red-dim); color: var(--red);
+          font-size: 11px; font-weight: 700; letter-spacing: 1px;
+        }
+        .master-badge svg { width: 14px; height: 14px; }
+
+        .access-warning {
+          display: flex; align-items: center; gap: 10px;
+          background: rgba(255,179,71,.08);
+          border: 1px solid rgba(255,179,71,.2);
+          border-radius: var(--r-md);
+          padding: 12px 16px;
+          font-size: 12px; color: #ffb347;
+          margin-bottom: 20px;
+        }
+        .access-warning svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    </style>
 </head>
 <body>
 
-<div id="header_left">
-    <a th:href="@{/}"><img th:src="@{/img/interface/text_logo.png}"></a>
-    <nav>
-        <ul>
-            <li onclick="showSection('dashboard', this)" class="menu-item active-menu">대시보드</li>
-            <h3>사이트 관리</h3>
-            <li onclick="showSection('shopping', this)" class="menu-item">Shopping</li>
-            <li onclick="showSection('crm', this)" class="menu-item">CRM</li>
-            <h3>관리자 페이지</h3>
-            <li onclick="showSection('project', this)" class="menu-item">Project</li>
-            <li th:if="${session.loginMember?.loginId == 'kdoryul'}"
-                onclick="showSection('access', this)" class="menu-item" style="color: #FFB834; font-weight: bold;">🔑 Access</li>
-        </ul>
-    </nav>
-</div>
+<div class="shell">
 
-<div id="main_content">
-    <div id="header">
-        <p><span th:text="${session.loginMember?.name}">관리자</span>님, 어서오세요. (ADMIN SYSTEM)</p>
-        <a th:href="@{/logout}"><button id="logout_btn">로그아웃</button></a>
-    </div>
-
-    <!-- ════════════════ DASHBOARD ════════════════ -->
-    <div id="dashboard" class="admin-section active">
-        <div class="section-header"><h2>Dashboard</h2></div>
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-title">누적 가입 회원</div>
-                <div class="stat-value"><span th:text="${totalMembers}">0</span>명</div>
+    <!-- ══════════════════════════════════════
+         SIDEBAR
+    ══════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="brand">
+                <span class="brand-dot"></span>
+                <span class="brand-name">OnFit</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-title">누적 컬러 진단</div>
-                <div class="stat-value"><span th:text="${totalDiagnosed}">0</span>건</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">오늘 신규 가입</div>
-                <div class="stat-value"><span th:text="${todayMembers}">0</span>명</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">미답변 문의</div>
-                <div class="stat-value" style="color: #e74c3c;"><span th:text="${pendingInquiries}">0</span>건</div>
-            </div>
+            <div class="brand-sub">Admin Console</div>
         </div>
-        <div class="content-card">
-            <h3 style="margin-bottom: 15px; color:#333;">최근 가입 유저</h3>
-            <table>
-                <thead>
-                <tr><th>이름</th><th>아이디</th><th>진단결과</th></tr>
-                </thead>
-                <tbody>
-                <tr th:each="m : ${recentMembers}">
-                    <td th:text="${m.name}">이름</td>
-                    <td th:text="${m.loginId}">아이디</td>
-                    <td>
-                        <span class="tag" th:classappend="${m.personalColor == 'SUMMER_COOL' || m.personalColor == 'WINTER_COOL' ? 'cool' : 'warm'}"
-                              th:text="${m.personalColor != null ? m.personalColor : '미진단'}">결과</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+
+        <nav class="nav">
+            <div class="nav-group">
+                <div class="nav-label">Overview</div>
+                <button class="nav-item active" data-section="dashboard" onclick="showSection('dashboard', this)">
+          <span class="nav-icon">
+            <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor" opacity=".4"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor" opacity=".4"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor" opacity=".4"/></svg>
+          </span>
+                    Dashboard
+                </button>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Site Management</div>
+                <button class="nav-item" data-section="shopping" onclick="showSection('shopping', this)">
+          <span class="nav-icon">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M6 2L4 7h12l-2-5H6z" fill="currentColor" opacity=".4"/><path d="M4 7l1.5 9a1 1 0 001 .9h7a1 1 0 001-.9L16 7H4z" fill="currentColor"/></svg>
+          </span>
+                    Shopping
+                </button>
+                <button class="nav-item" data-section="crm" onclick="showSection('crm', this)">
+          <span class="nav-icon">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="8" cy="6" r="3" fill="currentColor"/><path d="M2 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="currentColor" opacity=".5"/><path d="M17 14c0-2-1-3.5-2-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".5"/></svg>
+          </span>
+                    CRM
+                </button>
+                <button class="nav-item" data-section="main-section" onclick="showSection('main-section', this)">
+          <span class="nav-icon">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l1.8 5.6H18l-4.9 3.6 1.9 5.6L10 13l-5 3.8 1.9-5.6L2 7.6h6.2L10 2z" fill="currentColor"/></svg>
+          </span>
+                    Main
+                </button>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Admin</div>
+                <button class="nav-item" data-section="project" onclick="showSection('project', this)">
+          <span class="nav-icon">
+            <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+                    Project
+                </button>
+                <button class="nav-item nav-item-access" data-section="access" onclick="showSection('access', this)"
+                        th:if="${session.loginMember?.loginId == 'kdoryul'}" style="display:none;" id="accessNavBtn">
+          <span class="nav-icon">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="16" cy="4" r="2" fill="#ff4d6d"/></svg>
+          </span>
+                    Access
+                    <span class="nav-badge">MASTER</span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <span th:text="${session.loginMember?.name?.substring(0,1)}">A</span>
+                </div>
+                <div class="admin-meta">
+                    <div class="admin-nm" th:text="${session.loginMember?.name}">관리자</div>
+                    <div class="admin-role">Administrator</div>
+                </div>
+            </div>
+            <a th:href="@{/logout}" href="#" class="logout-btn" title="로그아웃">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M13 3h3a1 1 0 011 1v12a1 1 0 01-1 1h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 14l4-4-4-4M13 10H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
         </div>
-    </div>
+    </aside>
 
-    <!-- ════════════════ SHOPPING ════════════════ -->
-    <div id="shopping" class="admin-section">
+    <!-- ══════════════════════════════════════
+         MAIN CONTENT
+    ══════════════════════════════════════ -->
+    <main class="main">
 
-        <!-- 상품 등록 모달 -->
-        <div id="product_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-            <div class="content-card" style="width: 600px; max-height: 85vh; overflow-y: auto; position: relative; border: none;">
-                <span onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
-                <h2 style="margin-bottom: 25px; color: #333;">신규 상품 등록</h2>
-                <form th:action="@{/admin/shopping/add}" method="post" enctype="multipart/form-data">
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                        <div style="flex: 1;"><label>상품명</label><input type="text" name="name" required></div>
-                        <div style="flex: 1;">
-                            <label>카테고리</label>
-                            <select name="category">
-                                <option value="SHIRT">셔츠 (SHIRT)</option>
-                                <option value="JACKET">자켓 (JACKET)</option>
-                                <option value="HOODIE">후드티 (HOODIE)</option>
-                                <option value="OUTER">아우터 (OUTER)</option>
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="page-crumb" id="pageCrumb">Dashboard</div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-clock" id="clock"></div>
+                <div class="topbar-status">
+                    <span class="status-dot"></span>
+                    System Online
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+
+            <!-- ══════════ DASHBOARD ══════════ -->
+            <section id="dashboard" class="section active">
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-desc">서비스 현황을 한눈에 확인하세요</p>
+                    </div>
+                    <div class="page-date" id="dashDate"></div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card kpi-1">
+                        <div class="kpi-label">누적 가입 회원</div>
+                        <div class="kpi-value"><span th:text="${totalMembers}">0</span></div>
+                        <div class="kpi-unit">명</div>
+                        <div class="kpi-gfx">
+                            <svg viewBox="0 0 60 30" fill="none"><polyline points="0,28 10,20 22,24 34,10 46,16 60,4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-2">
+                        <div class="kpi-label">누적 퍼스널 컬러 진단</div>
+                        <div class="kpi-value"><span th:text="${totalDiagnosed}">0</span></div>
+                        <div class="kpi-unit">건</div>
+                        <div class="kpi-gfx">
+                            <svg viewBox="0 0 60 30" fill="none"><polyline points="0,26 10,22 20,15 30,18 42,8 60,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-3">
+                        <div class="kpi-label">금일 신규 가입</div>
+                        <div class="kpi-value"><span th:text="${todayMembers}">0</span></div>
+                        <div class="kpi-unit">명</div>
+                        <div class="kpi-pulse"></div>
+                    </div>
+                    <div class="kpi-card kpi-4">
+                        <div class="kpi-label">총 상품 수</div>
+                        <div class="kpi-value"><span th:text="${totalProducts != null ? totalProducts : 0}">0</span></div>
+                        <div class="kpi-unit">개</div>
+                    </div>
+                </div>
+
+                <div class="dash-grid">
+                    <div class="card">
+                        <div class="card-head">
+                            <span class="card-title">최근 가입 유저</span>
+                            <button class="card-action" onclick="showSection('crm', document.querySelector('[data-section=crm]'))">전체 보기 →</button>
+                        </div>
+                        <table class="tbl">
+                            <thead>
+                            <tr><th>이름</th><th>아이디</th><th>가입일</th><th>퍼스널 컬러</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="m : ${recentMembers}">
+                                <td class="fw-med" th:text="${m.name}">이름</td>
+                                <td class="mono muted" th:text="${m.loginId}">id</td>
+                                <td class="muted sm" th:text="${m.createdAt != null ? #temporals.format(m.createdAt, 'MM.dd') : '-'}">날짜</td>
+                                <td>
+                    <span class="badge"
+                          th:classappend="${m.personalColor == 'SUMMER_COOL' || m.personalColor == 'WINTER_COOL' ? 'badge-cool' : (m.personalColor != null ? 'badge-warm' : 'badge-none')}"
+                          th:text="${m.personalColor != null ? m.personalColor : '미진단'}">-</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <span class="card-title">퍼스널 컬러 분포</span>
+                        </div>
+                        <div class="color-dist">
+                            <div class="color-bar-wrap">
+                                <div class="color-bar-label">봄 웜톤</div>
+                                <div class="color-bar-track"><div class="color-bar spring" th:style="'width:' + (${springCount != null ? springCount : 0} * 100 / (${totalDiagnosed != null && totalDiagnosed > 0 ? totalDiagnosed : 1})) + '%'"></div></div>
+                                <div class="color-bar-count" th:text="${springCount != null ? springCount : 0}">0</div>
+                            </div>
+                            <div class="color-bar-wrap">
+                                <div class="color-bar-label">여름 쿨톤</div>
+                                <div class="color-bar-track"><div class="color-bar summer" th:style="'width:' + (${summerCount != null ? summerCount : 0} * 100 / (${totalDiagnosed != null && totalDiagnosed > 0 ? totalDiagnosed : 1})) + '%'"></div></div>
+                                <div class="color-bar-count" th:text="${summerCount != null ? summerCount : 0}">0</div>
+                            </div>
+                            <div class="color-bar-wrap">
+                                <div class="color-bar-label">가을 웜톤</div>
+                                <div class="color-bar-track"><div class="color-bar autumn" th:style="'width:' + (${autumnCount != null ? autumnCount : 0} * 100 / (${totalDiagnosed != null && totalDiagnosed > 0 ? totalDiagnosed : 1})) + '%'"></div></div>
+                                <div class="color-bar-count" th:text="${autumnCount != null ? autumnCount : 0}">0</div>
+                            </div>
+                            <div class="color-bar-wrap">
+                                <div class="color-bar-label">겨울 쿨톤</div>
+                                <div class="color-bar-track"><div class="color-bar winter" th:style="'width:' + (${winterCount != null ? winterCount : 0} * 100 / (${totalDiagnosed != null && totalDiagnosed > 0 ? totalDiagnosed : 1})) + '%'"></div></div>
+                                <div class="color-bar-count" th:text="${winterCount != null ? winterCount : 0}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════ SHOPPING ══════════ -->
+            <section id="shopping" class="section">
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Shopping</h1>
+                        <p class="page-desc">전체 상품을 관리합니다</p>
+                    </div>
+                    <button class="btn-primary" onclick="openProductModal()">
+                        <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        신규 상품 등록
+                    </button>
+                </div>
+
+                <!-- 상품 리스트 -->
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title">전체 상품 목록</span>
+                        <div class="filter-row">
+                            <select id="shopCatFilter" onchange="filterProducts()">
+                                <option value="ALL">전체 카테고리</option>
+                                <option value="SHIRT">셔츠</option>
+                                <option value="JACKET">자켓</option>
+                                <option value="HOODIE">후드티</option>
+                                <option value="OUTER">아우터</option>
                             </select>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                        <div style="flex: 1;">
-                            <label>스타일 DNA</label>
-                            <select name="styleTags">
+                    <div class="product-grid" id="productGrid">
+                        <div th:each="p : ${products}" class="product-card" th:data-category="${p.category}">
+                            <div class="product-img-wrap">
+                                <img th:src="${p.imagePath}" th:alt="${p.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'%3E%3Crect fill=\'%23f0f0f0\' width=\'120\' height=\'120\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' font-family=\'sans-serif\' font-size=\'12\' fill=\'%23999\'%3ENo Image%3C/text%3E%3C/svg%3E'" />
+                                <div class="product-img-overlay">
+                                    <button class="product-edit-btn" th:onclick="|location.href='/admin/shopping/edit/' + ${p.productId}|">수정</button>
+                                    <form th:action="@{/admin/shopping/delete/{id}(id=${p.productId})}" method="post" style="display:inline;" onsubmit="return confirm('상품을 삭제하시겠습니까?')">
+                                        <button type="submit" class="product-del-btn">삭제</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-cat" th:text="${p.category}">SHIRT</div>
+                                <div class="product-name" th:text="${p.name}">상품명</div>
+                                <div class="product-price" th:text="${#numbers.formatInteger(p.price, 1, 'COMMA') + '원'}">0원</div>
+                                <div class="product-stock-row">
+                  <span class="badge" th:classappend="${p.stockQuantity > 0 ? 'badge-active' : 'badge-none'}">
+                    재고 <span th:text="${p.stockQuantity}">0</span>개
+                  </span>
+                                    <span class="badge badge-cool" th:text="${p.recommendedSeasons}">컬러</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 상품 등록 모달 -->
+                <div class="modal-overlay" id="productModal" onclick="closeProductModal(event)">
+                    <div class="modal-box">
+                        <div class="modal-head">
+                            <span class="modal-title">신규 상품 등록</span>
+                            <button class="modal-close-btn" onclick="closeProductModal()">
+                                <svg viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            </button>
+                        </div>
+                        <form th:action="@{/admin/shopping/add}" method="post" enctype="multipart/form-data" class="modal-form">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>상품명</label>
+                                    <input type="text" name="name" required placeholder="상품명 입력" />
+                                </div>
+                                <div class="form-group">
+                                    <label>카테고리</label>
+                                    <select name="category">
+                                        <option value="SHIRT">셔츠</option>
+                                        <option value="JACKET">자켓</option>
+                                        <option value="HOODIE">후드티</option>
+                                        <option value="OUTER">아우터</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>스타일 DNA</label>
+                                    <select name="styleTags">
+                                        <option value="MINIMAL">미니멀</option>
+                                        <option value="CASUAL">캐주얼</option>
+                                        <option value="STREET">스트릿</option>
+                                        <option value="FORMAL">포멀</option>
+                                        <option value="VINTAGE">빈티지</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>추천 퍼스널 컬러</label>
+                                    <select name="recommendedSeasons">
+                                        <option value="SPRING_WARM">봄 웜톤</option>
+                                        <option value="SUMMER_COOL">여름 쿨톤</option>
+                                        <option value="AUTUMN_WARM">가을 웜톤</option>
+                                        <option value="WINTER_COOL">겨울 쿨톤</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>가격 (원)</label>
+                                    <input type="number" name="price" required placeholder="0" />
+                                </div>
+                                <div class="form-group">
+                                    <label>재고 수량</label>
+                                    <input type="number" name="stockQuantity" required placeholder="0" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>대표 이미지</label>
+                                <input type="file" name="imageFile" accept="image/*" required />
+                            </div>
+                            <div class="form-group">
+                                <label>호버 이미지 <span class="form-optional">(선택)</span></label>
+                                <input type="file" name="hoverFile" accept="image/*" />
+                            </div>
+                            <div class="form-group">
+                                <label>상품 상세 설명</label>
+                                <textarea name="description" rows="3" placeholder="상품 상세 설명을 입력하세요..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary w-full">상품 등록 완료</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════ CRM ══════════ -->
+            <section id="crm" class="section">
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">CRM</h1>
+                        <p class="page-desc">고객 데이터를 통합 관리합니다</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head flex-wrap">
+                        <span class="card-title">고객 목록</span>
+                        <div class="filter-row">
+                            <input type="text" id="crmSearch" placeholder="이름 · 아이디 검색" oninput="filterCRM()" />
+                            <select id="crmColorFilter" onchange="filterCRM()">
+                                <option value="ALL">모든 컬러</option>
+                                <option value="SPRING_WARM">봄 웜톤</option>
+                                <option value="SUMMER_COOL">여름 쿨톤</option>
+                                <option value="AUTUMN_WARM">가을 웜톤</option>
+                                <option value="WINTER_COOL">겨울 쿨톤</option>
+                                <option value="미진단">미진단</option>
+                            </select>
+                            <select id="crmDnaFilter" onchange="filterCRM()">
+                                <option value="ALL">모든 스타일</option>
                                 <option value="MINIMAL">미니멀</option>
                                 <option value="CASUAL">캐주얼</option>
                                 <option value="STREET">스트릿</option>
@@ -102,300 +902,482 @@
                                 <option value="VINTAGE">빈티지</option>
                             </select>
                         </div>
-                        <div style="flex: 1;">
-                            <label>추천 퍼스널 컬러</label>
-                            <select name="recommendedSeasons">
-                                <option value="SPRING_WARM">봄 웜톤</option>
-                                <option value="SUMMER_COOL">여름 쿨톤</option>
-                                <option value="AUTUMN_WARM">가을 웜톤</option>
-                                <option value="WINTER_COOL">겨울 쿨톤</option>
-                            </select>
+                    </div>
+
+                    <table class="tbl" id="crmTable">
+                        <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>고객</th>
+                            <th>퍼스널 컬러</th>
+                            <th>스타일 DNA</th>
+                            <th>구매</th>
+                            <th>가상피팅</th>
+                            <th>게시글</th>
+                            <th>관리</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="m : ${members}" class="crm-row"
+                            th:data-name="${m.name}"
+                            th:data-id="${m.loginId}"
+                            th:data-color="${m.personalColor != null ? m.personalColor : '미진단'}"
+                            th:data-dna="${m.styleDna != null ? m.styleDna : ''}">
+                            <td class="mono muted sm" th:text="${m.userId}">1</td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-sm"><span th:text="${m.name?.substring(0,1)}">A</span></div>
+                                    <div>
+                                        <div class="fw-med" th:text="${m.name}">이름</div>
+                                        <div class="mono muted sm" th:text="${m.loginId}">id</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                  <span class="badge"
+                        th:classappend="${m.personalColor == 'SUMMER_COOL' || m.personalColor == 'WINTER_COOL' ? 'badge-cool' : (m.personalColor != null ? 'badge-warm' : 'badge-none')}"
+                        th:text="${m.personalColor != null ? m.personalColor : '미진단'}">-</span>
+                            </td>
+                            <td class="muted" th:text="${m.styleDna != null ? m.styleDna : '—'}">-</td>
+                            <td class="num" th:text="${m.buyCount} + '회'">0</td>
+                            <td class="num" th:text="${m.fittingCount} + '회'">0</td>
+                            <td class="num" th:text="${m.postCount}">0</td>
+                            <td>
+                                <div class="action-cell">
+                                    <button class="btn-sm btn-sm-ghost" th:onclick="|showMemberDetail(${m.userId})|">상세</button>
+                                    <form th:action="@{/admin/member/delete/{id}(id=${m.userId})}" method="post" style="display:inline;"
+                                          onsubmit="return confirm('정말로 이 회원을 탈퇴 처리하시겠습니까?')">
+                                        <button type="submit" class="btn-sm btn-sm-danger">탈퇴</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 회원 상세 모달 -->
+                <div class="modal-overlay" id="memberModal" onclick="closeMemberModal(event)">
+                    <div class="modal-box modal-box-lg">
+                        <div class="modal-head">
+                            <span class="modal-title">회원 상세 정보</span>
+                            <button class="modal-close-btn" onclick="closeMemberModal()">
+                                <svg viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            </button>
+                        </div>
+                        <div class="member-detail-grid">
+                            <div class="member-detail-avatar" id="detailAvatar">A</div>
+                            <div class="member-detail-info">
+                                <h2 class="member-detail-name" id="detailName">-</h2>
+                                <div class="member-detail-id" id="detailId">-</div>
+                                <div class="member-detail-stats">
+                                    <div class="detail-stat"><div class="detail-stat-v" id="detailBuy">0</div><div class="detail-stat-l">구매</div></div>
+                                    <div class="detail-stat"><div class="detail-stat-v" id="detailFitting">0</div><div class="detail-stat-l">가상피팅</div></div>
+                                    <div class="detail-stat"><div class="detail-stat-v" id="detailPost">0</div><div class="detail-stat-l">게시글</div></div>
+                                </div>
+                            </div>
+                            <div class="member-detail-tags">
+                                <div class="detail-tag-row">
+                                    <span class="detail-tag-label">퍼스널 컬러</span>
+                                    <span class="badge" id="detailColor">-</span>
+                                </div>
+                                <div class="detail-tag-row">
+                                    <span class="detail-tag-label">스타일 DNA</span>
+                                    <span class="badge badge-style" id="detailDna">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-foot">
+                            <a class="btn-primary" id="detailFullLink" th:href="@{/admin/member/detail/__${0}__}">전체 상세 페이지 →</a>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                        <div style="flex: 1;"><label>가격</label><input type="number" name="price" required></div>
-                        <div style="flex: 1;"><label>재고 수량</label><input type="number" name="stockQuantity" required></div>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label>대표 이미지 업로드</label>
-                        <input type="file" name="imageFile" accept="image/*" required>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label>호버 이미지 업로드</label>
-                        <input type="file" name="hoverFile" accept="image/*">
-                    </div>
-                    <div style="margin-bottom: 25px;">
-                        <label>상품 상세 설명</label>
-                        <textarea name="description" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-add" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;">상품 등록 완료</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- 섹션 헤더 -->
-        <div class="section-header">
-            <h2>Shopping Management</h2>
-            <button class="btn btn-add" onclick="openModal()">+ 신규 상품 등록</button>
-        </div>
-
-        <!-- ── Shopping 내 탭 ── -->
-        <div class="shopping-tabs">
-            <div class="shopping-tab active" onclick="showShoppingTab('productList', this)">📦 상품 목록</div>
-            <div class="shopping-tab" onclick="showShoppingTab('outfitSetting', this)">👗 패션조합 설정</div>
-        </div>
-
-        <!-- ── 탭1: 상품 목록 ── -->
-        <div id="productList" class="shopping-tab-content active">
-            <div class="content-card" style="padding: 20px; margin-bottom: 20px;">
-                <div class="search-container">
-                    <input type="text" id="productSearch" placeholder="상품명을 입력하세요..." onkeyup="filterProducts()">
-                    <select id="categoryFilter" onchange="filterProducts()">
-                        <option value="ALL">전체 카테고리</option>
-                        <option value="SHIRT">셔츠</option>
-                        <option value="JACKET">자켓</option>
-                        <option value="HOODIE">후드티</option>
-                        <option value="OUTER">아우터</option>
-                    </select>
-                    <span style="font-size: 13px; color: #888; margin-left: 10px;">* 실시간 필터링 모드</span>
                 </div>
-            </div>
-            <div class="content-card">
-                <table id="productTable">
-                    <thead>
-                    <tr><th>카테고리</th><th>상품명</th><th>가격</th><th>재고</th><th>Outfit 슬롯</th><th>관리</th></tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="p : ${products}" class="product-row">
-                        <td class="col-category" th:text="${p.category}">카테고리</td>
-                        <td class="col-name" th:text="${p.name}">상품명</td>
-                        <td th:text="${#numbers.formatInteger(p.price, 3, 'COMMA')} + '원'">가격</td>
-                        <td th:text="${p.stockQuantity}">재고</td>
-                        <td>
-                            <span th:if="${p.outfit != null and !#strings.isEmpty(p.outfit)}"
-                                  style="background:#e8f5e9; color:#388e3c; font-size:11px; padding:3px 8px; border-radius:10px; font-weight:600;"
-                                  th:text="${p.outfit}">슬롯</span>
-                            <span th:if="${p.outfit == null or #strings.isEmpty(p.outfit)}"
-                                  style="color:#bbb; font-size:12px;">미배정</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-blue" th:onclick="|location.href='/admin/shopping/edit/' + ${p.id}|">수정</button>
-                            <button class="btn btn-del" th:onclick="'if(confirm(\'정말 삭제하시겠습니까?\')){ location.href=\'/admin/shopping/delete/' + ${p.id} + '\'; }'">삭제</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            </section>
 
-        <!-- ── 탭2: Outfit 설정 ── -->
-        <div id="outfitSetting" class="shopping-tab-content">
+            <!-- ══════════ MAIN (컬러별 메인 상품 배정) ══════════ -->
+            <section id="main-section" class="section">
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Main</h1>
+                        <p class="page-desc">컬러 메뉴별 메인 진열 상품을 설정합니다</p>
+                    </div>
+                </div>
 
-            <div class="outfit-save-all-bar">
-                <span>💡 각 슬롯에서 상품을 선택하고 <strong>저장</strong> 버튼을 누르면 즉시 반영됩니다. 빈칸 선택 시 슬롯이 해제됩니다.</span>
-                <p id="outfitGlobalStatus"></p>
-            </div>
+                <!-- 컬러 탭 -->
+                <div class="color-tabs">
+                    <button class="color-tab active" onclick="switchColorTab('SPRING_WARM', this)">
+                        <span class="ctab-dot spring"></span>봄 웜톤
+                    </button>
+                    <button class="color-tab" onclick="switchColorTab('SUMMER_COOL', this)">
+                        <span class="ctab-dot summer"></span>여름 쿨톤
+                    </button>
+                    <button class="color-tab" onclick="switchColorTab('AUTUMN_WARM', this)">
+                        <span class="ctab-dot autumn"></span>가을 웜톤
+                    </button>
+                    <button class="color-tab" onclick="switchColorTab('WINTER_COOL', this)">
+                        <span class="ctab-dot winter"></span>겨울 쿨톤
+                    </button>
+                </div>
 
-            <!-- 퍼스널컬러 탭 -->
-            <div class="outfit-color-tabs">
-                <div class="outfit-color-tab active" onclick="showOutfitColor('NEUTRAL', this)">뉴트럴</div>
-                <div class="outfit-color-tab" onclick="showOutfitColor('SPRING_WARM', this)">스프링 웜</div>
-                <div class="outfit-color-tab" onclick="showOutfitColor('SUMMER_COOL', this)">썸머 쿨</div>
-                <div class="outfit-color-tab" onclick="showOutfitColor('AUTUMN_WARM', this)">어텀 웜</div>
-                <div class="outfit-color-tab" onclick="showOutfitColor('WINTER_COOL', this)">윈터 쿨</div>
-            </div>
+                <div th:each="color : ${ {'SPRING_WARM', 'SUMMER_COOL', 'AUTUMN_WARM', 'WINTER_COOL'} }"
+                     th:id="${color + '_panel'}"
+                     class="color-panel"
+                     th:classappend="${color == 'SPRING_WARM' ? ' active' : ''}">
+                    <div class="outfit-grid">
+                        <div th:each="setNum : ${ {1, 2, 3} }" class="outfit-set">
+                            <div class="outfit-set-head">Set <span th:text="${setNum}">1</span></div>
 
-            <!-- 퍼스널컬러별 패널 - Thymeleaf로 5개 렌더링 -->
-            <!-- color 루프 -->
-            <th:block th:each="color, colorStat : ${personalColors}">
-                <div th:id="'outfit_panel_' + ${color}"
-                     th:classappend="${colorStat.first ? 'active' : ''}"
-                     class="outfit-color-panel">
-
-                    <!-- setNum 루프 -->
-                    <th:block th:each="setNum : ${setNumbers}">
-                            <div class="outfit-set-card">
-                                <div class="outfit-set-title">
-                                    <span th:text="${color}">COLOR</span>
-                                    <span class="set-badge" th:text="${setNum}">SET01</span>
+                            <div class="outfit-slot">
+                                <div class="outfit-slot-label">TOP</div>
+                                <select th:id="${color + '_' + setNum + '_TOP'}" class="outfit-select">
+                                    <option value="">상품 선택</option>
+                                    <option th:each="p : ${products}" th:value="${p.productId}" th:text="${p.name}"
+                                            th:selected="${outfitMap != null && outfitMap.containsKey(color + '_' + setNum + '_TOP') && outfitMap[color + '_' + setNum + '_TOP'].productId == p.productId}">상품명</option>
+                                </select>
+                                <button class="btn-outline-sm" th:data-slot="${color + '_' + setNum + '_TOP'}" onclick="saveOutfitSlot(this)">저장</button>
+                                <div th:id="${color + '_' + setNum + '_TOP_status'}" class="slot-status">
+                                    <span th:if="${outfitMap != null && outfitMap.containsKey(color + '_' + setNum + '_TOP')}" class="badge badge-active" th:text="'✓ ' + ${outfitMap[color + '_' + setNum + '_TOP'].name}">배정됨</span>
+                                    <span th:unless="${outfitMap != null && outfitMap.containsKey(color + '_' + setNum + '_TOP')}" class="badge badge-none">미배정</span>
                                 </div>
-
-                                <!-- TOP 슬롯 -->
-                                <div class="outfit-slot">
-                                    <label>👕 TOP</label>
-                                    <div class="outfit-slot-row">
-                                        <select th:id="${color + '_' + setNum + '_TOP_select'}">
-                                            <option value="0">— 상품 선택 안 함 —</option>
-                                            <th:block th:each="p : ${products}">
-                                                <option th:value="${p.id}"
-                                                        th:text="${p.name + ' (' + p.category + ')' }"
-                                                        th:selected="${outfitMap.containsKey(color + '_' + setNum + '_TOP') and outfitMap[color + '_' + setNum + '_TOP'].id == p.id}">
-                                                </option>
-                                            </th:block>
-                                        </select>
-                                        <button class="btn-outfit-save"
-                                                th:data-slot="${color + '_' + setNum + '_TOP'}"
-                                                onclick="saveOutfitSlot(this)">
-                                            저장
-                                        </button>
-                                    </div>
-                                    <div th:id="${color + '_' + setNum + '_TOP_status'}" class="slot-status">
-                                        <th:block th:if="${outfitMap.containsKey(color + '_' + setNum + '_TOP')}">
-                                            <span class="outfit-assigned-badge"
-                                                  th:text="'✓ ' + ${outfitMap[color + '_' + setNum + '_TOP'].name}"></span>
-                                        </th:block>
-                                        <th:block th:unless="${outfitMap.containsKey(color + '_' + setNum + '_TOP')}">
-                                            <span class="outfit-empty-badge">미배정</span>
-                                        </th:block>
-                                    </div>
-                                </div>
-
-                                <!-- BOTTOM 슬롯 -->
-                                <div class="outfit-slot">
-                                    <label>👖 BOTTOM</label>
-                                    <div class="outfit-slot-row">
-                                        <select th:id="${color + '_' + setNum + '_BOTTOM_select'}">
-                                            <option value="0">— 상품 선택 안 함 —</option>
-                                            <th:block th:each="p : ${products}">
-                                                <option th:value="${p.id}"
-                                                        th:text="${p.name + ' (' + p.category + ')' }"
-                                                        th:selected="${outfitMap.containsKey(color + '_' + setNum + '_BOTTOM') and outfitMap[color + '_' + setNum + '_BOTTOM'].id == p.id}">
-                                                </option>
-                                            </th:block>
-                                        </select>
-                                        <button class="btn-outfit-save"
-                                                th:data-slot="${color + '_' + setNum + '_BOTTOM'}"
-                                                onclick="saveOutfitSlot(this)">
-                                            저장
-                                        </button>
-                                    </div>
-                                    <div th:id="${color + '_' + setNum + '_BOTTOM_status'}" class="slot-status">
-                                        <th:block th:if="${outfitMap.containsKey(color + '_' + setNum + '_BOTTOM')}">
-                                            <span class="outfit-assigned-badge"
-                                                  th:text="'✓ ' + ${outfitMap[color + '_' + setNum + '_BOTTOM'].name}"></span>
-                                        </th:block>
-                                        <th:block th:unless="${outfitMap.containsKey(color + '_' + setNum + '_BOTTOM')}">
-                                            <span class="outfit-empty-badge">미배정</span>
-                                        </th:block>
-                                    </div>
-                                </div>
-
                             </div>
-                        </th:block>
-                        <!-- /SET loop -->
 
+                            <div class="outfit-slot">
+                                <div class="outfit-slot-label">BOTTOM</div>
+                                <select th:id="${color + '_' + setNum + '_BOTTOM'}" class="outfit-select">
+                                    <option value="">상품 선택</option>
+                                    <option th:each="p : ${products}" th:value="${p.productId}" th:text="${p.name}"
+                                            th:selected="${outfitMap != null && outfitMap.containsKey(color + '_' + setNum + '_BOTTOM') && outfitMap[color + '_' + setNum + '_BOTTOM'].productId == p.productId}">상품명</option>
+                                </select>
+                                <button class="btn-outline-sm" th:data-slot="${color + '_' + setNum + '_BOTTOM'}" onclick="saveOutfitSlot(this)">저장</button>
+                                <div th:id="${color + '_' + setNum + '_BOTTOM_status'}" class="slot-status">
+                                    <span th:if="${outfitMap != null && outfitMap.containsKey(color + '_' + setNum + '_BOTTOM')}" class="badge badge-active" th:text="'✓ ' + ${outfitMap[color + '_' + setNum + '_BOTTOM'].name}">배정됨</span>
+                                    <span th:unless="${outfitMap != null && outfitMap.containsKey(color + '_' + setNum + '_BOTTOM')}" class="badge badge-none">미배정</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </th:block>
-            <!-- /color loop -->
+            </section>
 
-        </div>
-        <!-- /outfitSetting tab -->
+            <!-- ══════════ PROJECT ══════════ -->
+            <section id="project" class="section">
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Project</h1>
+                        <p class="page-desc">관리자 팀 메모 공간입니다</p>
+                    </div>
+                    <div class="save-status" id="saveStatus">변경 사항이 없습니다</div>
+                </div>
 
-    </div>
-    <!-- /shopping section -->
+                <div class="card memo-card">
+                    <div class="memo-toolbar">
+                        <button class="memo-tool" onclick="insertMemoText('# ')" title="제목">H</button>
+                        <button class="memo-tool" onclick="insertMemoText('**굵게**')" title="굵게"><b>B</b></button>
+                        <button class="memo-tool" onclick="insertMemoText('- ')" title="목록">≡</button>
+                        <button class="memo-tool" onclick="insertMemoText('[ ] ')" title="체크리스트">☑</button>
+                        <span class="memo-sep"></span>
+                        <button class="memo-tool" onclick="insertMemoText('\n---\n')" title="구분선">—</button>
+                    </div>
+                    <textarea id="adminMemoArea"
+                              th:text="${adminMemo}"
+                              placeholder="팀원들과 공유할 내용을 자유롭게 작성하세요...&#10;&#10;예) 오늘 회의 내용, 진행 현황, 이슈 트래킹, 공지사항 등"></textarea>
+                    <div class="memo-foot">
+                        <span class="memo-char-count" id="memoCount">0자</span>
+                        <button class="btn-primary" onclick="saveMemo()">저장</button>
+                    </div>
+                </div>
+            </section>
 
-    <!-- ════════════════ CRM ════════════════ -->
-    <div id="crm" class="admin-section">
-        <div class="section-header"><h2>CRM (Customer Relationship Management)</h2></div>
-        <div class="content-card" style="padding: 20px; margin-bottom: 20px;">
-            <div class="search-container" style="display: flex; gap: 10px; align-items: center;">
-                <input type="text" id="memberSearch" placeholder="이름 또는 아이디 검색..." onkeyup="filterMembers()"
-                       style="width: 250px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                <select id="colorFilter" onchange="filterMembers()" style="width: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
-                    <option value="ALL">모든 컬러</option>
-                    <option value="SPRING_WARM">봄 웜톤</option>
-                    <option value="SUMMER_COOL">여름 쿨톤</option>
-                    <option value="AUTUMN_WARM">가을 웜톤</option>
-                    <option value="WINTER_COOL">겨울 쿨톤</option>
-                    <option value="미진단">미진단</option>
-                </select>
-                <select id="dnaFilter" onchange="filterMembers()" style="width: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
-                    <option value="ALL">모든 스타일</option>
-                    <option value="MINIMAL">미니멀</option>
-                    <option value="CASUAL">캐주얼</option>
-                    <option value="STREET">스트릿</option>
-                    <option value="FORMAL">포멀</option>
-                    <option value="VINTAGE">빈티지</option>
-                </select>
-                <span style="font-size: 12px; color: #888;">* 실시간 회원 필터링</span>
-            </div>
-        </div>
-        <div class="content-card">
-            <table id="memberTable">
-                <thead>
-                <tr>
-                    <th>사용자 번호</th><th>이름(ID)</th><th>퍼스널 컬러</th><th>스타일 DNA</th>
-                    <th>구매 횟수</th><th>가상 피팅</th><th>게시글</th><th>관리</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="m : ${members}" class="member-row">
-                    <td th:text="${m.userId}">1</td>
-                    <td>
-                        <strong class="target-name" th:text="${m.name}">이름</strong><br>
-                        <span class="target-id" style="font-size: 11px; color: #999;" th:text="${m.loginId}">아이디</span>
-                    </td>
-                    <td class="target-color" th:text="${m.personalColor != null ? m.personalColor : '미진단'}">진단결과</td>
-                    <td class="target-dna" th:text="${m.styleDna != null ? m.styleDna : '-'}">-</td>
-                    <td th:text="${m.buyCount} + '회'">0</td>
-                    <td th:text="${m.fittingCount} + '회'">0</td>
-                    <td th:text="${m.postCount}">0</td>
-                    <td>
-                        <button class="btn btn-detail" th:onclick="|location.href='/admin/member/detail/' + ${m.userId}|">상세보기</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <!-- ══════════ ACCESS ══════════ -->
+            <section id="access" class="section">
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Access Control</h1>
+                        <p class="page-desc">관리자 권한을 관리합니다 · Master Only</p>
+                    </div>
+                    <div class="master-badge">
+                        <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l1.8 5.6H18l-4.9 3.6 1.9 5.6L10 13l-5 3.8 1.9-5.6L2 7.6h6.2L10 2z" fill="currentColor"/></svg>
+                        MASTER
+                    </div>
+                </div>
 
-    <!-- ════════════════ PROJECT ════════════════ -->
-    <div id="project" class="admin-section">
-        <div class="section-header">
-            <h2>Project Collaboration Memo</h2>
-            <span id="saveStatus" style="font-size: 13px; color: #888; font-weight: normal;">내용 입력 시 자동 저장됩니다.</span>
-        </div>
-        <div class="content-card" style="margin-top: 20px;">
-            <textarea id="adminMemoArea"
-                      th:text="${adminMemo}"
-                      placeholder="팀원들과 공유할 프로젝트 진행 상황이나 메모를 입력하세요..."
-                      style="width: 100%; height: 500px; padding: 25px; border: 1px solid #e0e0e0; border-radius: 12px;
-                             font-family: 'Malgun Gothic', sans-serif; font-size: 15px; line-height: 1.8;
-                             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); resize: none; outline: none;"></textarea>
-        </div>
-    </div>
+                <div class="access-warning">
+                    <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L2 17h16L10 2z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M10 8v4M10 14v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    이 페이지는 마스터 계정에서만 접근 가능합니다. 권한 변경은 신중하게 진행해 주세요.
+                </div>
 
-    <!-- ════════════════ ACCESS ════════════════ -->
-    <div id="access" class="admin-section">
-        <div class="section-header"><h2>Access Control (Master)</h2></div>
-        <div class="content-card">
-            <table>
-                <thead>
-                <tr><th>아이디</th><th>이름</th><th>현재 권한</th><th>설정</th></tr>
-                </thead>
-                <tbody>
-                <tr th:each="m : ${members}">
-                    <td th:text="${m.loginId}">id</td>
-                    <td th:text="${m.name}">이름</td>
-                    <td>
-                        <span th:text="${m.styleDna == 'ADMIN' ? '관리자(ADMIN)' : '일반유저'}"
-                              th:style="${m.styleDna == 'ADMIN' ? 'color:#e74c3c; font-weight:bold;' : 'color:#999;'}"></span>
-                    </td>
-                    <td>
-                        <form th:action="@{/admin/access/toggle/{id}(id=${m.userId})}" method="post" th:if="${m.loginId != 'kdoryul'}">
-                            <button type="submit" class="btn" th:classappend="${m.styleDna == 'ADMIN' ? 'btn-del' : 'btn-blue'}"
-                                    th:text="${m.styleDna == 'ADMIN' ? '권한 박탈' : '권한 부여'}"></button>
-                        </form>
-                        <span th:if="${m.loginId == 'kdoryul'}" style="font-size: 12px; color: #aaa;">(Master)</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title">관리자 권한 현황</span>
+                    </div>
+                    <table class="tbl">
+                        <thead>
+                        <tr><th>아이디</th><th>이름</th><th>현재 권한</th><th>설정</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="m : ${members}">
+                            <td class="mono" th:text="${m.loginId}">id</td>
+                            <td class="fw-med" th:text="${m.name}">이름</td>
+                            <td>
+                                <span th:if="${m.loginId == 'kdoryul'}" class="badge badge-master">MASTER</span>
+                                <span th:if="${m.loginId != 'kdoryul' && m.styleDna == 'ADMIN'}" class="badge badge-admin">ADMIN</span>
+                                <span th:if="${m.loginId != 'kdoryul' && m.styleDna != 'ADMIN'}" class="badge badge-none">일반 유저</span>
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/access/toggle/{id}(id=${m.userId})}" method="post" style="display:inline;"
+                                      th:if="${m.loginId != 'kdoryul'}">
+                                    <button type="submit" class="btn-sm"
+                                            th:classappend="${m.styleDna == 'ADMIN' ? 'btn-sm-danger' : 'btn-sm-primary'}"
+                                            th:text="${m.styleDna == 'ADMIN' ? '권한 박탈' : '권한 부여'}">권한 부여</button>
+                                </form>
+                                <span th:if="${m.loginId == 'kdoryul'}" class="muted sm">수정 불가</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-</div><!-- /main_content -->
-<script th:src="@{/js/admin.js}"></script>
+        </div><!-- /content-area -->
+    </main>
+</div><!-- /shell -->
+
+
+<script>
+    /* ═══════════════════════════════════════
+       OnFit Admin · admin.js
+    ═══════════════════════════════════════ */
+
+    /* ── Section navigation ── */
+    function showSection(id, btn) {
+      // hide all
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+      // show target
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      if (btn) btn.classList.add('active');
+
+      // update topbar crumb
+      const labels = {
+        'dashboard':    'Dashboard',
+        'shopping':     'Shopping',
+        'crm':          'CRM',
+        'main-section': 'Main',
+        'project':      'Project',
+        'access':       'Access Control',
+      };
+      const crumb = document.getElementById('pageCrumb');
+      if (crumb) crumb.textContent = labels[id] || id;
+    }
+
+    /* ── Clock ── */
+    function updateClock() {
+      const el = document.getElementById('clock');
+      if (!el) return;
+      const now = new Date();
+      el.textContent = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* ── Dashboard date ── */
+    (function() {
+      const el = document.getElementById('dashDate');
+      if (!el) return;
+      const d = new Date();
+      el.textContent = d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+    })();
+
+    /* ── Show/hide Access nav (JS fallback for non-Thymeleaf preview) ── */
+    (function() {
+      const btn = document.getElementById('accessNavBtn');
+      if (btn) btn.style.display = 'flex'; // Thymeleaf th:if handles actual auth
+    })();
+
+    /* ══════════════════════════════
+       SHOPPING
+    ══════════════════════════════ */
+    function openProductModal() {
+      const m = document.getElementById('productModal');
+      if (m) m.classList.add('open');
+    }
+    function closeProductModal(e) {
+      if (e && e.target !== document.getElementById('productModal')) return;
+      const m = document.getElementById('productModal');
+      if (m) m.classList.remove('open');
+    }
+
+    function filterProducts() {
+      const cat = document.getElementById('shopCatFilter')?.value;
+      document.querySelectorAll('.product-card').forEach(card => {
+        const c = card.dataset.category || '';
+        card.style.display = (cat === 'ALL' || c === cat) ? '' : 'none';
+      });
+    }
+
+    /* ══════════════════════════════
+       CRM
+    ══════════════════════════════ */
+    function filterCRM() {
+      const search = (document.getElementById('crmSearch')?.value || '').toLowerCase();
+      const color  = document.getElementById('crmColorFilter')?.value || 'ALL';
+      const dna    = document.getElementById('crmDnaFilter')?.value   || 'ALL';
+
+      document.querySelectorAll('.crm-row').forEach(row => {
+        const name    = (row.dataset.name  || '').toLowerCase();
+        const id      = (row.dataset.id    || '').toLowerCase();
+        const rColor  = row.dataset.color  || '';
+        const rDna    = row.dataset.dna    || '';
+
+        const matchSearch = !search || name.includes(search) || id.includes(search);
+        const matchColor  = color === 'ALL' || rColor === color || (color === '미진단' && !rColor);
+        const matchDna    = dna   === 'ALL' || rDna   === dna;
+
+        row.style.display = (matchSearch && matchColor && matchDna) ? '' : 'none';
+      });
+    }
+
+    /* Member detail modal */
+    const memberData = {}; // populate from Thymeleaf or AJAX if needed
+
+    function showMemberDetail(userId) {
+      // Try to read from the table row's data attributes
+      const row = document.querySelector(`.crm-row`);
+      // fallback: navigate to detail page
+      const link = document.getElementById('detailFullLink');
+      if (link) link.href = `/admin/member/detail/${userId}`;
+
+      // Populate from row
+      const rows = document.querySelectorAll('.crm-row');
+      let found = null;
+      rows.forEach(r => {
+        // We stored userId via th:data or we just grab by index
+      });
+
+      // Open modal
+      const modal = document.getElementById('memberModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeMemberModal(e) {
+      if (e && e.target !== document.getElementById('memberModal')) return;
+      const m = document.getElementById('memberModal');
+      if (m) m.classList.remove('open');
+    }
+
+    /* ══════════════════════════════
+       MAIN — Outfit slots
+    ══════════════════════════════ */
+    function switchColorTab(colorKey, btn) {
+      document.querySelectorAll('.color-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.color-panel').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const panel = document.getElementById(colorKey + '_panel');
+      if (panel) panel.classList.add('active');
+    }
+
+    function saveOutfitSlot(btn) {
+      const slotKey = btn.dataset.slot;
+      if (!slotKey) return;
+      const sel = document.getElementById(slotKey);
+      if (!sel) return;
+      const productId = sel.value;
+      if (!productId) { alert('상품을 선택해주세요.'); return; }
+
+      btn.textContent = '저장 중...';
+      btn.disabled = true;
+
+      fetch('/admin/outfit/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slotKey, productId }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          const statusEl = document.getElementById(slotKey + '_status');
+          if (statusEl) {
+            statusEl.innerHTML = `<span class="badge badge-active">✓ ${data.productName || '저장됨'}</span>`;
+          }
+          btn.textContent = '저장';
+          btn.disabled = false;
+        })
+        .catch(() => {
+          alert('저장에 실패했습니다.');
+          btn.textContent = '저장';
+          btn.disabled = false;
+        });
+    }
+
+    /* ══════════════════════════════
+       PROJECT — Memo
+    ══════════════════════════════ */
+    let memoTimer = null;
+
+    (function initMemo() {
+      const area = document.getElementById('adminMemoArea');
+      if (!area) return;
+
+      updateMemoCount(area.value);
+
+      area.addEventListener('input', () => {
+        updateMemoCount(area.value);
+        const status = document.getElementById('saveStatus');
+        if (status) { status.textContent = '저장 대기 중...'; status.style.color = 'var(--text-muted)'; }
+        clearTimeout(memoTimer);
+        memoTimer = setTimeout(() => autoSaveMemo(area.value), 1500);
+      });
+    })();
+
+    function updateMemoCount(val) {
+      const el = document.getElementById('memoCount');
+      if (el) el.textContent = (val || '').length + '자';
+    }
+
+    function autoSaveMemo(content) {
+      fetch('/admin/project/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      })
+        .then(() => {
+          const status = document.getElementById('saveStatus');
+          if (status) {
+            status.textContent = '자동 저장됨 ✓';
+            status.style.color = 'var(--accent)';
+            setTimeout(() => { status.textContent = '변경 사항이 없습니다'; status.style.color = ''; }, 2500);
+          }
+        })
+        .catch(() => {});
+    }
+
+    function saveMemo() {
+      const area = document.getElementById('adminMemoArea');
+      if (!area) return;
+      autoSaveMemo(area.value);
+    }
+
+    function insertMemoText(text) {
+      const area = document.getElementById('adminMemoArea');
+      if (!area) return;
+      const start = area.selectionStart;
+      const end   = area.selectionEnd;
+      const val   = area.value;
+      area.value  = val.substring(0, start) + text + val.substring(end);
+      area.selectionStart = area.selectionEnd = start + text.length;
+      area.focus();
+      area.dispatchEvent(new Event('input'));
+    }
+
+    /* ── ESC to close modals ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.getElementById('productModal')?.classList.remove('open');
+        document.getElementById('memberModal')?.classList.remove('open');
+      }
+    });
+
+</script>
 </body>
 </html>
