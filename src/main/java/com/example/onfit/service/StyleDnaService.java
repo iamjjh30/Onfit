@@ -1,8 +1,10 @@
 package com.example.onfit.service;
 
+import com.example.onfit.entity.Coupon;
 import com.example.onfit.entity.Member;
 import com.example.onfit.entity.MemberActivity;
 import com.example.onfit.entity.Product;
+import com.example.onfit.repository.CouponRepository;
 import com.example.onfit.repository.MemberActivityRepository;
 import com.example.onfit.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,60 @@ import java.util.Map;
 public class StyleDnaService {
 
     @Autowired
+    private CouponRepository couponRepository;
+
+    @Autowired
     private MemberActivityRepository activityRepository;
 
     @Autowired
     private MemberRepository memberRepository;
+
+    // 🌟 레벨별 쿠폰 지급
+    private void grantLevelUpCoupon(Member member, int newLevel) {
+        Coupon coupon = switch (newLevel) {
+            case 2 -> Coupon.builder()
+                    .member(member)
+                    .name("Lv.2 달성 축하 쿠폰")
+                    .code("LEVEL2-" + member.getId())
+                    .discountRate(5)
+                    .minOrderAmount(30000)
+                    .expiredAt(java.time.LocalDate.now().plusMonths(3))
+                    .isUsed(false)
+                    .build();
+            case 3 -> Coupon.builder()
+                    .member(member)
+                    .name("Lv.3 달성 축하 쿠폰")
+                    .code("LEVEL3-" + member.getId())
+                    .discountRate(10)
+                    .minOrderAmount(50000)
+                    .expiredAt(java.time.LocalDate.now().plusMonths(3))
+                    .isUsed(false)
+                    .build();
+            case 4 -> Coupon.builder()
+                    .member(member)
+                    .name("Lv.4 달성 축하 쿠폰")
+                    .code("LEVEL4-" + member.getId())
+                    .discountRate(15)
+                    .minOrderAmount(50000)
+                    .expiredAt(java.time.LocalDate.now().plusMonths(3))
+                    .isUsed(false)
+                    .build();
+            case 5 -> Coupon.builder()
+                    .member(member)
+                    .name("Lv.5 OnFit Editor 축하 쿠폰")
+                    .code("LEVEL5-" + member.getId())
+                    .discountRate(20)
+                    .minOrderAmount(50000)
+                    .expiredAt(java.time.LocalDate.now().plusMonths(6))
+                    .isUsed(false)
+                    .build();
+            default -> null;
+        };
+
+        if (coupon != null) {
+            couponRepository.save(coupon);
+        }
+    }
 
     // 1. 활동 기록 저장 메서드 (컨트롤러에서 호출할 예정)
     public void recordActivity(Member member, Product product, String type) {
@@ -99,10 +151,21 @@ public class StyleDnaService {
     }
 
     public void updateLevel(Member member) {
-        int count  = member.getTotalOrderCount();
-        int amount = member.getTotalOrderAmount();
+        int oldLevel = member.getStyleLevel() != null ? member.getStyleLevel() : 1;
+        int count    = member.getTotalOrderCount();
+        int amount   = member.getTotalOrderAmount();
 
         int newLevel = calculateLevel(count, amount);
+
+        // 🌟 레벨업 감지 → 쿠폰 지급
+        if (newLevel > oldLevel) {
+            // oldLevel+1 부터 newLevel까지 모든 레벨 쿠폰 지급 (한 번에 여러 레벨 오를 수도 있음)
+            for (int lv = oldLevel + 1; lv <= newLevel; lv++) {
+                grantLevelUpCoupon(member, lv);
+                System.out.println("🎉 레벨업! Lv." + oldLevel + " → Lv." + lv + " 쿠폰 지급!");
+            }
+        }
+
         member.setStyleLevel(newLevel);
         member.setLastOrderAt(LocalDateTime.now());
         memberRepository.save(member);

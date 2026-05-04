@@ -4,7 +4,7 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const AI_SERVER_URL = "http://localhost:5000";
+    const AI_SERVER_URL = "https://leesa-pseudosquamate-peristaltically.ngrok-free.dev";
 
     // ✅ URL 파라미터 확인용 로그
     const urlParams = new URLSearchParams(window.location.search);
@@ -87,7 +87,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             formData.append('image', faceFile);
 
             try {
-                const response = await fetch(`${AI_SERVER_URL}/api/analyze-face`, {method: 'POST', body: formData});
+                const response = await fetch(`${AI_SERVER_URL}/api/analyze-face`, {
+                    method: 'POST',
+                    headers: {
+                        'ngrok-skip-browser-warning': '69420' // 🌟 Ngrok 경고창 무시 마법의 헤더
+                    },
+                    body: formData
+                });
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
 
@@ -299,6 +305,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             try {
                 const response = await fetch(`${AI_SERVER_URL}/api/try-on`, {
                     method: 'POST',
+                    headers: {
+                        'ngrok-skip-browser-warning': '69420' // 🌟 여기도 추가!
+                    },
                     body: formData
                 });
                 const data = await response.json();

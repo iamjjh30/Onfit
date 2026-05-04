@@ -79,7 +79,17 @@
                         <button class="pay-method-btn" data-method="계좌이체">계좌이체</button>
                     </div>
                 </section>
+                <section class="checkout-section">
+                <h3 class="section-title">쿠폰 할인</h3>
+                <div class="coupon-select-wrap">
+                    <select id="coupon-select" class="form-select">
+                        <option value="">쿠폰을 선택해주세요</option>
+                    </select>
+                    <p class="coupon-desc" id="coupon-desc"></p>
+                </div>
+            </section>
             </div>
+            <!-- 쿠폰 선택 -->
 
             <div id="checkout-right"></div>
         </div>
@@ -129,6 +139,10 @@
         <div class="summary-row">
             <span>배송비</span>
             <span id="summary-delivery">0원</span>
+        </div>
+        <div class="summary-row" id="summary-coupon-row" style="display:none;">
+            <span>쿠폰 할인</span>
+            <span id="summary-coupon" style="color:#e74c3c;">-0원</span>
         </div>
         <div class="summary-divider"></div>
         <div class="summary-row summary-total">

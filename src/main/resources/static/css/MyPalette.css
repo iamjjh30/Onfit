@@ -24,7 +24,8 @@
     50%       { transform: translateY(-10px); }
 }
 @keyframes fillBar {
-    to { width: 60%; }
+    from { width: 0; }
+    to   { width: var(--target-pct, 0%); }
 }
 
 /* ── 리셋 & 기본 ── */
@@ -393,8 +394,9 @@ body {
 /* 상단 헤더 */
 .lv-header {
     margin-bottom: 40px;
+    width: 100%;
 }
-.lv-header-left { flex: 1; }
+.lv-header-left { flex: 1; width: 100%; }
 .lv-title-row {
     display: flex; align-items: center; gap: 10px;
     flex-wrap: wrap; margin: 8px 0 20px;
@@ -420,11 +422,14 @@ body {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.55; }
 }
-.level-bar-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-.level-bar  { flex: 1; height: 8px; background: #e8e8e8; border-radius: 100px; overflow: hidden; }
+.level-bar-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; width:100%; }
+.level-bar  { flex: 1; height: 8px; background: #e8e8e8; border-radius: 100px; overflow: hidden; width: 100%; }
 .level-fill {
-    height: 100%; width: 0; background: var(--black); border-radius: 100px;
-    animation: fillBar 1.5s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+    height: 100%;
+    width: 0;
+    background: var(--black);
+    border-radius: 100px;
+    transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .level-pct { font-size: 0.82rem; font-weight: 700; color: var(--black); flex-shrink: 0; }
 
@@ -785,6 +790,7 @@ footer {
     flex: 1;
     position: relative;
     cursor: pointer;
+    width: 100%;
 }
 .lv-bar-tooltip {
     position: absolute;

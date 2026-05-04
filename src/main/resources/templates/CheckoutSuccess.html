@@ -97,7 +97,7 @@
             </div>
         </div>
     </div>
-
+</body>
 <script>
     // 1. API 주소 설정 (같은 도메인이면 비워두는 것이 세션 유지에 유리합니다)
     var API_BASE = '';
@@ -111,6 +111,7 @@
     var phone      = params.get('phone')    || '';
     var address    = params.get('address')  || '';
     var deliFee    = Number(params.get('deliFee')) || 0;
+    var couponId   = params.get('couponId') || '';
 
     // 🌟 [중요] items 데이터 추출 및 productId 강제 매핑
     var rawItems = [];
@@ -164,6 +165,7 @@
                 phone:      phone,
                 address:    address,
                 deliFee:    deliFee,
+                couponId:   couponId,
                 items:      items // 보정된 items 전송
             })
         })

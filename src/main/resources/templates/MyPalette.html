@@ -369,8 +369,7 @@
                 <span class="lv-step-num">Lv.1</span>
                 <span class="lv-step-name">New Fitter</span>
                 <span class="lv-step-benefit"
-                      data-benefit-detail="✅ 가입 웰컴 쿠폰 3,000원 지급&#10;✅ 3만원 이상 무료배송">
-                        웰컴 쿠폰 3,000원
+                      data-benefit-detail="✅ 가입 웰컴 쿠폰 3,000원 지급">
                 </span>
             </div>
 
@@ -386,7 +385,6 @@
                 <span class="lv-step-name">Style Starter</span>
                 <span class="lv-step-benefit"
                       data-benefit-detail="✅ 5% 할인 쿠폰 월 1회&#10;✅ 신상품 얼리 알림">
-                        5% 쿠폰 월 1회 · 2만원↑ 무료배송
                 </span>
             </div>
 
@@ -402,7 +400,6 @@
                 <span class="lv-step-name">Color Expert</span>
                 <span class="lv-step-benefit"
                       data-benefit-detail="✅ 10% 할인 쿠폰 월 1회&#10;✅ 퍼스널 컬러 재진단 무료">
-                    10% 쿠폰 월 1회 · 무조건 무료배송
                 </span>
             </div>
 
@@ -418,7 +415,6 @@
                 <span class="lv-step-name">Fit Master</span>
                 <span class="lv-step-benefit"
                       data-benefit-detail="✅ 15% 할인 쿠폰 월 2회&#10;✅ VIP 시즌 기획전 초대&#10;✅ 가상 피팅 우선 처리">
-                         15% 쿠폰 월 2회 · VIP 기획전 초대
                 </span>
             </div>
 
@@ -434,7 +430,6 @@
                 <span class="lv-step-name">OnFit Editor</span>
                 <span class="lv-step-benefit"
                       data-benefit-detail="✅ 20% 할인 쿠폰 월 2회&#10;✅ 당일 배송&#10;✅ 신상품 선구매권&#10;✅ 생일 특별 쿠폰">
-                        20% 쿠폰 · 당일배송 · 스타일리스트 상담
                 </span>
             </div>
         </div>
@@ -450,6 +445,7 @@
 <script th:inline="javascript">
     // 백엔드에서 넘겨준 데이터(JSON 문자열)를 자바스크립트 전역 변수에 저장!
     window.USER_NAME = /*[[${session.loginMember != null ? session.loginMember.name : '고객'}]]*/ '고객';
+    window.DB_MEMBER_ID = /*[[${session.loginMember?.id}]]*/ null;
     window.DB_RECOMMENDATIONS = /*[[${recommendations}]]*/ [];
     window.DB_SEASON  = /*[[${session.loginMember?.personalColor}]]*/ null;
     window.DB_DNA     = /*[[${dnaJson}]]*/ null;

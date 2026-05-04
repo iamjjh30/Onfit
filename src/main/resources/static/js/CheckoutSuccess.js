@@ -11,6 +11,7 @@ var recvName   = params.get('recvName') || '';
 var phone      = params.get('phone')    || '';
 var address    = params.get('address')  || '';
 var deliFee    = Number(params.get('deliFee')) || 0;
+var couponId = params.get('couponId') || '';
 
 var rawItems = [];
 try {
@@ -53,6 +54,7 @@ function callConfirm() {
             phone:      phone,
             address:    address,
             deliFee:    deliFee,
+            couponId:   couponId,
             items:      items
         })
     })

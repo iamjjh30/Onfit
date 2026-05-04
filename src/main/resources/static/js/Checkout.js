@@ -11,6 +11,9 @@ var API_BASE = 'http://localhost:8080';
 // !! 본인의 API 개별 연동 클라이언트 키로 교체하세요
 var CLIENT_KEY = 'test_ck_DpexMgkW36wNbepd4OWdVGbR5ozO';
 
+var selectedCoupon  = null; // 선택된 쿠폰 객체
+var discountPrice   = 0;    // 할인 금액
+
 function getToken() { return localStorage.getItem('token'); }
 function authHeaders() {
     return {
@@ -48,6 +51,7 @@ function init() {
     initPayMethodBtns();
     initSameAsOrderer(); // 🌟 추가
     initAddressSearch();
+    loadCoupons();
     if (MODE === 'direct') {
         initDirect();
     } else {
@@ -154,6 +158,9 @@ function renderSummary() {
     var td = document.getElementById('summary-total');
     if (pd) pd.textContent = sumPrice.toLocaleString() + '원';
     if (dd) dd.textContent = deliPrice === 0 ? '무료배송' : deliPrice.toLocaleString() + '원';
+
+    // 🌟 할인 반영
+    totalPrice = Math.max(0, sumPrice + deliPrice - discountPrice);
     if (td) td.textContent = totalPrice.toLocaleString() + '원';
 }
 
@@ -167,6 +174,17 @@ function requestPayment() {
     var baseAddress   = document.getElementById('input-address').value.trim();
     var detailAddress = document.getElementById('input-address-detail').value.trim();
     var address = detailAddress ? baseAddress + ' ' + detailAddress : baseAddress;
+    var extraQuery = new URLSearchParams({
+        recvName: recvName,
+        phone:    phone,
+        address:  address,
+        deliFee:  deliPrice,
+        couponId: selectedCoupon ? selectedCoupon.id : '',  // 🌟 추가
+        items:    JSON.stringify(cartItems.map(function(item) {
+            var actualId = item.productId || item.id || item.itemNo;
+            return { productId: actualId, size: item.size || 'FREE', qty: item.qty || item.quantity || 1 };
+        }))
+    }).toString();
 
     if (!recvName || !phone || !address) {
         alert('배송지 정보를 모두 입력해주세요.');
@@ -184,25 +202,6 @@ function requestPayment() {
         : firstItemName;
 
     var orderId = 'ONFIT-' + Date.now();
-
-    // 🌟 스프링 부트 컨트롤러로 넘길 배송지 + 상품 정보 세팅
-    var extraQuery = new URLSearchParams({
-        recvName: recvName,
-        phone:    phone,
-        address:  address,
-        deliFee:  deliPrice,
-        items:    JSON.stringify(cartItems.map(function(item) {
-            console.log("아이템 데이터 확인:", item);
-
-            var actualId = item.productId || item.id || item.itemNo;
-
-            return {
-                productId: actualId,
-                size:      item.size || 'FREE',
-                qty:       item.qty || item.quantity || 1
-            };
-        }))
-    }).toString();
 
     // 🌟 변경된 부분: 정적 HTML 대신 스프링 부트 API 주소로 리다이렉트
     var successUrl = window.location.origin + '/api/payment/success?' + extraQuery;
@@ -313,4 +312,76 @@ function initAddressSearch() {
             }
         }).open();
     });
+}
+/* ----------------------------------------------------------------
+   쿠폰 목록 불러오기
+---------------------------------------------------------------- */
+function loadCoupons() {
+    fetch('/api/mypage/coupons', { credentials: 'include' })
+        .then(function(res) {
+            if (!res.ok) return;
+            return res.json();
+        })
+        .then(function(coupons) {
+            if (!coupons || coupons.length === 0) return;
+
+            var select = document.getElementById('coupon-select');
+            if (!select) return;
+
+            coupons.forEach(function(coupon) {
+                var discount = coupon.discountAmount
+                    ? coupon.discountAmount.toLocaleString() + '원 할인'
+                    : coupon.discountRate + '% 할인';
+                var option = document.createElement('option');
+                option.value       = JSON.stringify(coupon);
+                option.textContent = coupon.name + ' (' + discount + ')';
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', function() {
+                if (!this.value) {
+                    selectedCoupon = null;
+                    discountPrice  = 0;
+                    document.getElementById('coupon-desc').textContent = '';
+                    document.getElementById('summary-coupon-row').style.display = 'none';
+                } else {
+                    selectedCoupon = JSON.parse(this.value);
+                    applyСoupon();
+                }
+                renderSummary();
+            });
+        })
+        .catch(function(err) { console.error('쿠폰 로드 실패:', err); });
+}
+
+/* ----------------------------------------------------------------
+   쿠폰 적용
+---------------------------------------------------------------- */
+function applyСoupon() {
+    if (!selectedCoupon) { discountPrice = 0; return; }
+
+    var minOrder = selectedCoupon.minOrderAmount || 0;
+    if (sumPrice + deliPrice < minOrder) {
+        alert(minOrder.toLocaleString() + '원 이상 구매 시 사용 가능한 쿠폰입니다.');
+        document.getElementById('coupon-select').value = '';
+        selectedCoupon = null;
+        discountPrice  = 0;
+        document.getElementById('coupon-desc').textContent = '';
+        document.getElementById('summary-coupon-row').style.display = 'none';
+        return;
+    }
+
+    if (selectedCoupon.discountAmount) {
+        discountPrice = selectedCoupon.discountAmount;
+    } else if (selectedCoupon.discountRate) {
+        discountPrice = Math.floor((sumPrice + deliPrice) * selectedCoupon.discountRate / 100);
+    }
+
+    var desc = document.getElementById('coupon-desc');
+    if (desc) desc.textContent = '✅ ' + discountPrice.toLocaleString() + '원 할인 적용됩니다.';
+
+    var row = document.getElementById('summary-coupon-row');
+    if (row) row.style.display = 'flex';
+    var couponEl = document.getElementById('summary-coupon');
+    if (couponEl) couponEl.textContent = '-' + discountPrice.toLocaleString() + '원';
 }
