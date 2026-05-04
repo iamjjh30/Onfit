@@ -520,6 +520,16 @@ function renderRecentProducts() {
     const dotsContainer = document.getElementById('recentDots');
     if (!gallery) return;
 
+    // 🌟 다른 사용자면 초기화
+    var currentUserId = window.DB_MEMBER_ID || null;
+    var savedUserId   = localStorage.getItem('recentUserId');
+    if (currentUserId !== null && String(currentUserId) !== String(savedUserId)) {
+        localStorage.removeItem('recentProducts');
+        localStorage.setItem('recentUserId', String(currentUserId));
+    }
+
+    // ... 나머지 기존 코드 그대로
+
     let recentData = JSON.parse(localStorage.getItem('recentProducts') || '[]');
 
     const uniqueRecent = [];
@@ -625,6 +635,7 @@ function renderLevelSection() {
 
     // 🌟 IntersectionObserver로 화면에 보일 때 애니메이션
     if (fill) {
+        fill.style.setProperty('--target-pct', pct + '%');
         fill.style.width = '0%'; // 초기화
 
         var levelSection = document.querySelector('.level-section');

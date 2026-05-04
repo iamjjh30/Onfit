@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
+    <title>마이페이지 — OnFit</title>
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <link rel="stylesheet" th:href="@{/css/MyPage.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div id="wrap">
+
+    <!-- ── 히어로 ── -->
+    <section class="mp-hero">
+        <div class="mp-hero-left">
+            <span class="mp-eyebrow">MY PAGE</span>
+            <h1 class="mp-hero-name">
+                <span th:text="${session.loginMember.name}">회원</span>님,<br>환영합니다
+            </h1>
+            <p class="mp-hero-sub" th:text="'가입일: ' + ${#temporals.format(session.loginMember.createdAt, 'yyyy.MM.dd')}">가입일</p>
+            <div class="mp-hero-stats">
+                <div class="mp-stat">
+                    <span class="mp-stat-num" th:text="${session.loginMember.totalOrderCount}">0</span>
+                    <span class="mp-stat-label">총 구매 횟수</span>
+                </div>
+                <div class="mp-stat-divider"></div>
+                <div class="mp-stat">
+                    <span class="mp-stat-num" th:text="${#numbers.formatInteger(session.loginMember.totalOrderAmount, 3, 'COMMA')} + '원'">0원</span>
+                    <span class="mp-stat-label">총 구매 금액</span>
+                </div>
+                <div class="mp-stat-divider"></div>
+                <div class="mp-stat">
+                    <span class="mp-stat-num" th:text="${couponCount}">0</span>
+                    <span class="mp-stat-label">보유 쿠폰</span>
+                </div>
+            </div>
+        </div>
+        <div class="mp-hero-right">
+            <div class="mp-level-card">
+                <span class="mp-level-eyebrow">STYLE LEVEL</span>
+                <p class="mp-level-num" th:text="'Lv.' + ${session.loginMember.styleLevel}">Lv.1</p>
+                <p class="mp-level-name" th:text="${levelName}">New Fitter</p>
+                <div class="mp-level-bar-wrap">
+                    <div class="mp-level-bar">
+                        <div class="mp-level-fill" th:style="'width:' + ${progressPct} + '%'"></div>
+                    </div>
+                    <span class="mp-level-pct" th:text="${progressPct} + '%'">0%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 탭 네비게이션 ── -->
+    <nav class="mp-tab-nav">
+        <button class="mp-tab active" data-target="tab-info">회원 정보</button>
+        <button class="mp-tab" data-target="tab-address">배송지 관리</button>
+        <button class="mp-tab" data-target="tab-coupon">보유 쿠폰</button>
+        <button class="mp-tab" data-target="tab-withdraw">회원 탈퇴</button>
+    </nav>
+
+    <!-- ── 탭 콘텐츠 ── -->
+
+    <!-- 1. 회원 정보 -->
+    <section class="mp-section active" id="tab-info">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-eyebrow">MEMBER INFO</span>
+                <h2 class="section-title">회원 정보</h2>
+            </div>
+
+            <form id="form-info" class="mp-form">
+                <div class="mp-form-grid">
+                    <div class="mp-field">
+                        <label class="mp-label">이름</label>
+                        <input type="text" id="input-name" class="mp-input"
+                               th:value="${session.loginMember.name}" readonly>
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">아이디</label>
+                        <input type="text" class="mp-input mp-input-disabled"
+                               th:value="${session.loginMember.loginId}" disabled>
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">이메일</label>
+                        <input type="email" id="input-email" class="mp-input"
+                               th:value="${session.loginMember.email}" readonly>
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">전화번호</label>
+                        <input type="tel" id="input-tel" class="mp-input"
+                               th:value="${session.loginMember.tel}" readonly>
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">생년월일</label>
+                        <input type="text" class="mp-input mp-input-disabled"
+                               th:value="${session.loginMember.birthDate}" disabled>
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">퍼스널 컬러</label>
+                        <input type="text" class="mp-input mp-input-disabled"
+                               th:value="${session.loginMember.personalColor == 'SPRING_WARM' ? '봄 웜톤' :
+                                          (session.loginMember.personalColor == 'SUMMER_COOL' ? '여름 쿨톤' :
+                                          (session.loginMember.personalColor == 'AUTUMN_WARM' ? '가을 웜톤' :
+                                          (session.loginMember.personalColor == 'WINTER_COOL' ? '겨울 쿨톤' : '미진단')))}"
+                               disabled>
+                    </div>
+                </div>
+
+                <div class="mp-btn-row">
+                    <button type="button" id="btn-edit-info" class="mp-btn-outline">정보 수정</button>
+                    <button type="button" id="btn-save-info" class="mp-btn-primary" style="display:none;">저장하기</button>
+                    <button type="button" id="btn-cancel-info" class="mp-btn-ghost" style="display:none;">취소</button>
+                </div>
+            </form>
+
+            <!-- 비밀번호 변경 -->
+            <div class="mp-divider"></div>
+            <div class="section-header" style="margin-bottom:24px;">
+                <span class="section-eyebrow">PASSWORD</span>
+                <h3 class="mp-sub-title">비밀번호 변경</h3>
+            </div>
+            <form id="form-pw" class="mp-form">
+                <div class="mp-form-grid">
+                    <div class="mp-field">
+                        <label class="mp-label">현재 비밀번호</label>
+                        <input type="password" id="input-pw-current" class="mp-input" placeholder="현재 비밀번호 입력">
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">새 비밀번호</label>
+                        <input type="password" id="input-pw-new" class="mp-input" placeholder="새 비밀번호 입력">
+                    </div>
+                    <div class="mp-field">
+                        <label class="mp-label">새 비밀번호 확인</label>
+                        <input type="password" id="input-pw-confirm" class="mp-input" placeholder="새 비밀번호 재입력">
+                    </div>
+                </div>
+                <p class="mp-pw-msg" id="pw-msg"></p>
+                <div class="mp-btn-row">
+                    <button type="button" id="btn-change-pw" class="mp-btn-primary">비밀번호 변경</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- 2. 배송지 관리 -->
+    <section class="mp-section" id="tab-address">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-eyebrow">DELIVERY</span>
+                <h2 class="section-title">배송지 관리</h2>
+            </div>
+
+            <div class="mp-address-card">
+                <div class="mp-address-badge">기본 배송지</div>
+                <div class="mp-address-info" id="address-display">
+                    <p class="mp-address-main" id="address-main-text"
+                       th:text="${session.loginMember.address != null ? session.loginMember.address : '등록된 배송지가 없습니다.'}">
+                        주소
+                    </p>
+                    <p class="mp-address-detail" id="address-detail-text"
+                       th:text="${session.loginMember.addressDetail}">
+                        상세주소
+                    </p>
+                </div>
+                <button type="button" id="btn-edit-address" class="mp-btn-outline">수정</button>
+            </div>
+
+            <!-- 주소 수정 폼 (기본 숨김) -->
+            <div class="mp-address-form" id="address-form" style="display:none;">
+                <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+                <div class="mp-field" style="margin-bottom:12px;">
+                    <label class="mp-label">도로명 주소</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="new-address" class="mp-input" placeholder="주소 검색을 눌러주세요" readonly style="flex:1; cursor:pointer;">
+                        <button type="button" id="btn-search-address" class="mp-btn-primary" style="flex-shrink:0; width:100px;">주소 검색</button>
+                    </div>
+                </div>
+                <div class="mp-field" style="margin-bottom:20px;">
+                    <label class="mp-label">상세 주소</label>
+                    <input type="text" id="new-address-detail" class="mp-input" placeholder="상세 주소 입력">
+                </div>
+                <div class="mp-btn-row">
+                    <button type="button" id="btn-save-address" class="mp-btn-primary">저장</button>
+                    <button type="button" id="btn-cancel-address" class="mp-btn-ghost">취소</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 보유 쿠폰 -->
+    <section class="mp-section" id="tab-coupon">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-eyebrow">COUPON</span>
+                <h2 class="section-title">보유 쿠폰</h2>
+                <p class="section-sub">사용 가능한 쿠폰 <strong th:text="${couponCount}">0</strong>장</p>
+            </div>
+
+            <!-- 미사용 쿠폰 -->
+            <div class="mp-coupon-list">
+                <div th:if="${#lists.isEmpty(coupons)}">
+                    <p style="text-align:center; padding:60px 0; color:#aaa; font-size:0.9rem;">보유한 쿠폰이 없습니다.</p>
+                </div>
+                <div class="mp-coupon-card" th:each="coupon : ${coupons}"
+                     th:classappend="${coupon.isUsed ? ' used' : ''}">
+                    <div class="mp-coupon-left">
+                        <p class="mp-coupon-discount"
+                           th:text="${coupon.discountAmount != null ? #numbers.formatInteger(coupon.discountAmount, 3, 'COMMA') + '원' : coupon.discountRate + '%'}">
+                            할인
+                        </p>
+                        <p class="mp-coupon-name" th:text="${coupon.name}">쿠폰명</p>
+                        <p class="mp-coupon-condition"
+                           th:text="${coupon.minOrderAmount > 0 ? #numbers.formatInteger(coupon.minOrderAmount, 3, 'COMMA') + '원 이상 구매 시' : '금액 제한 없음'}">
+                            조건
+                        </p>
+                    </div>
+                    <div class="mp-coupon-right">
+                        <span class="mp-coupon-status"
+                              th:text="${coupon.isUsed ? '사용완료' : '사용가능'}"
+                              th:classappend="${coupon.isUsed ? ' status-used' : ' status-active'}">
+                        </span>
+                        <p class="mp-coupon-expire"
+                           th:text="'~ ' + ${#temporals.format(coupon.expiredAt, 'yyyy.MM.dd')}">
+                            만료일
+                        </p>
+                        <p class="mp-coupon-code" th:text="${coupon.code}">CODE</p>
+                    </div>
+                    <div class="mp-coupon-hole-left"></div>
+                    <div class="mp-coupon-hole-right"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 회원 탈퇴 -->
+    <section class="mp-section" id="tab-withdraw">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-eyebrow">WITHDRAW</span>
+                <h2 class="section-title">회원 탈퇴</h2>
+            </div>
+
+            <div class="mp-withdraw-warn">
+                <p class="mp-warn-title">⚠️ 탈퇴 전 꼭 확인해주세요</p>
+                <ul class="mp-warn-list">
+                    <li>탈퇴 시 모든 주문 내역, 쿠폰, 스타일 DNA 데이터가 삭제됩니다.</li>
+                    <li>삭제된 데이터는 복구가 불가능합니다.</li>
+                    <li>보유 쿠폰은 자동으로 소멸되며 환급되지 않습니다.</li>
+                    <li>탈퇴 후 동일 아이디로 재가입이 불가합니다.</li>
+                </ul>
+            </div>
+
+            <div class="mp-field" style="max-width:400px; margin-bottom:20px;">
+                <label class="mp-label">비밀번호 확인</label>
+                <input type="password" id="input-withdraw-pw" class="mp-input" placeholder="비밀번호를 입력해주세요">
+            </div>
+            <p class="mp-pw-msg" id="withdraw-msg"></p>
+            <button type="button" id="btn-withdraw" class="mp-btn-danger">회원 탈퇴</button>
+        </div>
+    </section>
+
+</div><!-- /#wrap -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:inline="javascript">
+    window.MEMBER_DATA = {
+        name:          /*[[${session.loginMember.name}]]*/ '',
+        email:         /*[[${session.loginMember.email}]]*/ '',
+        tel:           /*[[${session.loginMember.tel}]]*/ '',
+        address:       /*[[${session.loginMember.address}]]*/ '',
+        addressDetail: /*[[${session.loginMember.addressDetail}]]*/ ''
+    };
+</script>
+<script th:src="@{/js/MyPage.js}"></script>
+</body>
+</html>
