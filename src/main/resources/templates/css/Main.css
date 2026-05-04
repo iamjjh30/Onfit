@@ -584,16 +584,126 @@
    }
 
    /* ====================================================
-      컬러 트렌드 팝업 — 컬러피커 2배 레이아웃 조정
+      트렌드 섹션 카드
       ==================================================== */
-   /* 스와치 5개 × 72px = 360px + gap — info-col 넓이 충분 */
-   /* 팝업 전체 폭을 약간 넓혀서 overflow 방지 */
-   .color-trend-popup {
-       max-width: 940px !important;
+   .neutral-trend-section { margin-top: 80px; }
+   .neutral-trend-header { margin-bottom: 24px; }
+   .neutral-trend-header h2 {
+       font-size: clamp(1.8rem,3.5vw,2.6rem);
+       font-weight:900; letter-spacing:-1.5px; line-height:1.15; margin-bottom:10px;
    }
-   .ctpopup-info-col {
-       gap: 20px !important;
+   .neutral-trend-header p { font-size:0.95rem; color:#666; line-height:1.75; }
+
+   .trend-single-img {
+       position:relative; width:100%; aspect-ratio:21/8;
+       border-radius:24px; overflow:hidden; cursor:pointer;
+       background:#111;
+       box-shadow:0 8px 40px rgba(0,0,0,0.12);
+       transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease;
    }
+   .trend-single-img:hover { transform:translateY(-5px); box-shadow:0 24px 64px rgba(0,0,0,0.2); }
+   .trend-single-img > img {
+       position:absolute; inset:0; width:100%; height:100%;
+       object-fit:cover; object-position:center center; display:block;
+       transition:transform 0.6s ease, filter 0.4s ease;
+   }
+   .trend-single-img:hover > img { transform:scale(1.04); filter:brightness(0.78); }
+   .trend-single-overlay {
+       position:absolute; inset:0;
+       background:linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 50%, transparent 100%);
+       display:flex; flex-direction:column; justify-content:flex-end;
+       padding:30px 36px; gap:9px;
+   }
+   .trend-single-chips { display:flex; gap:8px; }
+   .trend-chip-dot {
+       width:20px; height:20px; border-radius:50%;
+       border:2px solid rgba(255,255,255,0.55);
+       box-shadow:0 2px 8px rgba(0,0,0,0.35);
+   }
+   .trend-single-label { font-size:1.2rem; font-weight:800; color:#fff; letter-spacing:-0.4px; }
+   .trend-single-hint {
+       font-size:0.82rem; color:rgba(255,255,255,0.7); font-weight:500; letter-spacing:0.06em;
+       transition:color 0.3s, transform 0.3s;
+   }
+   .trend-single-img:hover .trend-single-hint { color:#fff; transform:translateX(5px); }
+
+   /* ====================================================
+      컬러 트렌드 팝업 (#ct-overlay / #ct-box)
+      ==================================================== */
+   #ct-overlay {
+       display: none;
+       position: fixed;
+       inset: 0;
+       z-index: 999999;
+       background: rgba(0,0,0,0.6);
+       align-items: center;
+       justify-content: center;
+       padding: 20px;
+   }
+   #ct-box {
+       position:relative; width:100%; max-width:920px; max-height:88vh;
+       background:#fff; border-radius:24px; overflow:hidden;
+       display:flex; flex-direction:row;
+       box-shadow:0 40px 100px rgba(0,0,0,0.38);
+       animation: ctSlideUp 0.32s cubic-bezier(0.16,1,0.3,1) both;
+   }
+   @keyframes ctSlideUp {
+       from { opacity:0; transform:translateY(30px) scale(0.97); }
+       to   { opacity:1; transform:translateY(0)    scale(1);    }
+   }
+   #ct-close {
+       position:absolute; top:16px; right:16px;
+       width:34px; height:34px; border-radius:50%;
+       background:rgba(0,0,0,0.09); border:none;
+       font-size:15px; color:#444; cursor:pointer;
+       display:flex; align-items:center; justify-content:center;
+       z-index:10; transition:background 0.2s, color 0.2s;
+   }
+   #ct-close:hover { background:#111; color:#fff; }
+   #ct-img-col {
+       width:42%; flex-shrink:0;
+       background:#111; overflow:hidden; position:relative;
+   }
+   #ct-img-col img {
+       width:100%; height:100%;
+       object-fit:cover; object-position:center; display:block;
+   }
+   #ct-info-col {
+       flex:1; display:flex; flex-direction:column; gap:16px;
+       padding:40px 36px 36px; overflow-y:auto;
+   }
+   #ct-badge { width:fit-content; }
+   #ct-title {
+       font-size:clamp(1.6rem,2.8vw,2.2rem);
+       font-weight:900; letter-spacing:-1.5px; line-height:1.1; color:#111; margin:0;
+   }
+   #ct-desc { font-size:0.88rem; color:#666; line-height:1.8; margin:0; }
+   #ct-palette { display:flex; gap:10px; flex-wrap:wrap; }
+   .ct-sw-wrap { display:flex; flex-direction:column; align-items:center; gap:5px; }
+   .ct-sw {
+       width:40px; height:40px; border-radius:50%;
+       box-shadow:0 2px 10px rgba(0,0,0,0.12);
+       transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1); cursor:default;
+   }
+   .ct-sw:hover { transform:scale(1.2); }
+   .ct-sw-name { font-size:0.6rem; color:#aaa; letter-spacing:0.04em; }
+   #ct-tags { display:flex; flex-wrap:wrap; gap:7px; }
+   .ct-tag {
+       padding:5px 13px; border-radius:50px;
+       border:1.5px solid #e0e0e0; font-size:0.77rem; font-weight:600; color:#444; background:#f8f8f8;
+   }
+   #ct-keywords { display:flex; flex-wrap:wrap; gap:6px; }
+   .ct-kw {
+       padding:4px 10px; border-radius:7px;
+       font-size:0.7rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+   }
+   #ct-cta {
+       margin-top:auto; display:block; width:100%; padding:13px 0;
+       background:#111; color:#fff; border:none; border-radius:12px;
+       font-size:0.9rem; font-weight:700; cursor:pointer; letter-spacing:0.02em;
+       transition:background 0.2s, transform 0.18s;
+   }
+   #ct-cta:hover { background:#333; transform:translateY(-2px); }
 
    .best-products-grid {
        display: grid;
@@ -1203,4 +1313,85 @@
 }
 .logout-link:hover {
     color: #ff4d4f !important; /* 마우스 올리면 경고 느낌의 붉은색으로! */
+}
+/* ====================================================
+   컬러 트렌드 팝업 (#ct-overlay)
+   ==================================================== */
+#ct-overlay {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+#ct-box {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    background: #fff;
+    border-radius: 24px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    animation: ctFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ctFadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#ct-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: rgba(255,255,255,0.9);
+    border: none; font-size: 24px; cursor: pointer;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10; transition: 0.2s;
+}
+#ct-close:hover { background: #000; color: #fff; }
+
+#ct-img-col { width: 45%; background: #f8f8f8; }
+#ct-img { width: 100%; height: 100%; object-fit: cover; }
+
+#ct-info-col {
+    width: 55%; padding: 60px;
+    display: flex; flex-direction: column; justify-content: center;
+}
+
+#ct-badge { margin-bottom: 15px; }
+#ct-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; color: #111; }
+#ct-desc { font-size: 1.05rem; line-height: 1.7; color: #555; margin-bottom: 30px; }
+
+#ct-palette { display: flex; gap: 15px; margin-bottom: 30px; }
+.ct-sw-wrap { text-align: center; }
+.ct-sw { width: 45px; height: 45px; border-radius: 50%; margin-bottom: 8px; }
+.ct-sw-name { font-size: 0.7rem; color: #888; font-weight: 600; }
+
+#ct-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
+.ct-tag { padding: 6px 14px; background: #f0f0f0; border-radius: 50px; font-size: 0.85rem; color: #666; }
+
+#ct-keywords { display: flex; gap: 10px; margin-bottom: 40px; }
+.ct-kw { padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
+
+#ct-cta {
+    width: 100%; height: 55px; background: #111; color: #fff;
+    border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: 0.3s;
+}
+#ct-cta:hover { background: #333; transform: translateY(-2px); }
+
+@media (max-width: 850px) {
+    #ct-box { flex-direction: column; max-height: 90vh; overflow-y: auto; }
+    #ct-img-col, #ct-info-col { width: 100%; }
+    #ct-img { height: 300px; }
+    #ct-info-col { padding: 40px 30px; }
 }
