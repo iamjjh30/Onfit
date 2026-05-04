@@ -3,21 +3,22 @@
    - 세션 기반 인증 (JWT 토큰 방식 제거)
    - 수정 모드: URL에 ?edit={postId} 있으면 기존 내용 불러와서 수정
    - 다중 이미지 (최대 5장) → imgUrl: JSON.stringify([url1, url2, ...])
+   - 상품 인용 최대 4개, 가로 스와이프 UI
    - POST /api/posts        (새 글)
    - PUT  /api/posts/{id}   (수정)
 ================================================================ */
 
-var selectedCat      = '잡담';
+var selectedCat      = '오늘의 핏';
 var imageFiles       = [];
 var imageBase64s     = [];
 var selectedProducts = [];
 var allProducts      = [];
 var MAX_IMAGES       = 5;
-var editPostId       = null;   // ✅ 수정 모드일 때 postId
+var MAX_PRODUCTS     = 4;   // ✅ 상품 인용 최대 4개
+var editPostId       = null;
 
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', function () {
-    // ✅ URL에서 edit 파라미터 확인
     var params = new URLSearchParams(window.location.search);
     editPostId = params.get('edit') ? parseInt(params.get('edit')) : null;
 
@@ -29,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchProducts();
     checkLoginStatus();
 
-    // ✅ 수정 모드면 기존 내용 불러오기
     if (editPostId) {
         loadPostForEdit(editPostId);
     }
@@ -37,27 +37,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ── 수정 모드: 기존 게시글 불러오기 ── */
 function loadPostForEdit(postId) {
-    // 제목 변경
     var titleEl = document.querySelector('.write-title');
     if (titleEl) titleEl.textContent = '게시글 수정';
     var submitBtn = document.getElementById('submitBtn');
     if (submitBtn) submitBtn.textContent = '수정하기';
 
-    fetch('/api/posts/' + postId, {
-        credentials: 'include'
-    })
+    fetch('/api/posts/' + postId, { credentials: 'include' })
         .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
         .then(function (post) {
-            // 카테고리 세팅
             if (post.type) {
                 selectedCat = post.type;
                 document.querySelectorAll('.cat-tab').forEach(function (tab) {
-                    tab.classList.toggle('active', tab.getAttribute('data-cat') === post.type);
+                    tab.classList.toggle('active', tab.getAttribute('data-menu') === post.type);
                 });
             }
 
-            // 내용 세팅 (상품 태그 제거 후)
-            var content = (post.content || post.title || '').replace(/\[상품:\d+:[^\]]*\]\n?/g, '').replace(/\[상품:\d+\]\n?/g, '').trim();
+            var content = (post.content || post.title || '')
+                .replace(/\[상품:\d+:[^\]]*\]\n?/g, '')
+                .replace(/\[상품:\d+\]\n?/g, '')
+                .trim();
             var ta = document.getElementById('contentInput');
             if (ta) {
                 ta.value = content;
@@ -65,7 +63,6 @@ function loadPostForEdit(postId) {
                 if (ct) ct.textContent = content.length;
             }
 
-            // 이미지 세팅
             if (post.imgUrl) {
                 var images = [];
                 try {
@@ -75,12 +72,40 @@ function loadPostForEdit(postId) {
                     images = [post.imgUrl];
                 }
                 imageBase64s = images.filter(Boolean);
-                imageFiles   = images.map(function () { return null; }); // 기존 이미지는 File 없음
+                imageFiles   = images.map(function () { return null; });
                 renderImagePreviews();
+            }
+
+            // 상품 인용 복원
+            var rawContent = post.content || post.title || '';
+            var productIds = [];
+            rawContent.replace(/\[상품:(\d+)\]/g, function (m, id) {
+                var n = parseInt(id);
+                if (productIds.indexOf(n) === -1) productIds.push(n);
+            });
+            rawContent.replace(/\[상품:(\d+):[^\]]+\]/g, function (m, id) {
+                var n = parseInt(id);
+                if (productIds.indexOf(n) === -1) productIds.push(n);
+            });
+
+            if (productIds.length) {
+                Promise.all(productIds.map(function (id) {
+                    return fetch('/api/products/' + id, { credentials: 'include' })
+                        .then(function (r) { return r.ok ? r.json() : null; })
+                        .catch(function () { return null; });
+                })).then(function (products) {
+                    products.filter(Boolean).forEach(function (p) {
+                        if (!selectedProducts.some(function (s) { return s.id === p.id; })) {
+                            selectedProducts.push(p);
+                        }
+                    });
+                    renderSelectedProducts();
+                    renderProductList(allProducts);
+                });
             }
         })
         .catch(function () {
-            alert('게시글을 불러올 수 없습니다.');
+            toast('게시글을 불러올 수 없습니다.');
             window.location.href = '/community';
         });
 }
@@ -98,7 +123,7 @@ function setupCategoryTabs() {
         tab.addEventListener('click', function () {
             document.querySelectorAll('.cat-tab').forEach(function (t) { t.classList.remove('active'); });
             this.classList.add('active');
-            selectedCat = this.getAttribute('data-cat');
+            selectedCat = this.getAttribute('data-menu');
         });
     });
 }
@@ -118,7 +143,7 @@ function setupImageUpload() {
 
     trigger.addEventListener('click', function () {
         if (imageFiles.length >= MAX_IMAGES) {
-            alert('이미지는 최대 ' + MAX_IMAGES + '장까지 첨부할 수 있어요.');
+            toast('이미지는 최대 ' + MAX_IMAGES + '장까지 첨부할 수 있어요.');
             return;
         }
         fileInput.click();
@@ -128,12 +153,15 @@ function setupImageUpload() {
         var newFiles  = Array.from(this.files);
         var remaining = MAX_IMAGES - imageFiles.length;
         if (newFiles.length > remaining) {
-            alert('최대 ' + MAX_IMAGES + '장까지만 첨부 가능해요. ' + remaining + '장만 추가됩니다.');
+            toast('최대 ' + MAX_IMAGES + '장까지만 첨부 가능해요. ' + remaining + '장만 추가됩니다.');
             newFiles = newFiles.slice(0, remaining);
         }
 
         var validFiles = newFiles.filter(function (f) {
-            if (f.size > 10 * 1024 * 1024) { alert(f.name + ' 파일은 10MB를 초과해서 제외됩니다.'); return false; }
+            if (f.size > 10 * 1024 * 1024) {
+                toast(f.name + ' 파일은 10MB를 초과해서 제외됩니다.');
+                return false;
+            }
             return true;
         });
 
@@ -186,7 +214,7 @@ function renderImagePreviews() {
     });
 }
 
-/* ── 상품 목록 ── */
+/* ── 상품 목록 fetch ── */
 function fetchProducts() {
     fetch('/api/products', { credentials: 'include' })
         .then(function (r) { return r.json(); })
@@ -200,7 +228,7 @@ function fetchProducts() {
         });
 }
 
-/* ── 상품 피커 ── */
+/* ── 상품 피커 드롭다운 ── */
 function setupProductPicker() {
     var header  = document.getElementById('productPickerHeader');
     var body    = document.getElementById('productPickerBody');
@@ -225,6 +253,7 @@ function setupProductPicker() {
     }
 }
 
+/* ── 상품 목록 렌더링 ── */
 function renderProductList(products) {
     var container = document.getElementById('productItems');
     if (!container) return;
@@ -234,13 +263,20 @@ function renderProductList(products) {
         return;
     }
 
+    var isFull = selectedProducts.length >= MAX_PRODUCTS;
+
     container.innerHTML = products.map(function (p) {
-        var added = selectedProducts.some(function (s) { return s.productId === p.productId; });
-        return '<div class="product-item" data-id="' + p.productId + '">' +
-            '<img src="' + (p.imgUrl || '') + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
+        // ✅ p.id 기준으로 통일해서 비교
+        var added = selectedProducts.some(function (s) { return s.id === p.id; });
+        var disabledAttr = (added || isFull) ? 'disabled' : '';
+        var btnText = added ? '추가됨' : (isFull ? '최대 ' + MAX_PRODUCTS + '개' : '+ 인용');
+        var btnClass = 'product-item-add' + (added ? ' added' : '') + (isFull && !added ? ' full' : '');
+
+        return '<div class="product-item" data-id="' + p.id + '">' +
+            '<img src="' + (p.imageUrl || '') + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
             '<span class="product-item-name">' + p.name + '</span>' +
             '<span class="product-item-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
-            '<button class="product-item-add" ' + (added ? 'disabled' : '') + '>' + (added ? '추가됨' : '+ 인용') + '</button>' +
+            '<button class="' + btnClass + '" ' + disabledAttr + '>' + btnText + '</button>' +
             '</div>';
     }).join('');
 
@@ -250,40 +286,52 @@ function renderProductList(products) {
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 var id = parseInt(item.getAttribute('data-id'));
-                var p  = allProducts.find(function (p) { return p.productId === id; });
+                var p  = allProducts.find(function (p) { return p.id === id; });
                 if (p) addProduct(p);
             });
         }
     });
 }
 
+/* ── 상품 추가 ── */
 function addProduct(p) {
-    if (selectedProducts.some(function (s) { return s.productId === p.productId; })) return;
+    // ✅ 최대 4개 제한
+    if (selectedProducts.length >= MAX_PRODUCTS) {
+        toast('상품 인용은 최대 ' + MAX_PRODUCTS + '개까지 가능해요.');
+        return;
+    }
+    // ✅ 중복 방지: p.id 기준
+    if (selectedProducts.some(function (s) { return s.id === p.id; })) return;
+
     selectedProducts.push(p);
     renderSelectedProducts();
     renderProductList(allProducts);
 }
 
+/* ── 상품 제거 ── */
 function removeProduct(id) {
-    selectedProducts = selectedProducts.filter(function (s) { return s.productId !== id; });
+    selectedProducts = selectedProducts.filter(function (s) { return s.id !== id; });
     renderSelectedProducts();
     renderProductList(allProducts);
 }
 
+/* ── 선택된 상품 태그 렌더링 (최대 4개) ── */
 function renderSelectedProducts() {
     var container = document.getElementById('selectedProducts');
     if (!container) return;
 
     container.innerHTML = selectedProducts.map(function (p) {
         return '<div class="selected-product-tag">' +
-            '<img src="' + (p.imgUrl || '') + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
+            '<img src="' + (p.imageUrl || '') + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
             p.name +
-            '<button class="remove-tag" data-id="' + p.productId + '" type="button">✕</button>' +
+            '<button class="remove-tag" data-id="' + p.id + '" type="button">✕</button>' +
             '</div>';
     }).join('');
 
     container.querySelectorAll('.remove-tag').forEach(function (btn) {
-        btn.addEventListener('click', function () { removeProduct(parseInt(this.getAttribute('data-id'))); });
+        btn.addEventListener('click', function () {
+            removeProduct(parseInt(this.getAttribute('data-id')));
+        });
     });
 }
 
@@ -294,14 +342,14 @@ function setupSubmit() {
 
     btn.addEventListener('click', function () {
         var rawContent = document.getElementById('contentInput').value.trim();
-        if (!rawContent && selectedProducts.length === 0 && imageBase64s.length === 0) {
-            alert('내용을 입력하거나 이미지/상품을 추가해주세요.');
+        if (!rawContent && imageBase64s.length === 0) {
+            toast('내용을 입력하거나 이미지를 추가해주세요.');
             return;
         }
 
-        var firstLine    = rawContent.split('\n')[0] || '게시글';
-        var title        = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
-        var productTags  = selectedProducts.map(function (p) { return '[상품:' + p.productId + ']'; }).join('\n');
+        var firstLine   = rawContent.split('\n')[0] || '게시글';
+        var title       = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
+        var productTags = selectedProducts.map(function (p) { return '[상품:' + p.id + ']'; }).join('\n');
         var finalContent = rawContent + (productTags ? '\n' + productTags : '');
 
         var imgUrl = imageBase64s.length === 0
@@ -313,7 +361,6 @@ function setupSubmit() {
         btn.disabled    = true;
         btn.textContent = editPostId ? '수정 중...' : '게시 중...';
 
-        // ✅ 수정 모드: PUT, 새 글: POST
         var url    = editPostId ? '/api/posts/' + editPostId : '/api/posts';
         var method = editPostId ? 'PUT' : 'POST';
 
@@ -325,7 +372,7 @@ function setupSubmit() {
         })
             .then(function (r) {
                 if (r.status === 401) {
-                    alert('로그인이 필요합니다.');
+                    toast('로그인이 필요합니다.');
                     window.location.href = '/login';
                     return null;
                 }
@@ -337,9 +384,18 @@ function setupSubmit() {
                 window.location.href = '/community/' + post.postId;
             })
             .catch(function () {
-                alert((editPostId ? '수정' : '게시글 등록') + '에 실패했습니다. 다시 시도해주세요.');
+                toast((editPostId ? '수정' : '게시글 등록') + '에 실패했습니다. 다시 시도해주세요.');
                 btn.disabled    = false;
                 btn.textContent = editPostId ? '수정하기' : '게시하기';
             });
     });
+}
+
+function toast(msg, success = true) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast-show' + (success ? '' : ' toast-error');
+    setTimeout(() => { toast.className = ''; }, 1200);
+
 }

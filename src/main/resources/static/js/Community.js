@@ -1,52 +1,94 @@
 /* ================================================================
-   Community.js — 세션 기반 인증으로 수정 (JWT 토큰 방식 제거)
+   Community.js
 ================================================================ */
 
-/* ----------------------------------------------------------------
-   상태
----------------------------------------------------------------- */
 var state = {
     currentMenu: 'ALL',
     likedPosts:  {},
     posts:       []
 };
 
-/* ----------------------------------------------------------------
-   초기화
----------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', function () {
     loadLikedPosts();
     setupTabListeners();
+    setupMobileTabBar();
+    setupSwipeTabChange();
     setupSearch();
+    setupMobileSearch();
     fetchPosts(null);
+    fetchProfileImage();
 });
 
-/* ----------------------------------------------------------------
-   좋아요 로컬 캐시 로드
----------------------------------------------------------------- */
+/* ── 좋아요 로컬 캐시 ── */
 function loadLikedPosts() {
     var s = localStorage.getItem('likedPosts');
     if (s) { try { state.likedPosts = JSON.parse(s); } catch (e) {} }
 }
 
-/* ----------------------------------------------------------------
-   탭 이벤트
----------------------------------------------------------------- */
+/* ── 데스크탑 탭 ── */
 function setupTabListeners() {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
             this.classList.add('active');
             var menu = this.getAttribute('data-menu');
+            document.querySelectorAll('.mobile-tab').forEach(function (b) {
+                b.classList.toggle('active', b.getAttribute('data-menu') === menu);
+            });
             state.currentMenu = menu;
             fetchPosts(menu === 'ALL' ? null : menu);
         });
     });
 }
 
-/* ----------------------------------------------------------------
-   검색
----------------------------------------------------------------- */
+/* ── 모바일 하단 탭바 ── */
+function setupMobileTabBar() {
+    document.querySelectorAll('.mobile-tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.mobile-tab').forEach(function (b) { b.classList.remove('active'); });
+            document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            var menu = this.getAttribute('data-menu');
+            document.querySelectorAll('.tab-btn[data-menu="' + menu + '"]').forEach(function (b) { b.classList.add('active'); });
+            state.currentMenu = menu;
+            fetchPosts(menu === 'ALL' ? null : menu);
+        });
+    });
+}
+
+/* ── 모바일 스와이프 탭 전환 ── */
+function setupSwipeTabChange() {
+    var tabs = ['ALL', '오늘의 핏', '잡담', '추천', '자랑'];
+    var container = document.getElementById('postListContainer');
+    if (!container) return;
+    var touchStartX = 0, touchStartY = 0;
+
+    container.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    container.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        var dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+
+        var currentIdx = tabs.indexOf(state.currentMenu);
+        var nextIdx = dx < 0
+            ? Math.min(currentIdx + 1, tabs.length - 1)
+            : Math.max(currentIdx - 1, 0);
+        if (nextIdx === currentIdx) return;
+
+        var nextMenu = tabs[nextIdx];
+        state.currentMenu = nextMenu;
+        document.querySelectorAll('.tab-btn, .mobile-tab').forEach(function (b) {
+            b.classList.toggle('active', b.getAttribute('data-menu') === nextMenu);
+        });
+        fetchPosts(nextMenu === 'ALL' ? null : nextMenu);
+    }, { passive: true });
+}
+
+/* ── 데스크탑 검색 ── */
 function setupSearch() {
     var input = document.getElementById('searchInput');
     if (!input) return;
@@ -55,39 +97,55 @@ function setupSearch() {
         clearTimeout(timer);
         var kw = this.value.trim();
         timer = setTimeout(function () {
-            if (kw.length === 0) {
-                renderPosts(state.posts);
-            } else {
-                var filtered = state.posts.filter(function (p) {
-                    return (p.content || '').includes(kw) || (p.title || '').includes(kw);
-                });
-                renderPosts(filtered);
-            }
+            renderPosts(kw.length === 0 ? state.posts : state.posts.filter(function (p) {
+                return (p.content || '').includes(kw) || (p.title || '').includes(kw);
+            }));
         }, 250);
     });
 }
 
-/* ----------------------------------------------------------------
-   API 호출 — 세션 쿠키 자동 전송 (credentials: 'include')
----------------------------------------------------------------- */
+/* ── 모바일 검색 ── */
+function setupMobileSearch() {
+    var mobileInput = document.getElementById('mobileSearchInput');
+    if (!mobileInput) return;
+    var timer;
+    mobileInput.addEventListener('input', function () {
+        clearTimeout(timer);
+        var kw = this.value.trim();
+        var desktopInput = document.getElementById('searchInput');
+        if (desktopInput) desktopInput.value = kw;
+        timer = setTimeout(function () {
+            renderPosts(kw.length === 0 ? state.posts : state.posts.filter(function (p) {
+                return (p.content || '').includes(kw) || (p.title || '').includes(kw);
+            }));
+        }, 250);
+    });
+}
+
+/* ── 프로필 이미지 로드 ── */
+function fetchProfileImage() {
+    fetch('/api/members/me', { credentials: 'include' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+            if (!data || !data.profileImg) return;
+            var img = document.getElementById('userProfileImg');
+            if (img) img.src = data.profileImg;
+        })
+        .catch(function () {});
+}
+
+/* ── 게시글 조회 ── */
 function fetchPosts(type) {
     var container = document.getElementById('postListContainer');
     if (container) {
         container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><span>게시글을 불러오는 중...</span></div>';
     }
-
     var url = '/api/posts';
     if (type) url += '?type=' + encodeURIComponent(type);
 
-    fetch(url, {
-        credentials: 'include'  // ✅ 세션 쿠키(JSESSIONID) 자동 포함
-    })
-        .then(function (r) { if (!r.ok) throw new Error('조회 실패'); return r.json(); })
+    fetch(url, { credentials: 'include' })
+        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
         .then(function (data) {
-            // Share Fit 타입 항상 제외
-            data = data.filter(function (p) { return p.type !== 'Share Fit'; });
-
-            // liked 동기화
             data.forEach(function (p) {
                 if (typeof p.liked === 'boolean') state.likedPosts[p.postId] = p.liked;
             });
@@ -100,22 +158,17 @@ function fetchPosts(type) {
         });
 }
 
-/* ----------------------------------------------------------------
-   렌더링
----------------------------------------------------------------- */
+/* ── 렌더링 ── */
 function renderPosts(posts) {
     var container = document.getElementById('postListContainer');
     if (!container) return;
-
     if (!posts || posts.length === 0) {
         container.innerHTML = '<div class="no_data">게시글이 없습니다.</div>';
         return;
     }
-
     container.innerHTML = posts.map(createPostHTML).join('');
     attachCardListeners();
 
-    // 상품 인용 비동기 렌더링
     posts.forEach(function (post) {
         var ids = extractProductIds(post.content || '');
         if (!ids.length) return;
@@ -131,12 +184,8 @@ function createPostHTML(post) {
     var profileSrc = post.profileImg || '/img/interface/ProfileDefault.png';
     var dateStr    = post.createdAt ? post.createdAt.substring(0, 10) : '';
     var cleanText  = cleanProductTags(post.content || post.title || '');
-
-    // 다중 이미지 파싱
-    var images = parseImages(post.imgUrl);
+    var images     = parseImages(post.imgUrl);
     var imagesHTML = buildImagesHTML(images);
-
-    // 상품 인용
     var productIds = extractProductIds(post.content || '');
     var productHTML = productIds.length
         ? '<div class="quoted-product-list" id="productPreview_' + post.postId + '"><span class="quoted-product-loading">상품 불러오는 중...</span></div>'
@@ -162,18 +211,16 @@ function createPostHTML(post) {
         '<div class="post_footer">' +
         '<button class="stat-btn ' + (isLiked ? 'liked' : '') + '" data-post-id="' + post.postId + '" data-action="like">' +
         '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (isLiked ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' +
-        likeCount +
-        '</button>' +
+        likeCount + '</button>' +
         '<button class="stat-btn" data-post-id="' + post.postId + '" data-action="comment">' +
         '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' +
-        commentCnt +
-        '</button>' +
+        commentCnt + '</button>' +
         '</div>' +
         '</div>' +
         '</article>';
 }
 
-/* ── 이미지 파싱 & HTML ── */
+/* ── 이미지 파싱 ── */
 function parseImages(imgUrl) {
     if (!imgUrl) return [];
     try {
@@ -220,30 +267,38 @@ function cleanProductTags(content) {
 
 function fetchAndRenderProducts(ids, containerEl) {
     Promise.all(ids.map(function (id) {
-        return fetch('/api/products/' + id, {
-            credentials: 'include'  // ✅ 세션 쿠키 포함
-        })
+        return fetch('/api/products/' + id, { credentials: 'include' })
             .then(function (r) { return r.ok ? r.json() : null; })
             .catch(function () { return null; });
     })).then(function (products) {
         var valid = products.filter(Boolean);
         if (!valid.length) { containerEl.innerHTML = ''; return; }
+
         containerEl.innerHTML = valid.map(function (p) {
-            return '<a href="/product/' + p.productId + '" class="quoted-product-card" onclick="event.stopPropagation()">' +
-                '<img src="' + (p.imgUrl || '') + '" alt="' + escHtml(p.name) + '">' +
+            return '<a href="/itemDetail?id=' + p.id + '" class="quoted-product-card" onclick="event.stopPropagation()">' +
+                '<img src="' + (p.imageUrl || '') + '" alt="' + escHtml(p.name) + '" onerror="this.style.display=\'none\'">' +
                 '<div class="quoted-product-info">' +
                 '<span class="quoted-product-name">' + escHtml(p.name) + '</span>' +
                 '<span class="quoted-product-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
                 '</div></a>';
         }).join('');
+
+        addWheelScroll(containerEl);
     });
 }
 
 /* ── 이벤트 ── */
 function attachCardListeners() {
+    var touchStartedOnProductList = false;
+
     document.querySelectorAll('.post_card').forEach(function (card) {
+        card.addEventListener('touchstart', function (e) {
+            touchStartedOnProductList = !!e.target.closest('.quoted-product-list');
+        }, { passive: true });
+
         card.addEventListener('click', function (e) {
-            var btn = e.target.closest('.stat-btn, .quoted-product-card');
+            if (touchStartedOnProductList) return;
+            var btn = e.target.closest('.stat-btn, .quoted-product-card, .quoted-product-list');
             if (btn) return;
             window.location.href = '/community/' + this.getAttribute('data-post-id');
         });
@@ -252,33 +307,23 @@ function attachCardListeners() {
     document.querySelectorAll('.stat-btn[data-action="like"]').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
-            var postId = parseInt(this.getAttribute('data-post-id'));
-            toggleLike(postId);
+            toggleLike(parseInt(this.getAttribute('data-post-id')));
         });
     });
 
     document.querySelectorAll('.stat-btn[data-action="comment"]').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
-            var postId = this.getAttribute('data-post-id');
-            window.location.href = '/community/' + postId + '#comments';
+            window.location.href = '/community/' + this.getAttribute('data-post-id') + '#comments';
         });
     });
 }
 
-/* ----------------------------------------------------------------
-   좋아요 토글 — 401 응답으로 로그인 여부 판단
----------------------------------------------------------------- */
+/* ── 좋아요 토글 ── */
 function toggleLike(postId) {
-    fetch('/api/posts/' + postId + '/like', {
-        method: 'POST',
-        credentials: 'include'  // ✅ 세션 쿠키 포함
-    })
+    fetch('/api/posts/' + postId + '/like', { method: 'POST', credentials: 'include' })
         .then(function (r) {
-            if (r.status === 401) {
-                toast('로그인이 필요합니다.');
-                return null;
-            }
+            if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
             return r.json();
         })
         .then(function (data) {
@@ -286,13 +331,46 @@ function toggleLike(postId) {
             state.likedPosts[postId] = data.liked;
             localStorage.setItem('likedPosts', JSON.stringify(state.likedPosts));
             state.posts = state.posts.map(function (p) {
-                return p.postId === postId
-                    ? Object.assign({}, p, { liked: data.liked, likeCount: data.likeCount })
-                    : p;
+                return p.postId === postId ? Object.assign({}, p, { liked: data.liked, likeCount: data.likeCount }) : p;
             });
             renderPosts(state.posts);
         })
         .catch(function () {});
+}
+
+/* ── 가로 스크롤 ── */
+function addWheelScroll(el) {
+    if (el._scrollAdded) return;
+    el._scrollAdded = true;
+
+    el.addEventListener('wheel', function (e) {
+        if (e.deltaY === 0) return;
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    var isDragging = false, startX, startScrollLeft;
+    el.addEventListener('mousedown', function (e) {
+        isDragging = true;
+        startX = e.pageX;
+        startScrollLeft = el.scrollLeft;
+        el.style.userSelect = 'none';
+        el.style.cursor = 'grabbing';
+        e.stopPropagation();
+    });
+    window.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        el.scrollLeft = startScrollLeft - (e.pageX - startX);
+    });
+    window.addEventListener('mouseup', function () {
+        if (!isDragging) return;
+        isDragging = false;
+        el.style.userSelect = '';
+        el.style.cursor = '';
+    });
+
+    el.addEventListener('touchstart', function (e) { e.stopPropagation(); }, { passive: true });
+    el.addEventListener('touchmove',  function (e) { e.stopPropagation(); }, { passive: true });
 }
 
 /* ── 유틸 ── */
@@ -301,10 +379,13 @@ function escHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function toast(msg, success = true) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.className = 'toast-show' + (success ? '' : ' toast-error');
-    setTimeout(() => { toast.className = ''; location.href = '/login';}, 1200);
+function toast(msg, redirect) {
+    var toastEl = document.getElementById('toast');
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.className = 'toast-show';
+    setTimeout(function () {
+        toastEl.className = '';
+        if (redirect) window.location.href = redirect;
+    }, 1200);
 }

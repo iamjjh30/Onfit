@@ -208,7 +208,6 @@ public class MemberController {
             return ResponseEntity.status(401).build();
         }
 
-        // 🌟 세션 대신 DB에서 최신 정보 조회
         Member freshMember = memberRepository.findById(loginMember.getId())
                 .orElse(null);
         if (freshMember == null) {
@@ -222,5 +221,59 @@ public class MemberController {
         info.put("address",  freshMember.getAddress());
         info.put("addressDetail", freshMember.getAddressDetail());
         return ResponseEntity.ok(info);
+    }
+
+    // ── 커뮤니티 프로필 페이지 ──────────────────────────────────────
+
+    @GetMapping("/community/profile")
+    public String communityProfilePage(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/login";
+        return "CommunityProfile";
+    }
+
+    @GetMapping("/api/members/me")
+    @ResponseBody
+    public ResponseEntity<?> getCommunityProfile(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) return ResponseEntity.status(401).build();
+
+        Member member = memberRepository.findById(loginMember.getId()).orElse(null);
+        if (member == null) return ResponseEntity.status(404).build();
+
+        Map<String, Object> info = new HashMap<>();
+        info.put("id",         member.getId());
+        info.put("name",       member.getName());
+        info.put("email",      member.getEmail());
+        info.put("profileImg", member.getProfileImg());
+        return ResponseEntity.ok(info);
+    }
+
+    @PostMapping("/api/members/me/profile-image")
+    @ResponseBody
+    public ResponseEntity<?> uploadProfileImage(
+            @RequestBody Map<String, String> body,
+            HttpSession session) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) return ResponseEntity.status(401).build();
+
+        String base64Img = body.get("profileImg");
+        if (base64Img == null || base64Img.isBlank())
+            return ResponseEntity.badRequest().body(Map.of("message", "이미지가 없습니다."));
+
+        // Base64 크기 체크 (2MB 제한 — Base64는 원본보다 약 33% 커짐)
+        long sizeBytes = base64Img.length() * 3L / 4;
+        if (sizeBytes > 2 * 1024 * 1024)
+            return ResponseEntity.badRequest().body(Map.of("message", "이미지는 2MB 이하만 가능합니다."));
+
+        Member member = memberRepository.findById(loginMember.getId()).orElse(null);
+        if (member == null) return ResponseEntity.status(404).build();
+
+        member.setProfileImg(base64Img);
+        memberRepository.save(member);
+        session.setAttribute("loginMember", member);
+
+        return ResponseEntity.ok(Map.of("profileImg", base64Img));
     }
 }

@@ -23,7 +23,7 @@ public class CommentResponse {
         r.commentId  = c.getCommentId();
         r.memberId   = c.getMember().getId();           // ✅ getUser().getUserId() → getMember().getId()
         r.nickname   = c.getMember().getName();         // ✅ getUser().getNickname() → getMember().getName()
-        r.profileImg = null;                            // ✅ Member에 profileImg 없으므로 null (추후 필드 추가 시 교체)
+        r.profileImg = c.getMember().getProfileImg();
         r.content    = c.getContent();
         r.createdAt  = c.getCreatedAt();
         r.likeCount  = c.getLikes().size();

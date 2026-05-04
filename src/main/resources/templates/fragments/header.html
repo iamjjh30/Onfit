@@ -202,42 +202,99 @@
             filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.0);
         }
 
+        /* ── Icon Panel — 오른쪽 1/3 슬라이드 ── */
         #icon-panel {
-            max-height: 0;
+            display: flex;
             overflow: hidden;
+            max-height: 0;
             opacity: 0;
             transition: max-height 0.45s cubic-bezier(0.16,1,0.3,1), opacity 0.28s ease;
+            border-top: 0px solid transparent;
         }
         #header.icon-open #icon-panel {
             max-height: 300px;
             opacity: 1;
+            border-top: 1px solid rgba(0,0,0,0.06);
         }
 
+        /* 왼쪽 2/3 — 컨텍스트 콘텐츠 */
+        #icon-panel-spacer {
+            flex: 2;
+            padding: 18px 24px 20px;
+            overflow: hidden;
+        }
+
+        /* 공통 왼쪽 패널 */
+        .left-panel { display: none; }
+        .left-panel.active { display: block; }
+
+        .lp-label {
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: #c0c0c0;
+            text-transform: uppercase;
+            font-family: 'Syne', sans-serif;
+            margin-bottom: 14px;
+        }
+
+        /* ── 계정 왼쪽: 서비스 배너 ── */
+        .lp-guest-banner {
+            display: flex;
+            gap: 10px;
+        }
+        .lp-banner-card {
+            flex: 1;
+            padding: 14px 16px;
+            border-radius: 14px;
+            text-decoration: none;
+            background: rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .lp-banner-card:hover {
+            background: rgba(255,184,52,0.08);
+            border-color: rgba(255,184,52,0.3);
+            transform: translateY(-2px);
+        }
+        .lp-banner-icon { font-size: 22px; margin-bottom: 6px; }
+        .lp-banner-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: -0.02em;
+            margin-bottom: 3px;
+        }
+        .lp-banner-desc { font-size: 11px; color: #999; letter-spacing: -0.01em; line-height: 1.5; }
+
+        /* 오른쪽 1/3 — 실제 메뉴 */
         #icon-panel-inner {
-            padding: 0 24px 22px;
-            border-top: 1px solid rgba(0,0,0,0.06);
+            flex: 1;
+            padding: 18px 20px 20px;
+            border-left: 1px solid rgba(0,0,0,0.06);
         }
 
         .icon-panel-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 0 14px;
-            margin-bottom: 16px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
             border-bottom: 1.5px solid #111;
         }
         .icon-panel-title {
-            font-size: 19px;
+            font-size: 16px;
             font-weight: 700;
             color: #111;
             letter-spacing: -0.02em;
         }
         .icon-panel-close {
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 600;
             color: #aaa;
             cursor: pointer;
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 8px;
             transition: color 0.2s ease, background 0.2s ease;
             letter-spacing: -0.01em;
@@ -245,44 +302,38 @@
         .icon-panel-close:hover { color: #333; background: rgba(0,0,0,0.05); }
 
         .icon-panel-content { display: none; }
-        .icon-panel-content.active { display: flex; gap: 10px; flex-wrap: wrap; }
+        .icon-panel-content.active { display: flex; flex-direction: column; gap: 4px; }
+
+        .icon-panel-welcome {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: -0.01em;
+            padding: 2px 0 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 6px;
+        }
+        .icon-panel-welcome strong { color: #111; font-weight: 700; }
 
         .icon-panel-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 18px;
-            border-radius: 13px;
-            border: 1px solid rgba(0,0,0,0.07);
-            background: rgba(0,0,0,0.02);
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 10px;
             text-decoration: none;
             color: rgba(0,0,0,0.72);
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             letter-spacing: -0.01em;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+            transition: background 0.18s ease, color 0.18s ease;
             white-space: nowrap;
         }
         .icon-panel-item:hover {
             background: rgba(255,184,52,0.1);
-            border-color: rgba(255,184,52,0.25);
             color: #C8860A;
             font-weight: 600;
-            transform: translateY(-1px);
-        }
-
-        .icon-panel-welcome {
-            font-size: 17px;
-            font-weight: 600;
-            color: #555;
-            letter-spacing: -0.01em;
-            padding: 4px 0 12px;
-            width: 100%;
-        }
-        .icon-panel-welcome strong {
-            color: #111;
-            font-weight: 700;
         }
 
         /* ── Search Panel ── */
@@ -372,7 +423,16 @@
         .res-btn.active { background: #111; color: #fff; border-color: #111; }
 
         .result-right { flex: 1; overflow: hidden; }
-        .product-grid { display: flex; gap: 14px; justify-content: flex-start; }
+        .product-grid {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+        .product-grid::-webkit-scrollbar { display: none; }
 
         .prod-card {
             width: 140px;
@@ -491,6 +551,75 @@
         </div>
 
         <div id="icon-panel">
+            <div id="icon-panel-spacer">
+
+                <!-- 계정: 비로그인 배너 -->
+                <div class="left-panel" id="lp-profile-guest">
+                    <div class="lp-label">OnFit Services</div>
+                    <div class="lp-guest-banner">
+                        <a th:href="@{/AIStyler}" class="lp-banner-card">
+                            <div class="lp-banner-icon">🎨</div>
+                            <div class="lp-banner-title">AI 퍼스널컬러</div>
+                            <div class="lp-banner-desc">나만의 컬러 팔레트를<br>AI로 진단받아보세요</div>
+                        </a>
+                        <a th:href="@{/store}" class="lp-banner-card">
+                            <div class="lp-banner-icon">🛍️</div>
+                            <div class="lp-banner-title">스타일 스토어</div>
+                            <div class="lp-banner-desc">진단 결과 기반<br>맞춤 상품을 만나보세요</div>
+                        </a>
+                        <a th:href="@{/community}" class="lp-banner-card">
+                            <div class="lp-banner-icon">✨</div>
+                            <div class="lp-banner-title">커뮤니티</div>
+                            <div class="lp-banner-desc">패션 인사이트와<br>트렌드를 공유해요</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 계정: 로그인 시 서비스 바로가기 (정적) -->
+                <div class="left-panel" id="lp-profile-member">
+                    <div class="lp-label">바로가기</div>
+                    <div class="lp-guest-banner">
+                        <a th:href="@{/MyPalette}" class="lp-banner-card">
+                            <div class="lp-banner-icon">🎨</div>
+                            <div class="lp-banner-title">내 팔레트</div>
+                            <div class="lp-banner-desc">나의 퍼스널컬러와<br>진단 결과 확인</div>
+                        </a>
+                        <a th:href="@{/OrderInfo}" class="lp-banner-card">
+                            <div class="lp-banner-icon">📦</div>
+                            <div class="lp-banner-title">주문내역</div>
+                            <div class="lp-banner-desc">최근 주문 현황과<br>배송 상태 확인</div>
+                        </a>
+                        <a th:href="@{/community}" class="lp-banner-card">
+                            <div class="lp-banner-icon">✨</div>
+                            <div class="lp-banner-title">커뮤니티</div>
+                            <div class="lp-banner-desc">패션 인사이트와<br>트렌드를 공유해요</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 장바구니: 정적 안내 -->
+                <div class="left-panel" id="lp-cart">
+                    <div class="lp-label">쇼핑 바로가기</div>
+                    <div class="lp-guest-banner">
+                        <a th:href="@{/Cart}" class="lp-banner-card">
+                            <div class="lp-banner-icon">🛒</div>
+                            <div class="lp-banner-title">장바구니</div>
+                            <div class="lp-banner-desc">담아둔 상품을<br>확인하고 결제하기</div>
+                        </a>
+                        <a th:href="@{/store}" class="lp-banner-card">
+                            <div class="lp-banner-icon">🛍️</div>
+                            <div class="lp-banner-title">스토어</div>
+                            <div class="lp-banner-desc">AI 진단 기반<br>맞춤 상품 둘러보기</div>
+                        </a>
+                        <a th:href="@{/OrderInfo}" class="lp-banner-card">
+                            <div class="lp-banner-icon">📦</div>
+                            <div class="lp-banner-title">주문내역</div>
+                            <div class="lp-banner-desc">최근 주문 현황과<br>배송 상태 확인</div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
             <div id="icon-panel-inner">
                 <div class="icon-panel-header">
                     <span class="icon-panel-title" id="icon-panel-title"></span>
@@ -524,14 +653,14 @@
                 <div class="sp-input-row">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <input type="search" id="sp-input" placeholder="OnFit.com 검색하기" autocomplete="off">
-                    <span id="sp-cancel">취소</span>
+                    <span id="sp-cancel">창 닫기</span>
                 </div>
                 <div id="sp-initial-content">
                     <div class="sp-section-label">Popular Keywords</div>
                     <div class="sp-tags">
-                        <div class="sp-tag">#퍼스널컬러</div>
-                        <div class="sp-tag">#봄웜톤 코디</div>
-                        <div class="sp-tag">#와이드데님</div>
+                        <div class="sp-tag">#AI진단</div>
+                        <div class="sp-tag">#후디</div>
+                        <div class="sp-tag">#캡</div>
                     </div>
                 </div>
                 <div id="sp-results-content">
@@ -587,12 +716,82 @@
             if(cancelBtn) cancelBtn.onclick = closeSearch;
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSearch(); closeIconPanel(); } });
 
+            // Popular Keywords 태그 클릭 시 검색 실행
+            document.querySelectorAll('.sp-tag').forEach(tag => {
+                tag.addEventListener('click', function () {
+                    const keyword = this.textContent.replace(/^#/, '').trim();
+                    if (spInput) {
+                        spInput.value = keyword;
+                        spInput.dispatchEvent(new Event('input'));
+                    }
+                });
+            });
+
+            // ── 아이콘 패널 (오른쪽 1/3) ──
+            const iconPanelTitle = document.getElementById('icon-panel-title');
+            const iconPanelClose = document.getElementById('icon-panel-close');
+            let currentPanel = null;
+
+            const panelConfig = {
+                profile: { title: '계정' },
+                cart:    { title: '장바구니' }
+            };
+
+            window.openIconPanel = function(panelKey) {
+                closeSearch();
+                if (currentPanel === panelKey) { closeIconPanel(); return; }
+
+                // 오른쪽 패널
+                document.querySelectorAll('.icon-panel-content').forEach(el => el.classList.remove('active'));
+                // 왼쪽 패널
+                document.querySelectorAll('.left-panel').forEach(el => el.classList.remove('active'));
+
+                let contentId, leftId;
+                if (panelKey === 'profile') {
+                    var isLogin = /*[[${session.loginMember != null}]]*/ false;
+                    contentId = isLogin ? 'panel-profile-member' : 'panel-profile-guest';
+                    leftId    = isLogin ? 'lp-profile-member'   : 'lp-profile-guest';
+                } else {
+                    contentId = 'panel-' + panelKey;
+                    leftId    = 'lp-' + panelKey;
+                }
+
+                const content = document.getElementById(contentId);
+                if (content) content.classList.add('active');
+                const leftPanel = document.getElementById(leftId);
+                if (leftPanel) leftPanel.classList.add('active');
+
+                if (iconPanelTitle) iconPanelTitle.textContent = panelConfig[panelKey]?.title || '';
+                if (header) header.classList.add('icon-open');
+                if (mask) mask.classList.add('active');
+
+                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
+                const currentIcon = document.getElementById('icon-' + panelKey);
+                if (currentIcon) currentIcon.classList.add('icon-open');
+
+                currentPanel = panelKey;
+            };
+
+            window.closeIconPanel = function() {
+                if (header) header.classList.remove('icon-open');
+                if (mask) mask.classList.remove('active');
+                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
+                currentPanel = null;
+            };
+
+            document.querySelectorAll('.header_icon[data-panel]').forEach(iconEl => {
+                iconEl.addEventListener('click', () => openIconPanel(iconEl.dataset.panel));
+            });
+
+            if (iconPanelClose) iconPanelClose.onclick = closeIconPanel;
+            if (mask) mask.onclick = () => { closeSearch(); closeIconPanel(); };
+
             // 라이브 검색 로직
             if(spInput) {
                 spInput.oninput = function () {
                     const keyword = this.value.trim();
                     if (keyword.length > 0) {
-                        fetch(`/api/search/live?keyword=${encodeURIComponent(keyword)}`)
+                        fetch(`/api/search/live?keyword=${encodeURIComponent(keyword)}&limit=8`)
                             .then(res => res.json())
                             .then(data => {
                                 if(menuContainer) menuContainer.innerHTML = '';
@@ -631,73 +830,6 @@
                 };
             }
 
-            const iconPanelTitle = document.getElementById('icon-panel-title');
-            const iconPanelClose = document.getElementById('icon-panel-close');
-
-            // 패널 설정
-            const panelConfig = {
-                profile: {
-                    title: '계정',
-                    getContentId: () => 'panel-profile-guest' // 기본값 (아래 함수에서 동적 변경)
-                },
-                cart: {
-                    title: '장바구니',
-                    getContentId: () => 'panel-cart'
-                }
-            };
-
-            let currentPanel = null;
-
-            window.openIconPanel = function(panelKey) {
-                closeSearch();
-                const config = panelConfig[panelKey];
-                if (!config) return;
-
-                if (currentPanel === panelKey) {
-                    closeIconPanel();
-                    return;
-                }
-
-                // 모든 패널 비활성화
-                document.querySelectorAll('.icon-panel-content').forEach(el => el.classList.remove('active'));
-
-                // 로그인 여부에 따른 프로필 패널 분기 (타임리프 인라인 적용)
-                let contentId = config.getContentId();
-                if (panelKey === 'profile') {
-                    var isLogin = /*[[${session.loginMember != null}]]*/ false;
-                    contentId = isLogin ? 'panel-profile-member' : 'panel-profile-guest';
-                }
-
-                const content = document.getElementById(contentId);
-                if (content) content.classList.add('active');
-
-                if(iconPanelTitle) iconPanelTitle.textContent = config.title;
-                if(header) header.classList.add('icon-open');
-                if(mask) mask.classList.add('active');
-
-                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
-                const currentIcon = document.getElementById(`icon-${panelKey}`);
-                if (currentIcon) currentIcon.classList.add('icon-open');
-
-                currentPanel = panelKey;
-            }
-
-            window.closeIconPanel = function() {
-                if(header) header.classList.remove('icon-open');
-                if(mask) mask.classList.remove('active');
-                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
-                currentPanel = null;
-            }
-
-            // 아이콘 클릭 이벤트 연결
-            document.querySelectorAll('.header_icon[data-panel]').forEach(iconEl => {
-                iconEl.addEventListener('click', () => {
-                    openIconPanel(iconEl.dataset.panel);
-                });
-            });
-
-            if(iconPanelClose) iconPanelClose.onclick = closeIconPanel;
-            if(mask) mask.onclick = () => { closeSearch(); closeIconPanel(); };
         });
     </script>
 </div>

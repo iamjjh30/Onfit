@@ -39,6 +39,9 @@ public class Member {
     // 스타일 DNA 대표 성향
     private String styleDna;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String profileImg;
+
     // 유저 활동 레벨 (기본값 1)
     @Builder.Default
     private Integer styleLevel = 1;

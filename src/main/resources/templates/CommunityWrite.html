@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" th:href="@{/img/interface/favicon.png}" type="image/x-icon">
-    <title>글쓰기 — OnFit</title>
+    <title>OnFit — Community</title>
     <link rel="stylesheet" th:href="@{/css/Main.css}">
     <link rel="stylesheet" th:href="@{/css/CommunityWrite.css}">
 </head>
@@ -42,7 +42,7 @@
             <div class="field-group">
                 <label class="field-label">카테고리</label>
                 <div class="cat-tabs">
-                    <button type="button" class="cat-tab active" data-menu="TF">오늘의 핏</button>
+                    <button type="button" class="cat-tab active" data-menu="오늘의 핏">오늘의 핏</button>
                     <button type="button" class="cat-tab" data-menu="잡담">잡담</button>
                     <button type="button" class="cat-tab" data-menu="추천">추천</button>
                     <button type="button" class="cat-tab" data-menu="자랑">자랑</button>
@@ -110,8 +110,7 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-
-<script th:src="@{/js/include.js}"></script>
+<div id="toast"></div>
 <script th:src="@{/js/CommunityWrite.js}"></script>
 </body>
 </html>
