@@ -350,7 +350,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             const response = await fetch('/api/ai/save-fitting', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 🌟 [추가] 혹시 모를 CSRF 에러 방지 (스프링 시큐리티 설정에 따라 다름)
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: JSON.stringify({
                     topProductId:    hasTop    ? topId    : null,
                     bottomProductId: hasBottom ? bottomId : null,
@@ -358,12 +362,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 })
             });
 
+            console.log("저장 요청 응답 상태 코드:", response.status);
+
             if (response.status === 401) {
                 alert("로그인이 풀렸습니다! 피팅 기록을 저장하려면 로그인해주세요.");
                 return;
             }
-            if (!response.ok) throw new Error(`서버 응답 오류 (상태 코드: ${response.status})`);
-            console.log("🎉 아카이브 저장 완료!");
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("저장 실패 상세 내용:", text);
+                throw new Error(`서버 응답 오류 (상태 코드: ${response.status})`);
+            }
 
         } catch (error) {
             console.error("아카이브 저장 실패:", error);
