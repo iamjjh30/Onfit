@@ -14,15 +14,30 @@
         <h1>COLOR STORE</h1>
 
         <div class="store-nav">
-            <nav class="category-tabs">
-                <a href="#" class="active" data-target="ALL">전체</a>
-                <a href="#" data-target="SHIRT">셔츠</a>
-                <a href="#" data-target="HOODIE">후드티</a>
-                <a href="#" data-target="JACKET">자켓</a>
-                <a href="#" data-target="PANTS">팬츠</a>
-                <a href="#" data-target="CAP">모자</a>
-            </nav>
-
+            <div class="store-tabs-wrap">
+                <div class="store-tab-row">
+                    <span class="store-tab-label">카테고리</span>
+                    <nav class="category-tabs">
+                        <a href="#" class="active" data-target="ALL">전체</a>
+                        <a href="#" data-target="SHIRT">셔츠</a>
+                        <a href="#" data-target="HOODIE">후드티</a>
+                        <a href="#" data-target="JACKET">자켓</a>
+                        <a href="#" data-target="PANTS">팬츠</a>
+                        <a href="#" data-target="CAP">모자</a>
+                    </nav>
+                </div>
+                <div class="store-tab-row">
+                    <span class="store-tab-label">퍼스널 컬러</span>
+                    <nav class="tone-tabs">
+                        <a href="#" class="active" data-tone="ALL">전체</a>
+                        <a href="#" data-tone="NEUTRAL">뉴트럴</a>
+                        <a href="#" data-tone="SPRING_WARM">봄 웜톤</a>
+                        <a href="#" data-tone="SUMMER_COOL">여름 쿨톤</a>
+                        <a href="#" data-tone="AUTUMN_WARM">가을 웜톤</a>
+                        <a href="#" data-tone="WINTER_COOL">겨울 쿨톤</a>
+                    </nav>
+                </div>
+            </div>
             <div class="filter-wrapper">
                 <button id="filter-btn" class="filter-toggle">
                     FILTER & SORT <span class="icon">▼</span>
@@ -36,17 +51,6 @@
                             <label><input type="radio" name="sort" value="price_high"> 가격 높은순</label>
                             <label><input type="radio" name="sort" value="newest"> 최신순</label>
                             <label><input type="radio" name="sort" value="popular"> 인기순</label>
-                        </div>
-
-                        <div class="filter-column color-filter-group">
-                            <h4>퍼스널 컬러 톤</h4>
-                            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem; padding-top: 5px;">
-                                <label><input type="checkbox" name="tone" value="NEUTRAL"> 🤍 뉴트럴 톤 (기본/무채색)</label>
-                                <label><input type="checkbox" name="tone" value="SPRING_WARM"> 🌸 봄 웜톤 (Spring Warm)</label>
-                                <label><input type="checkbox" name="tone" value="SUMMER_COOL"> 🌊 여름 쿨톤 (Summer Cool)</label>
-                                <label><input type="checkbox" name="tone" value="AUTUMN_WARM"> 🍂 가을 웜톤 (Autumn Warm)</label>
-                                <label><input type="checkbox" name="tone" value="WINTER_COOL"> ❄️ 겨울 쿨톤 (Winter Cool)</label>
-                            </div>
                         </div>
 
                         <div class="filter-column">

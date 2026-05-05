@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // 사진 업로드 설정
-    setupPreview('face-input', 'face-preview', null, (f) => faceFile = f);
+    setupPreview('face-input', 'face-preview', 'face-placeholder', (f) => faceFile = f);
     setupPreview('body-input', 'body-preview', 'body-placeholder', (f) => { bodyFile = f; updateTryOnBtn(); });
 
     // ==============================================================
