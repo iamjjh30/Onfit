@@ -31,14 +31,12 @@ public class AdminController {
 
     private final String MEMO_FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/uploads/admin_memo.txt";
 
-    // outfit 슬롯 키 목록 (퍼스널컬러 5개 × 세트 3개 × 상하의 2개 = 30개)
     private static final List<String> PERSONAL_COLORS = List.of(
             "NEUTRAL", "SPRING_WARM", "SUMMER_COOL", "AUTUMN_WARM", "WINTER_COOL"
     );
-    private static final List<String> SET_NUMBERS = List.of("SET01", "SET02", "SET03");
+    private static final List<String> SET_NUMBERS = List.of("SET01", "SET02", "SET03", "SET04");
     private static final List<String> POSITIONS = List.of("TOP", "BOTTOM");
 
-    // [0. 권한 체크 공통 로직]
     private boolean isAdmin(HttpSession session) {
         Member loginMember = (Member) session.getAttribute("loginMember");
         if (loginMember == null) return false;
@@ -46,7 +44,6 @@ public class AdminController {
         return masters.contains(loginMember.getLoginId()) || "ADMIN".equals(loginMember.getStyleDna());
     }
 
-    // [1. 어드민 메인 페이지]
     @GetMapping("")
     public String adminMain(Model model, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/login";
@@ -59,7 +56,6 @@ public class AdminController {
                 .filter(m -> m.getPersonalColor() != null && !m.getPersonalColor().equals("미진단"))
                 .count());
         model.addAttribute("todayMembers", 0);
-        model.addAttribute("pendingInquiries", 0);
 
         List<Member> recentMembers = allMembers.stream()
                 .sorted((m1, m2) -> Long.compare(m2.getId(), m1.getId()))
@@ -85,8 +81,7 @@ public class AdminController {
         } catch (IOException e) { e.printStackTrace(); }
         model.addAttribute("adminMemo", memoContent);
 
-        // ── [추가] Outfit 설정용 데이터 ──
-        // 현재 outfit 슬롯에 배정된 상품 맵 구성: { "NEUTRAL_SET01_TOP" -> Product }
+        // Outfit 맵
         Map<String, Product> outfitMap = new HashMap<>();
         for (Product p : products) {
             if (p.getOutfit() != null && !p.getOutfit().isBlank()) {
@@ -95,13 +90,14 @@ public class AdminController {
         }
         model.addAttribute("outfitMap", outfitMap);
 
-        model.addAttribute("personalColors", List.of("NEUTRAL","SPRING_WARM","SUMMER_COOL","AUTUMN_WARM","WINTER_COOL"));
-        model.addAttribute("setNumbers", List.of("SET01","SET02","SET03"));
+        // BestPick (임시 빈 맵)
+        model.addAttribute("bestMap", new HashMap<String, List<Product>>());
+
+        model.addAttribute("totalProducts", products.size());
 
         return "admin";
     }
 
-    // [2. 상품 등록]
     @PostMapping("/shopping/add")
     public String addProduct(@ModelAttribute Product product,
                              @RequestParam("imageFile") MultipartFile imageFile,
@@ -129,7 +125,6 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // [3. 상품 수정 페이지]
     @GetMapping("/shopping/edit/{id}")
     public String editProductPage(@PathVariable("id") Long id, Model model, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/login";
@@ -139,7 +134,6 @@ public class AdminController {
         return "admin_edit";
     }
 
-    // [4. 상품 수정 처리]
     @PostMapping("/shopping/update/{id}")
     public String updateProduct(@PathVariable("id") Long id,
                                 @ModelAttribute Product product,
@@ -167,7 +161,6 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // [5. 상품 삭제]
     @GetMapping("/shopping/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/";
@@ -175,11 +168,6 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // ────────────────────────────────────────────────────────────────
-    // [6. Outfit 슬롯 저장 API] - POST /admin/outfit/save
-    //  body: { slot: "NEUTRAL_SET01_TOP", productId: 12 }
-    //  productId가 0이면 해당 슬롯을 비움
-    // ────────────────────────────────────────────────────────────────
     @PostMapping("/outfit/save")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> saveOutfitSlot(
@@ -191,7 +179,6 @@ public class AdminController {
             return ResponseEntity.status(403).body(Map.of("result", "error", "message", "권한 없음"));
         }
 
-        // 슬롯 키 유효성 검사
         String slotKey = slot.toUpperCase();
         boolean valid = PERSONAL_COLORS.stream().anyMatch(c -> slotKey.startsWith(c))
                 && SET_NUMBERS.stream().anyMatch(s -> slotKey.contains(s))
@@ -200,22 +187,18 @@ public class AdminController {
             return ResponseEntity.badRequest().body(Map.of("result", "error", "message", "잘못된 슬롯 키: " + slot));
         }
 
-        // 기존에 해당 슬롯을 점유하던 상품의 outfit 초기화
         productRepository.clearOutfitSlot(slotKey);
 
-        // productId가 0이면 슬롯 비우기만 하고 종료
         if (productId == 0L) {
             return ResponseEntity.ok(Map.of("result", "success", "message", "슬롯이 비워졌습니다."));
         }
 
-        // 선택한 상품이 다른 슬롯을 이미 점유 중이면 그 슬롯도 초기화
         Product target = productRepository.findById(productId)
                 .orElse(null);
         if (target == null) {
             return ResponseEntity.badRequest().body(Map.of("result", "error", "message", "상품을 찾을 수 없습니다."));
         }
 
-        // 새 슬롯 할당
         productRepository.updateOutfit(productId, slotKey);
 
         return ResponseEntity.ok(Map.of(
@@ -224,10 +207,6 @@ public class AdminController {
         ));
     }
 
-    // ────────────────────────────────────────────────────────────────
-    // [7. Outfit 현재 상태 조회 API] - GET /admin/outfit/status
-    //  현재 모든 슬롯의 배정 현황을 JSON으로 반환
-    // ────────────────────────────────────────────────────────────────
     @GetMapping("/outfit/status")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getOutfitStatus(HttpSession session) {
@@ -250,7 +229,6 @@ public class AdminController {
         return ResponseEntity.ok(Map.of("result", "success", "slots", outfitStatus));
     }
 
-    // [8. 회원 상세]
     @GetMapping("/member/detail/{id}")
     public String memberDetail(@PathVariable("id") Long id, Model model, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/";
@@ -263,7 +241,6 @@ public class AdminController {
         return "admin_member_detail";
     }
 
-    // [9. 권한 토글]
     @PostMapping("/access/toggle/{id}")
     public String toggleAccess(@PathVariable("id") Long id, HttpSession session) {
         Member loginMember = (Member) session.getAttribute("loginMember");
@@ -278,7 +255,18 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // [10. 프로젝트 메모 저장]
+    @PostMapping("/member/delete/{id}")
+    public String deleteMember(@PathVariable("id") Long id, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/";
+        Member member = memberRepository.findById(id).orElse(null);
+        if (member != null && !"kdoryul".equals(member.getLoginId())) {
+            member.setStyleDna("DELETED");
+            member.setName("(탈퇴)" + member.getName());
+            memberRepository.save(member);
+        }
+        return "redirect:/admin";
+    }
+
     @PostMapping("/project/memo/save")
     @ResponseBody
     public String saveMemo(@RequestParam("content") String content, HttpSession session) {

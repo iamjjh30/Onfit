@@ -14,24 +14,7 @@
 <div id="micro-overlay"></div>
 <div class="snowman-throw" id="snowmanEmoji">⛄</div>
 
-<!-- 컬러 트렌드 팝업 -->
-<div id="color-trend-popup-overlay" onclick="closeColorTrendPopup(event)">
-    <div class="color-trend-popup" id="colorTrendPopup">
-        <button class="ctpopup-close" onclick="closeColorTrendPopup({forceClose:true})">✕</button>
-        <div class="ctpopup-img-col">
-            <img id="ctpopupImg" src="" alt="">
-        </div>
-        <div class="ctpopup-info-col">
-            <div class="ctpopup-season-badge" id="ctpopupBadge"></div>
-            <h2 class="ctpopup-title" id="ctpopupTitle"></h2>
-            <p class="ctpopup-desc" id="ctpopupDesc"></p>
-            <div class="ctpopup-palette" id="ctpopupPalette"></div>
-            <div class="ctpopup-tags" id="ctpopupTags"></div>
-            <div class="ctpopup-keywords" id="ctpopupKeywords"></div>
-            <button class="ctpopup-cta" onclick="location.href='/store'">트렌드 아이템 보러가기 →</button>
-        </div>
-    </div>
-</div>
+<!-- 트렌드 팝업은 body 맨 끝에 위치 (stacking context 완전 탈출) -->
 
 <header th:replace="~{fragments/header :: header}"></header>
 
@@ -1168,6 +1151,28 @@
 
 <!-- 장바구니 토스트 메시지 -->
 <div id="main-cart-toast"></div>
+
+
+<!-- ══════════════════════════════════════════
+     컬러 트렌드 팝업 — body 최하단 (stacking context 완전 탈출)
+══════════════════════════════════════════ -->
+<div id="ct-overlay" onclick="ctOverlayClick(event)">
+    <div id="ct-box">
+        <button id="ct-close" onclick="ctClose()">✕</button>
+        <div id="ct-img-col">
+            <img id="ct-img" src="" alt="">
+        </div>
+        <div id="ct-info-col">
+            <div id="ct-badge"></div>
+            <h2 id="ct-title"></h2>
+            <p id="ct-desc"></p>
+            <div id="ct-palette"></div>
+            <div id="ct-tags"></div>
+            <div id="ct-keywords"></div>
+            <button id="ct-cta" onclick="location.href='/store'">트렌드 아이템 보러가기 →</button>
+        </div>
+    </div>
+</div>
 
 <script th:src="@{/js/Main.js}"></script>
 </body>

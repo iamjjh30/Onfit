@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="kr">
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,30 +7,38 @@
     <link rel="stylesheet" href="../css/Ask.css"/>
     <link rel="stylesheet" href="../css/main.css"/>
 </head>
-<body><div th:replace="~{fragments/header :: header}"></div><div th:replace="~{fragments/header :: header}"></div>
+<body>
 
-    <div id="wrap">
-        <h1>나의 취향은?</h1>
-        <h4>MBTI는 알아도 내 옷 취향은 모르는 당신을 위해</h4>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div id="wrap">
+    <h1>나의 취향은?</h1>
+    <h4>MBTI는 알아도 내 옷 취향은 모르는 당신을 위해</h4>
+    <div class="btn-container">
         <a href="/Ask_question">
             <button>시작하기 -></button>
         </a>
     </div>
+</div>
+
 <footer>
     <div id="f_left" style="float:left;width:30%;padding-right:20px;">
         <a href="../index/Main.html">
-            <img src="../img/interface/LOGO_W.png">
+            <img src="../img/interface/LOGO_W.png" alt="OnFit Logo">
         </a>
     </div>
     <div id="f_right" style="float:left;width:70%;">
-        <nav><ul>
-            <a href="../AIStyler"><li>AI스타일러</li></a>
-            <a href="../store"><li>스토어</li></a>
-            <a href="../Community"><li>커뮤니티</li></a>
-            <a href="../MyPalette"><li>내 팔레트</li></a>
-        </ul></nav>
+        <nav>
+            <ul>
+                <a href="../AIStyler"><li>AI스타일러</li></a>
+                <a href="../store"><li>스토어</li></a>
+                <a href="../Community"><li>커뮤니티</li></a>
+                <a href="../MyPalette"><li>내 팔레트</li></a>
+            </ul>
+        </nav>
     </div>
 </footer>
+
 <script src="../js/include.js"></script>
 </body>
 </html>
