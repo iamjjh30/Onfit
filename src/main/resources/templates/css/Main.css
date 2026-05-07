@@ -627,84 +627,6 @@
    }
    .trend-single-img:hover .trend-single-hint { color:#fff; transform:translateX(5px); }
 
-   /* ====================================================
-      컬러 트렌드 팝업 (#ct-overlay / #ct-box)
-      ==================================================== */
-   #ct-overlay {
-       display: none;
-       position: fixed;
-       inset: 0;
-       z-index: 999999;
-       background: rgba(0,0,0,0.6);
-       align-items: center;
-       justify-content: center;
-       padding: 20px;
-   }
-   #ct-box {
-       position:relative; width:100%; max-width:920px; max-height:88vh;
-       background:#fff; border-radius:24px; overflow:hidden;
-       display:flex; flex-direction:row;
-       box-shadow:0 40px 100px rgba(0,0,0,0.38);
-       animation: ctSlideUp 0.32s cubic-bezier(0.16,1,0.3,1) both;
-   }
-   @keyframes ctSlideUp {
-       from { opacity:0; transform:translateY(30px) scale(0.97); }
-       to   { opacity:1; transform:translateY(0)    scale(1);    }
-   }
-   #ct-close {
-       position:absolute; top:16px; right:16px;
-       width:34px; height:34px; border-radius:50%;
-       background:rgba(0,0,0,0.09); border:none;
-       font-size:15px; color:#444; cursor:pointer;
-       display:flex; align-items:center; justify-content:center;
-       z-index:10; transition:background 0.2s, color 0.2s;
-   }
-   #ct-close:hover { background:#111; color:#fff; }
-   #ct-img-col {
-       width:42%; flex-shrink:0;
-       background:#111; overflow:hidden; position:relative;
-   }
-   #ct-img-col img {
-       width:100%; height:100%;
-       object-fit:cover; object-position:center; display:block;
-   }
-   #ct-info-col {
-       flex:1; display:flex; flex-direction:column; gap:16px;
-       padding:40px 36px 36px; overflow-y:auto;
-   }
-   #ct-badge { width:fit-content; }
-   #ct-title {
-       font-size:clamp(1.6rem,2.8vw,2.2rem);
-       font-weight:900; letter-spacing:-1.5px; line-height:1.1; color:#111; margin:0;
-   }
-   #ct-desc { font-size:0.88rem; color:#666; line-height:1.8; margin:0; }
-   #ct-palette { display:flex; gap:10px; flex-wrap:wrap; }
-   .ct-sw-wrap { display:flex; flex-direction:column; align-items:center; gap:5px; }
-   .ct-sw {
-       width:40px; height:40px; border-radius:50%;
-       box-shadow:0 2px 10px rgba(0,0,0,0.12);
-       transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1); cursor:default;
-   }
-   .ct-sw:hover { transform:scale(1.2); }
-   .ct-sw-name { font-size:0.6rem; color:#aaa; letter-spacing:0.04em; }
-   #ct-tags { display:flex; flex-wrap:wrap; gap:7px; }
-   .ct-tag {
-       padding:5px 13px; border-radius:50px;
-       border:1.5px solid #e0e0e0; font-size:0.77rem; font-weight:600; color:#444; background:#f8f8f8;
-   }
-   #ct-keywords { display:flex; flex-wrap:wrap; gap:6px; }
-   .ct-kw {
-       padding:4px 10px; border-radius:7px;
-       font-size:0.7rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
-   }
-   #ct-cta {
-       margin-top:auto; display:block; width:100%; padding:13px 0;
-       background:#111; color:#fff; border:none; border-radius:12px;
-       font-size:0.9rem; font-weight:700; cursor:pointer; letter-spacing:0.02em;
-       transition:background 0.2s, transform 0.18s;
-   }
-   #ct-cta:hover { background:#333; transform:translateY(-2px); }
-
    .best-products-grid {
        display: grid;
        grid-template-columns: repeat(4, 1fr);
@@ -1316,82 +1238,176 @@
 }
 /* ====================================================
    컬러 트렌드 팝업 (#ct-overlay)
+   — 중복 정의 제거, 전역 단일 선언
    ==================================================== */
 #ct-overlay {
-    display: none; /* 기본적으로 숨김 */
+    display: none;
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 10000;
-    justify-content: center;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     align-items: center;
-    padding: 20px;
+    justify-content: center;
+    padding: 24px;
+}
+#ct-overlay.active {
+    display: flex;
 }
 
 #ct-box {
     position: relative;
     width: 100%;
-    max-width: 1000px;
+    max-width: 960px;
+    max-height: 88vh;
     background: #fff;
-    border-radius: 24px;
-    display: flex;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-    animation: ctFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+    animation: ctSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes ctFadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes ctSlideUp {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
 #ct-close {
     position: absolute;
-    top: 20px; right: 20px;
-    background: rgba(255,255,255,0.9);
-    border: none; font-size: 24px; cursor: pointer;
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10; transition: 0.2s;
+    top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    border: none;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s, color 0.2s;
 }
-#ct-close:hover { background: #000; color: #fff; }
+#ct-close:hover { background: #111; color: #fff; }
 
-#ct-img-col { width: 45%; background: #f8f8f8; }
-#ct-img { width: 100%; height: 100%; object-fit: cover; }
+#ct-img-col {
+    width: 42%;
+    flex-shrink: 0;
+    background: #111;
+    overflow: hidden;
+}
+#ct-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
 
 #ct-info-col {
-    width: 55%; padding: 60px;
-    display: flex; flex-direction: column; justify-content: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 44px 40px 36px;
+    overflow-y: auto;
 }
 
-#ct-badge { margin-bottom: 15px; }
-#ct-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; color: #111; }
-#ct-desc { font-size: 1.05rem; line-height: 1.7; color: #555; margin-bottom: 30px; }
+#ct-badge { width: fit-content; }
 
-#ct-palette { display: flex; gap: 15px; margin-bottom: 30px; }
-.ct-sw-wrap { text-align: center; }
-.ct-sw { width: 45px; height: 45px; border-radius: 50%; margin-bottom: 8px; }
-.ct-sw-name { font-size: 0.7rem; color: #888; font-weight: 600; }
+#ct-title {
+    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    color: #111;
+    margin: 0;
+}
 
-#ct-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
-.ct-tag { padding: 6px 14px; background: #f0f0f0; border-radius: 50px; font-size: 0.85rem; color: #666; }
+#ct-desc {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.8;
+    margin: 0;
+}
 
-#ct-keywords { display: flex; gap: 10px; margin-bottom: 40px; }
-.ct-kw { padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
+#ct-palette {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.ct-sw-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.ct-sw {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: default;
+}
+.ct-sw:hover { transform: scale(1.18); }
+.ct-sw-name { font-size: 0.6rem; color: #aaa; letter-spacing: 0.04em; }
+
+#ct-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+.ct-tag {
+    padding: 5px 13px;
+    border-radius: 50px;
+    border: 1.5px solid #e0e0e0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #444;
+    background: #f8f8f8;
+}
+
+#ct-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.ct-kw {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
 
 #ct-cta {
-    width: 100%; height: 55px; background: #111; color: #fff;
-    border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: 0.3s;
+    margin-top: auto;
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.18s;
 }
 #ct-cta:hover { background: #333; transform: translateY(-2px); }
 
-@media (max-width: 850px) {
-    #ct-box { flex-direction: column; max-height: 90vh; overflow-y: auto; }
-    #ct-img-col, #ct-info-col { width: 100%; }
-    #ct-img { height: 300px; }
-    #ct-info-col { padding: 40px 30px; }
+@media (max-width: 768px) {
+    #ct-box {
+        flex-direction: column;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    #ct-img-col { width: 100%; height: 240px; flex-shrink: 0; }
+    #ct-img { height: 100%; }
+    #ct-info-col { padding: 32px 24px 28px; }
 }
