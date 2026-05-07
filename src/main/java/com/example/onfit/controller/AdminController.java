@@ -51,6 +51,7 @@ public class AdminController {
         List<Member> allMembers = memberRepository.findAll();
         List<Product> products = productRepository.findAll();
 
+
         model.addAttribute("totalMembers", allMembers.size());
         model.addAttribute("totalDiagnosed", allMembers.stream()
                 .filter(m -> m.getPersonalColor() != null && !m.getPersonalColor().equals("미진단"))
@@ -90,8 +91,14 @@ public class AdminController {
         }
         model.addAttribute("outfitMap", outfitMap);
 
-        // BestPick (임시 빈 맵)
-        model.addAttribute("bestMap", new HashMap<String, List<Product>>());
+        // 🌟 BestPick (이제 빈 맵이 아니라, DB에서 진짜로 꺼내옵니다!)
+        Map<String, List<Product>> bestMap = new HashMap<>();
+        for(String color : PERSONAL_COLORS) {
+            // isfeared 컬럼에 저장된 해당 컬러의 추천 상품들을 4개씩 가져옵니다.
+            List<Product> bestProducts = productRepository.findTop4ByIsfearedOrderByViewCountDesc(color);
+            bestMap.put(color, bestProducts);
+        }
+        model.addAttribute("bestMap", bestMap);
 
         model.addAttribute("totalProducts", products.size());
 
@@ -280,5 +287,32 @@ public class AdminController {
             e.printStackTrace();
             return "error";
         }
+    }
+    // 🌟 Best Picks (추천 상품) 저장 API
+    @PostMapping("/best/save")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveBestPick(
+            @RequestParam("color") String color,
+            @RequestParam("productId") Long productId,
+            HttpSession session) {
+
+        // 관리자 권한 체크 (기존 메서드 활용)
+        if (!isAdmin(session)) {
+            return ResponseEntity.status(403).body(Map.of("result", "error", "message", "권한 없음"));
+        }
+
+        Product target = productRepository.findById(productId).orElse(null);
+        if (target != null) {
+            // MainController에서 찾을 수 있도록 isfeared 컬럼에 컬러(예: NEUTRAL)를 저장합니다!
+            target.setIsfeared(color.toUpperCase());
+            productRepository.save(target);
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("result", "error", "message", "상품을 찾을 수 없습니다."));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "result", "success",
+                "message", color + " 추천 상품 저장 완료"
+        ));
     }
 }

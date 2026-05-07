@@ -420,7 +420,7 @@
                             </div>
                             <div class="form-row-2">
                                 <div class="form-group"><label>스타일 DNA</label><select name="styleTags"><option value="MINIMAL">미니멀</option><option value="CASUAL">캐주얼</option><option value="STREET">스트릿</option><option value="FORMAL">포멀</option><option value="VINTAGE">빈티지</option></select></div>
-                                <div class="form-group"><label>추천 퍼스널 컬러</label><select name="recommendedSeasons"><option value="SPRING_WARM">봄 웜톤</option><option value="SUMMER_COOL">여름 쿨톤</option><option value="AUTUMN_WARM">가을 웜톤</option><option value="WINTER_COOL">겨울 쿨톤</option></select></div>
+                                <div class="form-group"><label>추천 퍼스널 컬러</label><select name="isfeared"><option value="SPRING_WARM">봄 웜톤</option><option value="SUMMER_COOL">여름 쿨톤</option><option value="AUTUMN_WARM">가을 웜톤</option><option value="WINTER_COOL">겨울 쿨톤</option></select></div>
                             </div>
                             <div class="form-row-2">
                                 <div class="form-group"><label>가격 (원)</label><input type="number" name="price" required /></div>
@@ -531,11 +531,18 @@
                                 <div th:each="i : ${#numbers.sequence(1,4)}" class="best-pick-set">
                                     <div class="preview-img" th:id="${color + '_bestPreview_' + i}"></div>
                                     <div class="best-pick-label">상품 <span th:text="${i}"></span></div>
-                                    <select th:id="${color + '_bestSelect_' + i}" class="outfit-select" onchange="updateBestPickPreview('${color}', ${i}, this.value)">
+
+                                    <select th:id="${color + '_bestSelect_' + i}" class="outfit-select"
+                                            th:data-color="${color}" th:data-slot="${i}"
+                                            onchange="updateBestPickPreview(this.getAttribute('data-color'), this.getAttribute('data-slot'), this.value)">
                                         <option value="">선택 안함</option>
                                         <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}"
                                                 th:data-image="${p.imageUrl}"></option>
                                     </select>
+
+                                    <button type="button" class="btn-sm btn-sm-ghost" style="margin-top: 10px; width: 100%;"
+                                            th:data-color="${color}" th:data-slot="${i}"
+                                            onclick="event.preventDefault(); submitBestItem(this.getAttribute('data-color'), this.getAttribute('data-slot'), this)">저장</button>
                                 </div>
                             </th:block>
                         </div>
@@ -636,52 +643,54 @@
         </div>
     </main>
 </div>
-
 <script>
-    /* ═══════════════════════════════════════
-       OnFit Admin · Full JavaScript
-    ═══════════════════════════════════════ */
+    /* ====================================================
+       OnFit Admin - 직접 삽입된 JavaScript (캐시 문제 원천 차단!)
+       ==================================================== */
 
-    function showSection(id, btn) {
+    // [1] 섹션 전환 (무조건 실행되도록 window 강제 할당)
+    window.showSection = function(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
         const target = document.getElementById(id);
         if (target) target.classList.add('active');
         if (btn) btn.classList.add('active');
-        const crumb = document.getElementById('pageCrumb');
-        if (crumb) crumb.textContent = {
-            dashboard: 'Dashboard', shopping: 'Shopping', crm: 'CRM',
-            'main-section': 'Main', project: 'Project', access: 'Access Control'
-        }[id] || id;
-    }
 
+        const crumb = document.getElementById('pageCrumb');
+        if (crumb) {
+            crumb.textContent = {
+                dashboard: 'Dashboard', shopping: 'Shopping', crm: 'CRM',
+                'main-section': 'Main', project: 'Project', access: 'Access Control'
+            }[id] || id;
+        }
+    };
+
+    // [2] 시계 업데이트
     function updateClock() {
         const el = document.getElementById('clock');
         if (el) el.textContent = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
     }
     setInterval(updateClock, 1000);
-    updateClock();
 
-    (function() {
-        const btn = document.getElementById('accessNavBtn');
-        if (btn) btn.style.display = 'flex';
-    })();
-
-    function filterProducts() {
+    // [3] 쇼핑 상품 필터링
+    window.filterProducts = function() {
         const cat = document.getElementById('shopCatFilter')?.value || 'ALL';
         document.querySelectorAll('.product-card').forEach(card => {
             const c = card.dataset.category || '';
             card.style.display = (cat === 'ALL' || c === cat) ? '' : 'none';
         });
-    }
+    };
 
-    function openProductModal() { document.getElementById('productModal')?.classList.add('open'); }
-    function closeProductModal(e) {
+    // [4] 신규 상품 모달 제어
+    window.openProductModal = function() { document.getElementById('productModal')?.classList.add('open'); };
+    window.closeProductModal = function(e) {
         if (e && e.target !== document.getElementById('productModal')) return;
         document.getElementById('productModal')?.classList.remove('open');
-    }
+    };
 
-    function filterCRM() {
+    // [5] CRM 필터링
+    window.filterCRM = function() {
         const search = (document.getElementById('crmSearch')?.value || '').toLowerCase();
         const color  = document.getElementById('crmColorFilter')?.value || 'ALL';
         const dna    = document.getElementById('crmDnaFilter')?.value || 'ALL';
@@ -696,20 +705,23 @@
             const matchDna    = dna   === 'ALL' || rDna   === dna;
             row.style.display = (matchSearch && matchColor && matchDna) ? '' : 'none';
         });
-    }
+    };
 
-    function switchColorTab(key, btn) {
+    // [6] 메인 컬러 탭 전환
+    window.switchColorTab = function(key, btn) {
         document.querySelectorAll('.color-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.color-tab').forEach(t => t.classList.remove('active'));
         const panel = document.getElementById(key + '_panel');
         if (panel) panel.classList.add('active');
         if (btn) btn.classList.add('active');
-    }
+    };
 
-    function saveOutfitSlot(btn) {
+    // [7] 아웃핏 슬롯 저장
+    window.saveOutfitSlot = function(btn) {
         const slotKey = btn.dataset.slot;
         const sel = document.getElementById(slotKey);
         const productId = sel?.value;
+
         if (!productId) { alert('상품을 선택해주세요.'); return; }
 
         btn.textContent = '저장 중...';
@@ -720,31 +732,81 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'slot=' + encodeURIComponent(slotKey) + '&productId=' + productId
         })
-        .then(r => {
-            if (!r.ok) throw new Error('Save failed');
-            return r.json();
-        })
-        .then(data => {
-            const statusEl = document.getElementById(slotKey + '_status');
-            if (statusEl) {
-                statusEl.innerHTML = `<span class="badge badge-active">✓ ${data.message || '저장됨'}</span>`;
-            }
-            btn.textContent = '저장됨 ✓';
-            setTimeout(() => { btn.textContent = '저장'; btn.disabled = false; }, 1500);
-        })
-        .catch(() => {
-            alert('저장에 실패했습니다.');
-            btn.textContent = '저장';
-            btn.disabled = false;
-        });
-    }
+            .then(r => {
+                if (!r.ok) throw new Error('Save failed');
+                return r.json();
+            })
+            .then(data => {
+                const statusEl = document.getElementById(slotKey + '_status');
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="badge badge-active">✓ ${data.message || '저장됨'}</span>`;
+                }
+                btn.textContent = '저장됨 ✓';
+                setTimeout(() => { btn.textContent = '저장'; btn.disabled = false; }, 1500);
+            })
+            .catch(() => {
+                alert('저장에 실패했습니다.');
+                btn.textContent = '저장';
+                btn.disabled = false;
+            });
+    };
 
-    function updateOutfitPreview(selectEl) {
+    // [8] Best Picks 저장 (최신 버전!)
+    // [8] Best Picks 저장 (새로운 이름으로 캐시 완벽 파괴!)
+    window.submitBestItem = function(color, slotNum, btn) {
+        const selectEl = document.getElementById(color + '_bestSelect_' + slotNum);
+        const productId = selectEl.value;
+
+        if (!productId) {
+            alert('상품을 먼저 선택해주세요.');
+            return;
+        }
+
+        btn.textContent = '저장 중...';
+        btn.disabled = true;
+
+        fetch('/admin/best/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'color=' + encodeURIComponent(color) + '&productId=' + productId
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    btn.textContent = '저장 완료 ✓';
+                    btn.style.background = '#000';
+                    btn.style.color = '#fff';
+
+                    // 1.5초 뒤에 버튼 모양만 원래대로 되돌림 (새로고침 절대 없음!)
+                    setTimeout(() => {
+                        btn.textContent = '저장';
+                        btn.disabled = false;
+                        btn.style.background = 'var(--bg-hover)';
+                        btn.style.color = 'var(--text-secondary)';
+                    }, 1500);
+                } else {
+                    alert('저장 실패: ' + data.message);
+                    btn.textContent = '저장';
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('서버 연결 실패');
+                btn.textContent = '저장';
+                btn.disabled = false;
+            });
+    };
+
+    // [9] 이미지 미리보기 업데이트
+    window.updateOutfitPreview = function(selectEl) {
         const previewId = selectEl.id + '_preview';
         const previewImg = document.getElementById(previewId);
         if (!previewImg) return;
+
         const selectedOption = selectEl.options[selectEl.selectedIndex];
         const imageUrl = selectedOption ? selectedOption.getAttribute('data-image') : '';
+
         if (imageUrl) {
             previewImg.src = imageUrl;
             previewImg.style.display = 'block';
@@ -752,12 +814,8 @@
             previewImg.src = '';
             previewImg.style.display = 'none';
         }
-    }
-    window.addEventListener('load', () => {
-        document.querySelectorAll('.outfit-select').forEach(sel => updateOutfitPreview(sel));
-    });
-
-    function updateBestPickPreview(color, slot, productId) {
+    };
+    window.updateBestPickPreview = function(color, slot, productId) {
         const previewImg = document.getElementById(color + '_bestPreview_' + slot);
         if (!previewImg) return;
         const selectEl = document.getElementById(color + '_bestSelect_' + slot);
@@ -775,51 +833,34 @@
             previewImg.style.backgroundImage = '';
             previewImg.style.display = 'none';
         }
-    }
+    };
 
-    function addBestPick(color, productId, slot) {
-        if (!productId) return;
-        alert('[임시] ' + color + '의 슬롯 ' + slot + '에 상품 ID ' + productId + ' 추가.\n(서버에 /admin/best/add 엔드포인트 필요)');
-    }
-    function deleteBestPick(color, bpId) {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        alert('[임시] 상품 ID ' + bpId + ' 삭제 요청.\n(서버에 /admin/best/delete 엔드포인트 필요)');
-    }
+    // ==========================================
+    // 문서 로딩 완료 후 이벤트 리스너 초기화
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+        updateClock();
 
-    let memoTimer = null;
-    (function initMemo() {
-        const area = document.getElementById('adminMemoArea');
-        if (!area) return;
-        updateMemoCount(area.value);
-        area.addEventListener('input', () => {
-            updateMemoCount(area.value);
-            clearTimeout(memoTimer);
-            memoTimer = setTimeout(() => autoSaveMemo(area.value), 1500);
+        // 접근 제어 메뉴 표시
+        const accessBtn = document.getElementById('accessNavBtn');
+        if (accessBtn) accessBtn.style.display = 'flex';
+
+        // 기존 아웃핏/베스트 미리보기 이미지 세팅
+        document.querySelectorAll('.outfit-select').forEach(sel => {
+            if(sel.id.includes('_bestSelect_')) {
+                // Best Pick 초기화
+                const parts = sel.id.split('_bestSelect_');
+                if(parts.length === 2) updateBestPickPreview(parts[0], parts[1], sel.value);
+            } else {
+                // Outfit 초기화
+                updateOutfitPreview(sel);
+            }
         });
-    })();
 
-    function updateMemoCount(val) {
-        const el = document.getElementById('memoCount');
-        if (el) el.textContent = (val || '').length + '자';
-    }
-
-    function autoSaveMemo(content) {
-        fetch('/admin/project/memo/save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'content=' + encodeURIComponent(content)
+        // ESC 키 모달 닫기
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeProductModal();
         });
-    }
-
-    function saveMemo() {
-        const area = document.getElementById('adminMemoArea');
-        if (area) autoSaveMemo(area.value);
-    }
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            document.getElementById('productModal')?.classList.remove('open');
-        }
     });
 </script>
 </body>

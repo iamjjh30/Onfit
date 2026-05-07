@@ -1,185 +1,220 @@
-/* ─────────────────────────────────────────────
-       [1] CRM 회원 실시간 필터링
-    ───────────────────────────────────────────── */
-function filterMembers() {
-    const searchInput = document.getElementById('memberSearch').value.toLowerCase();
-    const colorFilter = document.getElementById('colorFilter').value;
-    const dnaFilter   = document.getElementById('dnaFilter').value;
-    const rows = document.getElementsByClassName('member-row');
-    for (let row of rows) {
-        const name  = row.querySelector('.target-name').textContent.toLowerCase();
-        const id    = row.querySelector('.target-id').textContent.toLowerCase();
-        const color = row.querySelector('.target-color').textContent.toUpperCase();
-        const dna   = row.querySelector('.target-dna').textContent.toUpperCase();
-        const matchSearch = name.includes(searchInput) || id.includes(searchInput);
-        const matchColor  = (colorFilter === 'ALL' || color === colorFilter || (colorFilter === '미진단' && color === '미진단'));
-        const matchDna    = (dnaFilter === 'ALL' || dna.includes(dnaFilter));
-        row.style.display = (matchSearch && matchColor && matchDna) ? "" : "none";
+/* ====================================================
+   OnFit Admin - 통합 JavaScript (HTML과 완벽 동기화 완료!)
+   ==================================================== */
+
+// [1] 섹션 전환
+window.showSection = function(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    if (btn) btn.classList.add('active');
+
+    const crumb = document.getElementById('pageCrumb');
+    if (crumb) {
+        crumb.textContent = {
+            dashboard: 'Dashboard', shopping: 'Shopping', crm: 'CRM',
+            'main-section': 'Main', project: 'Project', access: 'Access Control'
+        }[id] || id;
     }
 }
 
-/* ─────────────────────────────────────────────
-   [2] 쇼핑 상품 실시간 필터링
-───────────────────────────────────────────── */
+// [2] 시계 업데이트
+function updateClock() {
+    const el = document.getElementById('clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+}
+setInterval(updateClock, 1000);
+
+// [3] 쇼핑 상품 필터링
 function filterProducts() {
-    const searchInput    = document.getElementById('productSearch').value.toLowerCase();
-    const categoryFilter = document.getElementById('categoryFilter').value;
-    const rows = document.getElementsByClassName('product-row');
-    for (let row of rows) {
-        const categoryText = row.querySelector('.col-category').textContent.toUpperCase();
-        const nameText     = row.querySelector('.col-name').textContent.toLowerCase();
-        const matchCategory = (categoryFilter === 'ALL' || categoryText.includes(categoryFilter));
-        const matchName     = nameText.includes(searchInput);
-        row.style.display = (matchCategory && matchName) ? "" : "none";
-    }
+    const cat = document.getElementById('shopCatFilter')?.value || 'ALL';
+    document.querySelectorAll('.product-card').forEach(card => {
+        const c = card.dataset.category || '';
+        card.style.display = (cat === 'ALL' || c === cat) ? '' : 'none';
+    });
 }
 
-/* ─────────────────────────────────────────────
-   [3] 섹션 전환
-───────────────────────────────────────────── */
-function showSection(sectionId, el) {
-    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-    const target = document.getElementById(sectionId);
-    if (target) target.classList.add('active');
-    document.querySelectorAll('.menu-item').forEach(li => li.classList.remove('active-menu'));
-    if (el) el.classList.add('active-menu');
+// [4] 신규 상품 모달 제어
+function openProductModal() { document.getElementById('productModal')?.classList.add('open'); }
+function closeProductModal(e) {
+    if (e && e.target !== document.getElementById('productModal')) return;
+    document.getElementById('productModal')?.classList.remove('open');
 }
 
-/* ─────────────────────────────────────────────
-   [4] Shopping 내부 탭 전환
-───────────────────────────────────────────── */
-function showShoppingTab(tabId, el) {
-    document.querySelectorAll('.shopping-tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.shopping-tab').forEach(t => t.classList.remove('active'));
-    const target = document.getElementById(tabId);
-    if (target) target.classList.add('active');
-    if (el) el.classList.add('active');
+// [5] CRM 필터링
+function filterCRM() {
+    const search = (document.getElementById('crmSearch')?.value || '').toLowerCase();
+    const color  = document.getElementById('crmColorFilter')?.value || 'ALL';
+    const dna    = document.getElementById('crmDnaFilter')?.value || 'ALL';
+
+    document.querySelectorAll('.crm-row').forEach(row => {
+        const name = (row.dataset.name || '').toLowerCase();
+        const id   = (row.dataset.id   || '').toLowerCase();
+        const rColor = row.dataset.color || '';
+        const rDna   = row.dataset.dna   || '';
+        const matchSearch = !search || name.includes(search) || id.includes(search);
+        const matchColor  = color === 'ALL' || rColor === color || (color === '미진단' && !rColor);
+        const matchDna    = dna   === 'ALL' || rDna   === dna;
+        row.style.display = (matchSearch && matchColor && matchDna) ? '' : 'none';
+    });
 }
 
-/* ─────────────────────────────────────────────
-   [5] Outfit 퍼스널컬러 패널 전환
-───────────────────────────────────────────── */
-function showOutfitColor(colorKey, el) {
-    document.querySelectorAll('.outfit-color-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.outfit-color-tab').forEach(t => t.classList.remove('active'));
-    const panel = document.getElementById('outfit_panel_' + colorKey);
+// [6] 메인 컬러 탭 전환
+function switchColorTab(key, btn) {
+    document.querySelectorAll('.color-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.color-tab').forEach(t => t.classList.remove('active'));
+    const panel = document.getElementById(key + '_panel');
     if (panel) panel.classList.add('active');
-    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
 }
 
-/* ─────────────────────────────────────────────
-   [6] Outfit 슬롯 저장 (핵심)
-       slotKey  예: "NEUTRAL_SET01_TOP"
-       selectId 예: "NEUTRAL_SET01_TOP"  (select 요소 id에서 _select 제거 전)
-───────────────────────────────────────────── */
+// [7] 아웃핏 슬롯 저장 (핵심)
 function saveOutfitSlot(btn) {
-    const slotKey  = btn.getAttribute('data-slot');
-    const selectEl = document.getElementById(slotKey + '_select');
-    const statusEl = document.getElementById(slotKey + '_status');
+    const slotKey = btn.dataset.slot;
+    const sel = document.getElementById(slotKey);
+    const productId = sel?.value;
 
-    if (!selectEl || !statusEl) {
-        console.error('Outfit slot element not found:', slotKey);
-        return;
-    }
+    if (!productId) { alert('상품을 선택해주세요.'); return; }
 
-    const productId = selectEl.value;
-
-    // UI 피드백
-    statusEl.className = 'slot-status saving';
-    statusEl.innerHTML = '저장 중...';
-    btn.disabled = true;  // saveBtn → btn 으로 변경
-
-    const globalStatus = document.getElementById('outfitGlobalStatus');
-    if (globalStatus) globalStatus.textContent = slotKey + ' 저장 중...';
+    btn.textContent = '저장 중...';
+    btn.disabled = true;
 
     fetch('/admin/outfit/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'slot=' + encodeURIComponent(slotKey) + '&productId=' + encodeURIComponent(productId)
+        body: 'slot=' + encodeURIComponent(slotKey) + '&productId=' + productId
+    })
+        .then(r => {
+            if (!r.ok) throw new Error('Save failed');
+            return r.json();
+        })
+        .then(data => {
+            const statusEl = document.getElementById(slotKey + '_status');
+            if (statusEl) {
+                statusEl.innerHTML = `<span class="badge badge-active">✓ ${data.message || '저장됨'}</span>`;
+            }
+            btn.textContent = '저장됨 ✓';
+            setTimeout(() => { btn.textContent = '저장'; btn.disabled = false; }, 1500);
+        })
+        .catch(() => {
+            alert('저장에 실패했습니다.');
+            btn.textContent = '저장';
+            btn.disabled = false;
+        });
+}
+// 🌟 window. 를 붙이고 파라미터에 btn을 추가했습니다!
+// [8] Best Picks 저장 (새로고침 제거 버전!)
+window.saveBestPick = function(color, slotNum, btn) {
+    const selectEl = document.getElementById(color + '_bestSelect_' + slotNum);
+    const productId = selectEl.value;
+
+    if (!productId) {
+        alert('상품을 먼저 선택해주세요.');
+        return;
+    }
+
+    btn.textContent = '저장 중...';
+    btn.disabled = true;
+
+    fetch('/admin/best/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'color=' + encodeURIComponent(color) + '&productId=' + productId
     })
         .then(res => res.json())
         .then(data => {
-            btn.disabled = false;  // saveBtn → btn
             if (data.result === 'success') {
-                statusEl.className = 'slot-status success';
-                if (productId === '0') {
-                    statusEl.innerHTML = '<span class="outfit-empty-badge">미배정</span>';
-                } else {
-                    const productName = selectEl.options[selectEl.selectedIndex].text.split(' (')[0];
-                    statusEl.innerHTML = '<span class="outfit-assigned-badge">✓ ' + productName + '</span>';
-                }
-                if (globalStatus) {
-                    globalStatus.style.color = '#4CAF50';
-                    globalStatus.textContent = '✓ ' + data.message;
-                    setTimeout(() => { globalStatus.textContent = ''; }, 3000);
-                }
+                btn.textContent = '저장 완료 ✓';
+                btn.style.background = '#000';
+                btn.style.color = '#fff';
+
+                // 🌟 범인 검거! location.reload()를 지우고, 1.5초 뒤에 버튼 원래대로 복구만 해줍니다.
+                setTimeout(() => {
+                    btn.textContent = '저장';
+                    btn.disabled = false;
+                    btn.style.background = 'var(--bg-hover)';
+                    btn.style.color = 'var(--text-secondary)';
+                }, 1500);
+
             } else {
-                statusEl.className = 'slot-status error';
-                statusEl.textContent = '❌ ' + (data.message || '저장 실패');
+                alert('저장 실패: ' + data.message);
+                btn.textContent = '저장';
+                btn.disabled = false;
             }
         })
         .catch(err => {
-            btn.disabled = false;  // saveBtn → btn
-            statusEl.className = 'slot-status error';
-            statusEl.textContent = '❌ 서버 연결 실패';
-            console.error('Outfit save error:', err);
+            console.error(err);
+            alert('서버 연결 실패');
+            btn.textContent = '저장';
+            btn.disabled = false;
         });
-}
-
-/* ─────────────────────────────────────────────
-   [7] 상품 등록 모달
-───────────────────────────────────────────── */
-function openModal() {
-    const modal = document.getElementById('product_modal');
-    if (modal) modal.style.display = 'flex';
-}
-function closeModal() {
-    const modal = document.getElementById('product_modal');
-    if (modal) modal.style.display = 'none';
-}
-window.onclick = function(event) {
-    const modal = document.getElementById('product_modal');
-    if (event.target == modal) closeModal();
 };
+// [8] 이미지 미리보기 업데이트
+function updateOutfitPreview(selectEl) {
+    const previewId = selectEl.id + '_preview';
+    const previewImg = document.getElementById(previewId);
+    if (!previewImg) return;
 
-/* ─────────────────────────────────────────────
-   [8] Project 메모 자동 저장
-───────────────────────────────────────────── */
-let memoTimer;
-const memoArea = document.getElementById('adminMemoArea');
-if (memoArea) {
-    memoArea.addEventListener('input', function() {
-        const status = document.getElementById('saveStatus');
-        status.innerText = "저장 중...";
-        status.style.color = "#FFB834";
-        clearTimeout(memoTimer);
-        memoTimer = setTimeout(saveProjectMemo, 800);
-    });
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const imageUrl = selectedOption ? selectedOption.getAttribute('data-image') : '';
+
+    if (imageUrl) {
+        previewImg.src = imageUrl;
+        previewImg.style.display = 'block';
+    } else {
+        previewImg.src = '';
+        previewImg.style.display = 'none';
+    }
 }
-function saveProjectMemo() {
-    const content = document.getElementById('adminMemoArea').value;
-    const status  = document.getElementById('saveStatus');
+
+// [9] 프로젝트 메모 자동 저장
+let memoTimer = null;
+function updateMemoCount(val) {
+    const el = document.getElementById('memoCount');
+    if (el) el.textContent = (val || '').length + '자';
+}
+function autoSaveMemo(content) {
     fetch('/admin/project/memo/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'content=' + encodeURIComponent(content)
-    })
-        .then(response => response.text())
-        .then(result => {
-            if (result === 'success') {
-                status.innerText = "모든 변경 사항이 저장되었습니다. (" + new Date().toLocaleTimeString() + ")";
-                status.style.color = "#4CAF50";
-            } else {
-                status.innerText = "저장 중 오류가 발생했습니다.";
-                status.style.color = "#f44336";
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            status.innerText = "서버 연결 실패";
-        });
+    });
+}
+function saveMemo() {
+    const area = document.getElementById('adminMemoArea');
+    if (area) autoSaveMemo(area.value);
 }
 
-window.onload = function() {
-    console.log("OnFit Admin System: All Functions Integrated.");
-};
+// ==========================================
+// 문서 로딩 완료 후 이벤트 리스너 초기화
+// ==========================================
+window.addEventListener('DOMContentLoaded', () => {
+    updateClock();
+
+    // 접근 제어 메뉴 표시 (권한 있는 경우)
+    const accessBtn = document.getElementById('accessNavBtn');
+    if (accessBtn) accessBtn.style.display = 'flex';
+
+    // 기존 아웃핏 미리보기 이미지 세팅
+    document.querySelectorAll('.outfit-select').forEach(sel => updateOutfitPreview(sel));
+
+    // ESC 키 모달 닫기
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeProductModal();
+    });
+
+    // 메모장 타이머 연결
+    const memoArea = document.getElementById('adminMemoArea');
+    if (memoArea) {
+        updateMemoCount(memoArea.value);
+        memoArea.addEventListener('input', () => {
+            updateMemoCount(memoArea.value);
+            clearTimeout(memoTimer);
+            memoTimer = setTimeout(() => autoSaveMemo(memoArea.value), 1500);
+        });
+    }
+
+    console.log("OnFit Admin System: All Functions Integrated Successfully.");
+});
