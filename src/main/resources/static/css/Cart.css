@@ -14,11 +14,13 @@
 * { padding: 0; margin: 0; box-sizing: border-box; }
 html { overflow-x: clip; }
 body { overflow-x: clip; }
-nav ul li { float: left; list-style-type: none; }
 
-a { text-decoration: none; color: black; }
-a:hover   { color: #FFB834; }
-a:visited { color: black; }
+/* 🌟 (nav ul li 강제 정렬 삭제 완료!) */
+
+/* 🌟 링크 색상은 장바구니(#Cart) 안에서만 적용되도록 제한! */
+#Cart a { text-decoration: none; color: black; }
+#Cart a:hover   { color: #FFB834; }
+#Cart a:visited { color: black; }
 
 /* ====================================================
    WRAP
@@ -34,125 +36,6 @@ a:visited { color: black; }
     overflow: visible;
 }
 
-/* ====================================================
-   GNB — Main.css 기준 (fixed pill)
-   ==================================================== */
-#header-outer {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 9999;
-    width: 100%;
-    padding: 12px 5vw 0;
-    box-sizing: border-box;
-}
-
-#header {
-    width: 100%; height: 50px;
-    border-radius: 25px;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(30px) saturate(220%);
-    -webkit-backdrop-filter: blur(30px) saturate(220%);
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    box-shadow: 0 10px 50px -10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    overflow: visible;
-    transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-#logo { width: auto; flex-shrink: 0; }
-#logo img {
-    width: 40px; height: 40px;
-    margin: 0 20px; display: block;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    cursor: pointer;
-}
-#logo img:hover { transform: rotate(45deg); }
-
-#header nav { flex-shrink: 0; }
-#header nav ul { display: flex; margin: 0; padding: 0; }
-#header nav ul li {
-    float: none;
-    margin-left: 30px;
-    line-height: 50px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-#header nav ul li:hover { color: #FFB834; font-weight: bold; transition: 0.3s ease; }
-
-/* 검색창 */
-#header-search-inline {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 12px;
-    min-width: 0;
-}
-#header-search-box {
-    display: flex; align-items: center; gap: 8px;
-    width: 260px; height: 36px;
-    border-radius: 50px; padding: 0 16px;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(40px) saturate(250%);
-    -webkit-backdrop-filter: blur(40px) saturate(250%);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.8), 0 2px 12px rgba(0, 0, 0, 0.07);
-    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease;
-}
-#header-search-box:focus-within {
-    width: 340px;
-    background: rgba(255, 255, 255, 0.75);
-    box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-#search-icon { flex-shrink: 0; pointer-events: none; }
-#header-search-input {
-    flex: 1; height: 100%;
-    border: none; outline: none;
-    background: transparent;
-    font-size: 13px; color: #111;
-    letter-spacing: 0.01em; font-weight: 500; min-width: 0;
-}
-#header-search-input::placeholder { color: #999; font-weight: 400; }
-
-/* 아이콘 드롭다운 */
-.header_icon {
-    flex-shrink: 0;
-    width: auto; height: 100%;
-    padding: 0 16px; position: relative;
-    display: flex; align-items: center; cursor: pointer;
-}
-.header_icon img { width: 25px; height: 25px; display: block; }
-.header_icon:hover > .header_icon_hover1 { display: block !important; }
-.header_icon:hover > .header_icon_hover2 { display: block !important; }
-
-.header_icon_hover1 {
-    display: none; position: absolute; width: 160px;
-    border-radius: 12px; background-color: white;
-    border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-    right: 0; left: auto; z-index: 10; top: 48px;
-    overflow: hidden;
-}
-.header_icon_hover1 nav ul { display: flex; flex-direction: column; margin: 0; padding: 0; }
-.header_icon_hover1 nav ul li { float: none; line-height: 40px; padding: 0 16px; }
-
-.header_icon_hover2 {
-    display: none; position: absolute; width: 160px;
-    border-radius: 12px; background-color: white;
-    border: 1px solid rgba(0,0,0,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-    right: 0; left: auto; z-index: 10; top: 48px;
-    overflow: hidden;
-}
-.header_icon_hover2 nav ul { display: flex; flex-direction: column; margin: 0; padding: 0; }
-.header_icon_hover2 nav ul li { float: none; line-height: 40px; padding: 0 16px; }
-
-/* 구버전 검색 완전 숨김 */
-.header_icon_hover3,
-.header_search,
-.header_search_main,
-.header_search_btn,
-.header_main { display: none !important; }
 
 /* ====================================================
    CART — 고유 스타일
@@ -325,54 +208,6 @@ a:visited { color: black; }
     text-align: center;
 }
 
-/* ====================================================
-   FOOTER — Main.css 기준
-   ==================================================== */
-footer {
-    min-height: 320px;
-    background-color: #0a0a0a;
-    border-radius: 24px 24px 0 0;
-    overflow: hidden;
-    margin-top: 80px;
-    padding: 60px 60px 50px;
-    display: flex; gap: 60px; align-items: flex-start;
-}
-
-#f_left {
-    flex-shrink: 0; width: 220px;
-    display: flex; flex-direction: column; gap: 14px;
-    float: none !important; padding-right: 0 !important;
-}
-#f_left img {
-    width: 44px; height: 44px;
-    position: static !important;
-    top: auto !important; left: auto !important;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer;
-}
-#f_left img:hover { transform: rotate(45deg); }
-
-#f_tagline { font-size: 0.82rem; color: rgba(255, 255, 255, 0.4); line-height: 1.6; margin-top: 4px; }
-#f_copy    { font-size: 0.72rem; color: rgba(255, 255, 255, 0.2); margin-top: auto; padding-top: 40px; }
-
-#f_right {
-    flex: 1; display: flex; gap: 48px; justify-content: flex-end;
-    float: none !important; width: auto !important;
-    text-align: left !important; padding-top: 0 !important;
-}
-
-.f_nav_group { display: flex; flex-direction: column; gap: 10px; min-width: 100px; }
-.f_nav_title {
-    font-size: 0.72rem; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.35); margin-bottom: 4px;
-}
-.f_nav_group a { text-decoration: none; }
-.f_nav_group a span {
-    font-size: 0.88rem; color: rgba(255, 255, 255, 0.6);
-    transition: color 0.2s ease; cursor: pointer; display: block;
-}
-.f_nav_group a span:hover { color: white; }
-.f_nav_group a:visited span { color: rgba(255, 255, 255, 0.6); }
 
 /* ====================================================
    토스트
