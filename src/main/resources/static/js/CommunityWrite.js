@@ -283,8 +283,7 @@ function renderProductList(products) {
     container.querySelectorAll('.product-item').forEach(function (item) {
         var btn = item.querySelector('.product-item-add');
         if (btn && !btn.disabled) {
-            btn.addEventListener('click', function (e) {
-                e.stopPropagation();
+            item.addEventListener('click', function () {
                 var id = parseInt(item.getAttribute('data-id'));
                 var p  = allProducts.find(function (p) { return p.id === id; });
                 if (p) addProduct(p);
@@ -372,8 +371,7 @@ function setupSubmit() {
         })
             .then(function (r) {
                 if (r.status === 401) {
-                    toast('로그인이 필요합니다.');
-                    window.location.href = '/login';
+                    toast('로그인이 필요합니다.', '/login');
                     return null;
                 }
                 if (!r.ok) throw new Error('실패');
@@ -391,11 +389,13 @@ function setupSubmit() {
     });
 }
 
-function toast(msg, success = true) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.className = 'toast-show' + (success ? '' : ' toast-error');
-    setTimeout(() => { toast.className = ''; }, 1200);
-
+function toast(msg, redirect) {
+    var toastEl = document.getElementById('toast');
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.className = 'toast-show';
+    setTimeout(function () {
+        toastEl.className = '';
+        if (redirect) window.location.href = redirect;
+    }, 1200);
 }

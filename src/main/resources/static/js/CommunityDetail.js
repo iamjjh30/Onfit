@@ -44,12 +44,32 @@ function loadCurrentUser() {
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (u) {
             ds.currentUser = u;
-            if (u && u.profileImg) {
-                var el = document.getElementById('commentUserImg');
-                if (el) el.src = u.profileImg;
-            }
+            renderCommentInput(u);
         })
-        .catch(function () {});
+        .catch(function () { renderCommentInput(null); });
+}
+
+/* ── 댓글 입력 영역 렌더링 ── */
+function renderCommentInput(user) {
+    var card = document.querySelector('.comment-input-card');
+    if (!card) return;
+
+    if (!user) {
+        card.style.cursor = 'pointer';
+        card.innerHTML =
+            '<a href="/login" style="flex:1; display:flex; align-items:center; justify-content:center;'
+            + ' font-size:0.88rem; color:var(--text-muted); text-decoration:none;">'
+            + '<span style="color:var(--primary); font-weight:700;">로그인</span>'
+            + '&nbsp;후 댓글을 남길 수 있어요.'
+            + '</a>';
+        card.addEventListener('click', function () {
+            window.location.href = '/login';
+        });
+        return;
+    }
+
+    var img = document.getElementById('commentUserImg');
+    if (img && user.profileImg) img.src = user.profileImg;
 }
 
 /* ── 게시글 조회 ── */
@@ -355,15 +375,17 @@ function buildCommentHTML(c) {
         '<button class="action-btn' + (c.liked ? ' liked' : '') + '" data-action="like-comment" data-comment-id="' + c.commentId + '">' +
         '♥ ' + (c.likeCount || 0) +
         '</button>' +
-        '<button class="action-btn" data-action="reply" data-comment-id="' + c.commentId + '" data-author="' + escHtml(c.nickname || '') + '">답글</button>' +
+        (ds.currentUser ? '<button class="action-btn" data-action="reply" data-comment-id="' + c.commentId + '" data-author="' + escHtml(c.nickname || '') + '">답글</button>' : '') +
         deleteBtn +
         '</div>' +
-        '<div class="reply-input-wrap" id="replyWrap_' + c.commentId + '">' +
-        '<div class="reply-input-row">' +
-        '<input type="text" class="reply-input" id="replyInput_' + c.commentId + '" placeholder="답글을 입력하세요...">' +
-        '<button class="reply-submit" data-comment-id="' + c.commentId + '">등록</button>' +
-        '</div>' +
-        '</div>' +
+        (ds.currentUser
+            ? '<div class="reply-input-wrap" id="replyWrap_' + c.commentId + '">'
+            + '<div class="reply-input-row">'
+            + '<input type="text" class="reply-input" id="replyInput_' + c.commentId + '" placeholder="답글을 입력하세요...">'
+            + '<button class="reply-submit" data-comment-id="' + c.commentId + '">등록</button>'
+            + '</div>'
+            + '</div>'
+            : '') +
         '</div>' +
         '</div>' +
         repliesHTML +
