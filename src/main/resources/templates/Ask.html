@@ -4,40 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OnFit.com</title>
-    <link rel="stylesheet" href="../css/Ask.css"/>
     <link rel="stylesheet" href="../css/main.css"/>
+    <style>
+        /* 리뉴얼 스타일 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* 스크롤바 완전 제거 */
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* GNB 위치 조정 */
+        header, .header, [th\:replace*="header"] {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            margin-top: -15px; /* 요청하신 대로 15px 위로 */
+            z-index: 1000;
+        }
+
+        /* 중앙 컨텐츠 리뉴얼 */
+        #wrap {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            text-align: center;
+            padding-top: 20px; /* 헤더가 위로 올라간 만큼의 균형 */
+        }
+
+        #wrap h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            color: #111;
+        }
+
+        #wrap h4 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        /* 버튼 디자인 리뉴얼 */
+        .btn-container button {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: #000; /* 깔끔한 블랙 */
+            border: none;
+            border-radius: 50px; /* 둥근 버튼 */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-container button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            background-color: #333;
+        }
+
+        /* 푸터는 요청에 따라 완전히 제거됨 */
+    </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div id="wrap">
-    <h1>나의 취향은?</h1>
-    <h4>MBTI는 알아도 내 옷 취향은 모르는 당신을 위해</h4>
-    <div class="btn-container">
-        <a href="/Ask_question">
-            <button>시작하기 -></button>
-        </a>
+<main id="wrap">
+    <div class="content-box">
+        <h1>나의 취향은?</h1>
+        <h4>MBTI는 알아도 내 옷 취향은 모르는 당신을 위해</h4>
+        <div class="btn-container">
+            <a href="/Ask_question">
+                <button>시작하기 &rarr;</button>
+            </a>
+        </div>
     </div>
-</div>
-
-<footer>
-    <div id="f_left" style="float:left;width:30%;padding-right:20px;">
-        <a href="../index/Main.html">
-            <img src="../img/interface/LOGO_W.png" alt="OnFit Logo">
-        </a>
-    </div>
-    <div id="f_right" style="float:left;width:70%;">
-        <nav>
-            <ul>
-                <a href="../AIStyler"><li>AI스타일러</li></a>
-                <a href="../store"><li>스토어</li></a>
-                <a href="../Community"><li>커뮤니티</li></a>
-                <a href="../MyPalette"><li>내 팔레트</li></a>
-            </ul>
-        </nav>
-    </div>
-</footer>
+</main>
 
 <script src="../js/include.js"></script>
 </body>

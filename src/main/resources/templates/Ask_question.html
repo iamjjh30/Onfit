@@ -1,380 +1,686 @@
 <!DOCTYPE html>
-<html lang="kr">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OnFit.com</title>
-    <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" th:href="@{css/Main.css}"/>
-    <link rel="stylesheet" th:href="@{css/Ask_question.css}"/>
+    <style>
+        /* BTI Test Page Styling */
+        /* Design Philosophy: Minimalist, modern, with smooth interactions */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .bti-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* Header & Progress */
+        .bti-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .bti-progress-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .bti-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .bti-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .bti-progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Main Content */
+        .bti-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            margin-top: 80px;
+            margin-bottom: 40px;
+        }
+
+        .bti-card {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            width: 100%;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .bti-question {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 50px 0;
+            line-height: 1.4;
+            letter-spacing: -0.5px;
+        }
+
+        /* Choice Buttons */
+        .bti-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .bti-choice {
+            width: 100%;
+            padding: 24px 20px;
+            border: 2px solid #e0e0e0;
+            background: #f9f9f9;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        .bti-choice:hover {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+        }
+
+        .bti-choice:active {
+            transform: translateY(0);
+        }
+
+        .bti-choice-text {
+            display: block;
+        }
+
+        .bti-divider {
+            font-size: 14px;
+            color: #999;
+            font-weight: 500;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Result Screen */
+        .bti-result-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            margin-top: 80px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .bti-result-screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .bti-result-card {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            width: 100%;
+            text-align: center;
+        }
+
+        .bti-result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #666;
+            margin: 0 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bti-result-type {
+            font-size: 80px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            letter-spacing: -2px;
+        }
+
+        .bti-result-subtitle {
+            font-size: 16px;
+            color: #999;
+            margin: 20px 0 40px 0;
+            font-weight: 400;
+        }
+
+        .bti-fashion-recommendation {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+            text-align: left;
+        }
+
+        .bti-fashion-style {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .bti-fashion-description {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .bti-fashion-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .bti-fashion-items li {
+            background: #f0f0f0;
+            color: #555;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .bti-fashion-style {
+                font-size: 20px;
+            }
+            .bti-fashion-description {
+                font-size: 14px;
+            }
+            .bti-fashion-items li {
+                font-size: 13px;
+            }
+        }
+
+        /* Result Action Buttons */
+        .bti-result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 40px;
+        }
+
+        .bti-btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Pretendard', sans-serif;
+            text-transform: none;
+        }
+
+        .bti-btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .bti-btn-primary:hover {
+            box-shadow: 0 12px 32px rgba(245, 158, 11, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .bti-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+
+        .bti-btn-secondary:hover {
+            background: #e8e8e8;
+            border-color: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .bti-container {
+                padding: 16px;
+            }
+
+            .bti-header {
+                padding: 16px;
+            }
+
+            .bti-card {
+                padding: 40px 24px;
+                margin-top: 100px;
+            }
+
+            .bti-question {
+                font-size: 22px;
+                margin-bottom: 40px;
+            }
+
+            .bti-choice {
+                padding: 20px 16px;
+                font-size: 15px;
+            }
+
+            .bti-result-card {
+                padding: 40px 24px;
+                margin-top: 100px;
+            }
+
+            .bti-result-type {
+                font-size: 60px;
+            }
+
+            .bti-result-actions {
+                flex-direction: column;
+            }
+
+            .bti-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bti-card {
+                padding: 32px 20px;
+                border-radius: 16px;
+            }
+
+            .bti-question {
+                font-size: 20px;
+                margin-bottom: 32px;
+            }
+
+            .bti-choice {
+                padding: 18px 14px;
+                font-size: 14px;
+                border-radius: 12px;
+            }
+
+            .bti-result-type {
+                font-size: 48px;
+            }
+
+            .bti-result-card {
+                padding: 32px 20px;
+                border-radius: 16px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
-<body><div th:replace="~{fragments/header :: header}"></div>
-        <div class="container">
-            <h1>Fit BTI 질문지</h1>
-            <h2>나만의 스타일을 찾아보세요</h2>
-
-            <div class="question-card">
-                <h3>1. 길에서 누군가 "저기, 혹시 옷 정보 좀 알수 있을까요?"라고 묻는다면?</h3>
-                <div class="item_box">
-                    <label><input type="radio" name="q1" value="E" data-type="E"><span>내 센스를 인정받은 것 같아 뿌듯하게 알려준다 (E)</span></label>
-                    <label><input type="radio" name="q1" value="I" data-type="I"><span>쑥스러워서 대충 대답하고 서둘러 떠난다 (I)</span></label>
-                </div>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="bti-container">
+    <!-- Header with progress -->
+    <div class="bti-header">
+        <div class="bti-progress-wrapper">
+            <div class="bti-progress-bar">
+                <div class="bti-progress-fill" id="progressFill"></div>
             </div>
-            <div class="question-card">
-                <h3>2. 주말 아침, 집 앞 브런치 카페에 갈 때 당신의 선택은?</h3>
-                <div class="item_box">
-                    <label><input type="radio" name="q2" value="S" data-type="S"><span>무조건 편한 추리닝이나 원마일웨어. 활동성이 제일 중요해!! (S)</span></label>
-                    <label><input type="radio" name="q2" value="N" data-type="N"><span>그래도 사진은 남겨야지! 셋업이나 꾸민 느낌의 외출복 (N)</span></label>
-                </div>
-            </div>
-            <div class="question-card">
-                <h3>3. "이 스타일 요즘 유행이라는데 너랑은 좀 안어울려"라는 말을 들었을때</h3>
-                <div class="item_box">
-                    <label><input type="radio" name="q3" value="T" data-type="T"><span>왜? 색감이나 핏의 문제를 냉정하게 분석한다 (T)</span></label>
-                    <label><input type="radio" name="q3" value="F" data-type="F"><span>아... 그래? 상처받거나, 그 옷에 대한 애정이 급격히 식는다 (F)</span></label>
-                </div>
-            </div>
-            <div class="question-card">
-                <h3>4. 내일 아침 출근 / 등교 룩 정하는 시점은?</h3>
-                <div class="item_box">
-                    <label><input type="radio" name="q4" value="J" data-type="J"><span>전날 밤 이미 머릿속으로 양말까지 다 세팅 끝 (J)</span></label>
-                    <label><input type="radio" name="q4" value="P" data-type="P"><span>아침에 눈 떠서 그날 날씨, 기분에 따라 옷장을 뒤진다 (P)</span></label>
-                </div>
-            </div>
+            <p class="bti-progress-text">
+                <span id="currentQuestion">1</span> / <span id="totalQuestions">4</span>
+            </p>
+        </div>
+    </div>
 
-            <button class="submit-btn" id="submitBtn">결과 확인하기</button>
+    <!-- Question Card -->
+    <div class="bti-content">
+        <div class="bti-card" id="questionCard">
+            <h2 class="bti-question" id="questionText"></h2>
 
-            <div id="result-area" style="display:none;">
-                <h3>당신의 Fit BTI 결과는?</h3>
-                <div class="type-tag" id="mbti-type">----</div>
+            <!-- Choice Buttons -->
+            <div class="bti-choices">
+                <button class="bti-choice bti-choice-left" id="leftChoice">
+                    <span class="bti-choice-text" id="leftChoiceText"></span>
+                </button>
 
-                <!-- ISTJ -->
-                <div class="mbti-result" id="result-ISTJ" style="display:none;">
-                    <p class="result-desc">깔끔하고 단정한 베이직 스타일을 선호합니다. 유행보다 퀄리티와 실용성을 중시하며, 화이트 셔츠와 슬랙스 같은 타임리스 아이템이 옷장의 중심입니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#클래식</span>
-                        <span class="style-tag">#미니멀</span>
-                        <span class="style-tag">#타임리스</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>화이트 옥스포드 셔츠 + 슬랙스</li><li>베이지 트렌치코트</li><li>모노톤 니트 + 테일러드 팬츠</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>과한 로고 플레이 아이템</li><li>찢어진 데님 (디스트레스드)</li><li>형광 컬러 믹스 코디</li></ul>
-                        </div>
-                    </div>
-                </div>
+                <div class="bti-divider">또는</div>
 
-                <!-- ISFJ -->
-                <div class="mbti-result" id="result-ISFJ" style="display:none;">
-                    <p class="result-desc">편안하면서도 따뜻한 무드의 스타일을 즐깁니다. 플로럴 패턴이나 부드러운 파스텔 톤, 리넨 소재 등 자연스러운 분위기를 좋아합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#내추럴</span>
-                        <span class="style-tag">#로맨틱</span>
-                        <span class="style-tag">#파스텔</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>플로럴 미디 스커트 + 화이트 블라우스</li><li>리넨 셋업 (라벤더, 민트)</li><li>크림 니트 + 와이드 팬츠</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>올블랙 하드 무드 코디</li><li>메탈릭 소재 아우터</li><li>과한 스터드 액세서리</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- INFJ -->
-                <div class="mbti-result" id="result-INFJ" style="display:none;">
-                    <p class="result-desc">감각적이고 독창적인 무드를 추구합니다. 과하지 않지만 어딘가 특별한 디테일이 있는 옷을 선호하며, 전체적으로 정제된 무드를 유지합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#아트무드</span>
-                        <span class="style-tag">#미니멀</span>
-                        <span class="style-tag">#감각적</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>비대칭 넥라인 탑 + 와이드 팬츠</li><li>오버사이즈 코트 + 이너 레이어링</li><li>독특한 텍스처 니트 단품 코디</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>화려한 스팽글 파티룩</li><li>스포티한 트레이닝 세트</li><li>빅 로고 스트리트 무드</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- INTJ -->
-                <div class="mbti-result" id="result-INTJ" style="display:none;">
-                    <p class="result-desc">라인이 명확하고 구조적인 실루엣을 선호합니다. 블랙, 그레이, 네이비 중심의 절제된 컬러 팔레트와 기능성을 중시합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#구조적</span>
-                        <span class="style-tag">#모던</span>
-                        <span class="style-tag">#모노톤</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>블랙 테일러드 수트</li><li>스트럭처드 숄더 코트</li><li>그레이 터틀넥 + 슬림 팬츠</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>과한 프릴·러플 디테일</li><li>알록달록 컬러 블로킹</li><li>귀여운 캐릭터 프린트</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ISTP -->
-                <div class="mbti-result" id="result-ISTP" style="display:none;">
-                    <p class="result-desc">기능성과 스타일을 동시에 잡는 테크웨어나 워크웨어 계열에 끌립니다. 실용적인 포켓, 유틸리티 디테일을 좋아합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#테크웨어</span>
-                        <span class="style-tag">#유틸리티</span>
-                        <span class="style-tag">#스트리트</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>카고 팬츠 + 테크 재킷</li><li>유틸리티 베스트 레이어링</li><li>워크 부츠 + 와이드 데님</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>과한 레이스·시스루 소재</li><li>미니멀 올화이트 포멀룩</li><li>하이힐 드레시 코디</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ISFP -->
-                <div class="mbti-result" id="result-ISFP" style="display:none;">
-                    <p class="result-desc">그날의 기분과 감성을 옷으로 표현합니다. 빈티지 믹스, 아트워크 프린트, 독특한 컬러 조합을 즐기는 자유로운 스타일리스트입니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#감성</span>
-                        <span class="style-tag">#빈티지믹스</span>
-                        <span class="style-tag">#자유로운</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>빈티지 그래픽 티 + 미디 스커트</li><li>컬러 청재킷 레이어링</li><li>아트워크 프린트 원피스</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>딱딱한 포멀 수트</li><li>무채색 단일 톤 코디</li><li>로고만 가득한 명품 풀세트</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- INFP -->
-                <div class="mbti-result" id="result-INFP" style="display:none;">
-                    <p class="result-desc">개성 있는 빈티지 아이템과 감성적인 레이어링을 즐깁니다. 유행보다 자신만의 세계관을 담은 스타일링을 추구합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#빈티지</span>
-                        <span class="style-tag">#드리머</span>
-                        <span class="style-tag">#레이어링</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>플리마켓 빈티지 재킷 + 롱스커트</li><li>보헤미안 레이어드 룩</li><li>독립 아티스트 브랜드 티셔츠</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>트렌디한 패스트패션 풀세트</li><li>과한 비즈니스 포멀</li><li>획일적인 교복형 스타일</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- INTP -->
-                <div class="mbti-result" id="result-INTP" style="display:none;">
-                    <p class="result-desc">겉으로는 단순해 보이지만 자세히 보면 독특한 포인트가 숨어있는 스타일입니다. 편안함이 최우선이며 그래픽 티나 오버핏을 즐깁니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#아이러닉</span>
-                        <span class="style-tag">#오버핏</span>
-                        <span class="style-tag">#히든포인트</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>유니크 그래픽 오버사이즈 티</li><li>와이드 팬츠 + 심플 이너</li><li>독특한 문구·아트 프린트 후드</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>빡빡한 타이트 수트</li><li>과한 액세서리 풀코디</li><li>트렌디 하이패션 풀세트</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ESTP -->
-                <div class="mbti-result" id="result-ESTP" style="display:none;">
-                    <p class="result-desc">최신 트렌드에 민감하고 과감한 스타일링을 즐깁니다. 스니커즈, 볼드한 로고, 힙한 실루엣으로 눈에 띄는 것을 두려워하지 않습니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#트렌디</span>
-                        <span class="style-tag">#스트리트</span>
-                        <span class="style-tag">#볼드</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>빅 로고 후디 + 조거 팬츠</li><li>청키 스니커즈 + 배기 데님</li><li>스타디움 점퍼 레이어링</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>올드머니 조용한 럭셔리 룩</li><li>잔잔한 플로럴 로맨틱 룩</li><li>과한 레이어드 보헤미안</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ESFP -->
-                <div class="mbti-result" id="result-ESFP" style="display:none;">
-                    <p class="result-desc">밝고 화려한 컬러와 재미있는 패턴을 즐깁니다. 패션을 즐기고 표현하는 것을 사랑하며, 파티나 이벤트 룩이 특히 빛납니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#컬러풀</span>
-                        <span class="style-tag">#화려함</span>
-                        <span class="style-tag">#파티룩</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>비비드 컬러 미니 드레스</li><li>시퀸 탑 + 사틴 스커트</li><li>컬러 블로킹 세트업</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>무채색 미니멀 코디</li><li>오버사이즈 먹색 후드</li><li>군더더기 없는 올블랙</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ENFP -->
-                <div class="mbti-result" id="result-ENFP" style="display:none;">
-                    <p class="result-desc">예상치 못한 조합으로 매번 새로운 무드를 연출합니다. 레이어링과 액세서리 활용이 뛰어나며 패션으로 이야기를 만들어냅니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#크리에이티브</span>
-                        <span class="style-tag">#믹스매치</span>
-                        <span class="style-tag">#스토리텔링</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>패턴 혼합 레이어드 룩</li><li>빈티지 + 모던 믹스매치</li><li>독특한 액세서리 포인트 코디</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>획일적 유니폼 스타일</li><li>변화 없는 단색 베이직만</li><li>딱딱한 비즈니스 포멀</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ENTP -->
-                <div class="mbti-result" id="result-ENTP" style="display:none;">
-                    <p class="result-desc">규칙을 깨는 것을 즐기며 독창적인 스타일 실험을 두려워하지 않습니다. 젠더리스 패션이나 아방가르드 브랜드에 관심이 많습니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#아방가르드</span>
-                        <span class="style-tag">#젠더리스</span>
-                        <span class="style-tag">#실험적</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>젠더리스 오버사이즈 수트</li><li>아방가르드 디자이너 피스</li><li>예상 밖의 소재 믹스 코디</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>정형화된 교과서 포멀룩</li><li>트렌드 추종형 패스트패션</li><li>무난한 베이직 반복 코디</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ESTJ -->
-                <div class="mbti-result" id="result-ESTJ" style="display:none;">
-                    <p class="result-desc">TPO를 철저히 지키는 스타일리스트입니다. 깔끔한 테일러드 룩과 단정한 코디를 선호하며 신뢰감을 주는 패션을 추구합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#샤프</span>
-                        <span class="style-tag">#포멀</span>
-                        <span class="style-tag">#신뢰감</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>네이비 테일러드 블레이저</li><li>스트라이프 셔츠 + 치노 팬츠</li><li>클래식 더블 브레스티드 코트</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>과한 찢김·워싱 데님</li><li>TPO 무시한 슬리퍼 외출</li><li>형광 컬러 스트리트 무드</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ESFJ -->
-                <div class="mbti-result" id="result-ESFJ" style="display:none;">
-                    <p class="result-desc">유행하는 아이템을 자신에게 잘 맞게 소화하는 능력이 탁월합니다. 주변 사람들의 반응을 즐기며 상황에 맞는 세련된 룩을 연출합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#트렌디</span>
-                        <span class="style-tag">#스타일리시</span>
-                        <span class="style-tag">#세련된</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>시즌 트렌드 원피스</li><li>잘 맞는 데님 + 트렌디 탑</li><li>시그니처 컬러 백 포인트</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>너무 튀는 아방가르드 룩</li><li>지나치게 캐주얼한 트레이닝</li><li>계절 무시한 코디</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ENFJ -->
-                <div class="mbti-result" id="result-ENFJ" style="display:none;">
-                    <p class="result-desc">세련되고 영향력 있는 스타일을 지향합니다. 전체적인 무드와 조화를 중시하며 자신만의 시그니처 룩이 명확합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#우아함</span>
-                        <span class="style-tag">#인플루언서</span>
-                        <span class="style-tag">#시그니처</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>드레이프 원피스 + 힐</li><li>세미포멀 블레이저 세트</li><li>시그니처 컬러 코트 코디</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>과한 유틸리티 워크웨어</li><li>지저분한 레이어드 믹스</li><li>스포티 트레이닝 데일리</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ENTJ -->
-                <div class="mbti-result" id="result-ENTJ" style="display:none;">
-                    <p class="result-desc">존재감 있고 카리스마 넘치는 스타일을 추구합니다. 하이엔드 브랜드와 파워숄더, 강렬한 컬러로 리더십을 패션으로 표현합니다.</p>
-                    <div class="tag-row">
-                        <span class="style-tag">#파워</span>
-                        <span class="style-tag">#럭셔리</span>
-                        <span class="style-tag">#카리스마</span>
-                    </div>
-                    <div class="rec-grid">
-                        <div class="rec-card good">
-                            <div class="rec-title">✅ 추천 패션</div>
-                            <ul><li>파워숄더 블레이저 + 부츠</li><li>올블랙 하이엔드 세트업</li><li>강렬한 레드·버건디 코트</li></ul>
-                        </div>
-                        <div class="rec-card bad">
-                            <div class="rec-title">❌ 피해야 할 패션</div>
-                            <ul><li>지나치게 귀여운 파스텔 룩</li><li>헐렁한 후드 트레이닝</li><li>존재감 없는 무채색 베이직</li></ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="result-buttons">
-                    <button id="btn-shop">🛍️ 쇼핑하러 가기</button>
-                    <button id="btn-retry">🔄 재검사</button>
-                </div>
+                <button class="bti-choice bti-choice-right" id="rightChoice">
+                    <span class="bti-choice-text" id="rightChoiceText"></span>
+                </button>
             </div>
         </div>
-    <div th:replace="~{fragments/footer :: footer}"></div>
-    <script th:src="@{/js/Ask_question.js}"></script>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="bti-result-screen" id="resultScreen">
+        <div class="bti-result-card">
+            <h2 class="bti-result-title">나의 Fit BTI 타입은?</h2>
+            <div class="bti-result-type" id="resultType">----</div>
+            <p class="bti-result-subtitle">당신의 패션 성향이 분석되었습니다</p>
+
+            <div class="bti-fashion-recommendation">
+                <h3 class="bti-fashion-style" id="fashionStyle"></h3>
+                <p class="bti-fashion-description" id="fashionDescription"></p>
+                <ul class="bti-fashion-items" id="fashionItems"></ul>
+            </div>
+
+            <div class="bti-result-actions">
+                <a th:href="@{/store}" style="text-decoration:none;">
+                    <button class="bti-btn bti-btn-primary" id="shopBtn"> 쇼핑하러 가기 </button>
+                </a>
+                <button class="bti-btn bti-btn-secondary" id="retryBtn">
+                    다시 하기
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            id: 1,
+            text: '길에서 누군가 옷 정보를 묻는다면?',
+            leftOption: {
+                text: '내 센스를 인정받아 뿌듯하게 알려준다',
+                type: 'E'
+            },
+            rightOption: {
+                text: '쑥스러워서 대충 대답하고 서둘러 떠난다',
+                type: 'I'
+            }
+        },
+        {
+            id: 2,
+            text: '주말 아침, 집 앞 카페에 갈 때 선택은?',
+            leftOption: {
+                text: '무조건 편한 원마일웨어가 최고!',
+                type: 'S'
+            },
+            rightOption: {
+                text: '사진을 위해 꾸민 느낌의 외출복',
+                type: 'N'
+            }
+        },
+        {
+            id: 3,
+            text: '"너랑 안 어울려"라는 말을 들었을 때',
+            leftOption: {
+                text: '왜? 이유를 냉정하게 분석한다',
+                type: 'T'
+            },
+            rightOption: {
+                text: '아... 그래? 애정이 급격히 식는다',
+                type: 'F'
+            }
+        },
+        {
+            id: 4,
+            text: '내일 입을 옷을 정하는 시점은?',
+            leftOption: {
+                text: '전날 밤 이미 머릿속으로 세팅 끝',
+                type: 'J'
+            },
+            rightOption: {
+                text: '아침 기분에 따라 옷장을 뒤진다',
+                type: 'P'
+            }
+        }
+    ];
+
+    let currentQuestion = 0;
+    let answers = [];
+
+    const questionCard = document.getElementById('questionCard');
+    const resultScreen = document.getElementById('resultScreen');
+    const questionText = document.getElementById('questionText');
+    const leftChoiceText = document.getElementById('leftChoiceText');
+    const rightChoiceText = document.getElementById('rightChoiceText');
+    const leftChoice = document.getElementById('leftChoice');
+    const rightChoice = document.getElementById('rightChoice');
+    const progressFill = document.getElementById('progressFill');
+    const currentQuestionSpan = document.getElementById('currentQuestion');
+    const totalQuestionsSpan = document.getElementById('totalQuestions');
+    const resultType = document.getElementById('resultType');
+    const shopBtn = document.getElementById('shopBtn');
+    const retryBtn = document.getElementById('retryBtn');
+
+    const mbtiFashion = {
+        'ISTJ': {
+            style: '클래식 & 미니멀리즘',
+            description: '실용적이고 신뢰할 수 있는 ISTJ는 유행을 타지 않는 클래식한 스타일을 선호합니다. 깔끔하고 단정한 룩으로 당신의 신뢰감을 표현해보세요.',
+            items: ['테일러드 자켓', '화이트 셔츠', '슬랙스', '가죽 로퍼']
+        },
+        'ISFJ': {
+            style: '단정 & 페미닌',
+            description: '차분하고 배려심 깊은 ISFJ는 편안하면서도 단정한 페미닌 룩이 잘 어울립니다. 부드러운 색감과 소재로 따뜻한 분위기를 연출해보세요.',
+            items: ['니트 가디건', '플리츠 스커트', '블라우스', '플랫 슈즈']
+        },
+        'INFJ': {
+            style: '우아 & 유니크',
+            description: '통찰력 있고 신비로운 INFJ는 자신만의 개성을 드러내는 우아하고 유니크한 스타일을 즐깁니다. 깊이 있는 색감과 독특한 디자인으로 당신의 내면을 표현해보세요.',
+            items: ['롱 코트', '맥시 드레스', '빈티지 악세사리', '부츠']
+        },
+        'INTJ': {
+            style: '시크 & 모던',
+            description: '전략적이고 독립적인 INTJ는 간결하면서도 세련된 시크 모던 룩을 선호합니다. 절제된 디자인과 모노톤 컬러로 당신의 지적인 매력을 강조해보세요.',
+            items: ['블랙 터틀넥', '와이드 팬츠', '구조적인 가방', '앵클 부츠']
+        },
+        'ISTP': {
+            style: '캐주얼 & 활동적',
+            description: '호기심 많고 자유로운 ISTP는 활동성을 강조한 캐주얼 스타일이 잘 어울립니다. 편안하면서도 스타일리시한 아이템으로 당신의 에너지를 발산해보세요.',
+            items: ['후드티', '조거 팬츠', '스니커즈', '볼캡']
+        },
+        'ISFP': {
+            style: '자유분방 & 보헤미안',
+            description: '예술적이고 감성적인 ISFP는 자유분방한 보헤미안 스타일을 즐깁니다. 자연스러운 소재와 패턴으로 당신의 감각적인 면모를 보여주세요.',
+            items: ['플로럴 원피스', '데님 자켓', '에스닉 악세사리', '샌들']
+        },
+        'INFP': {
+            style: '로맨틱 & 빈티지',
+            description: '이상주의적이고 창의적인 INFP는 로맨틱하고 빈티지한 스타일을 선호합니다. 부드러운 실루엣과 섬세한 디테일로 당신의 몽환적인 분위기를 연출해보세요.',
+            items: ['레이스 블라우스', '롱 스커트', '빈티지 가디건', '메리제인 슈즈']
+        },
+        'INTP': {
+            style: '개성 & 편안함',
+            description: '논리적이고 독창적인 INTP는 편안하면서도 개성 있는 스타일을 추구합니다. 오버사이즈 핏과 유니크한 아이템으로 당신의 자유로운 사고를 표현해보세요.',
+            items: ['오버사이즈 셔츠', '루즈핏 팬츠', '안경', '백팩']
+        },
+        'ESTP': {
+            style: '트렌디 & 힙합',
+            description: '활동적이고 즉흥적인 ESTP는 트렌디하고 힙한 스트릿 스타일이 잘 어울립니다. 과감한 컬러와 디자인으로 당신의 넘치는 에너지를 보여주세요.',
+            items: ['크롭탑', '카고 팬츠', '볼드한 악세사리', '하이탑 스니커즈']
+        },
+        'ESFP': {
+            style: '화려 & 글램',
+            description: '사교적이고 낙천적인 ESFP는 화려하고 글램한 스타일을 즐깁니다. 반짝이는 소재와 과감한 노출로 당신의 매력을 한껏 발산해보세요.',
+            items: ['새틴 드레스', '미니 스커트', '하이힐', '클러치 백']
+        },
+        'ENFP': {
+            style: '컬러풀 & 믹스매치',
+            description: '열정적이고 자유로운 ENFP는 컬러풀하고 믹스매치 스타일을 선호합니다. 다양한 패턴과 색상을 조합하여 당신의 통통 튀는 개성을 표현해보세요.',
+            items: ['패턴 원피스', '컬러풀 니트', '레이어드 악세사리', '컨버스']
+        },
+        'ENTP': {
+            style: '도전 & 실험적',
+            description: '창의적이고 논쟁을 즐기는 ENTP는 도전적이고 실험적인 스타일을 추구합니다. 독특한 소재와 비대칭 디자인으로 당신의 혁신적인 사고를 보여주세요.',
+            items: ['가죽 자켓', '메탈릭 스커트', '워커 부츠', '선글라스']
+        },
+        'ESTJ': {
+            style: '정장 & 포멀',
+            description: '현실적이고 체계적인 ESTJ는 깔끔하고 단정한 정장 스타일이 잘 어울립니다. 격식 있는 룩으로 당신의 리더십과 전문성을 강조해보세요.',
+            items: ['수트 세트', '블라우스', '펜슬 스커트', '펌프스']
+        },
+        'ESFJ': {
+            style: '단정 & 우아',
+            description: '사교적이고 친절한 ESFJ는 단정하면서도 우아한 스타일을 선호합니다. 부드러운 실루엣과 고급스러운 소재로 당신의 따뜻한 이미지를 연출해보세요.',
+            items: ['트위드 자켓', '원피스', '진주 악세사리', '미들힐']
+        },
+        'ENFJ': {
+            style: '세련 & 지적',
+            description: '카리스마 있고 이타적인 ENFJ는 세련되고 지적인 스타일을 즐깁니다. 고급스러운 소재와 절제된 디자인으로 당신의 품격을 보여주세요.',
+            items: ['실크 블라우스', 'H라인 스커트', '클래식 시계', '스틸레토 힐']
+        },
+        'ENTJ': {
+            style: '파워풀 & 엣지',
+            description: '결단력 있고 통솔력 있는 ENTJ는 파워풀하고 엣지 있는 스타일을 추구합니다. 강렬한 색감과 구조적인 디자인으로 당신의 자신감을 표현해보세요.',
+            items: ['숄더 패드 자켓', '레더 팬츠', '체인 목걸이', '하이힐 부츠']
+        }
+    };
+
+    function initializeTest() {
+        currentQuestion = 0;
+        answers = [];
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const question = questions[currentQuestion];
+        questionText.textContent = question.text;
+        leftChoiceText.textContent = question.leftOption.text;
+        rightChoiceText.textContent = question.rightOption.text;
+
+        currentQuestionSpan.textContent = currentQuestion + 1;
+        totalQuestionsSpan.textContent = questions.length;
+
+        const progress = ((currentQuestion + 1) / questions.length) * 100;
+        progressFill.style.width = progress + '%';
+
+        questionCard.classList.remove('hidden');
+        resultScreen.classList.remove('active');
+    }
+
+    function handleChoice(type) {
+        answers.push(type);
+
+        if (currentQuestion < questions.length - 1) {
+            currentQuestion++;
+            showQuestion();
+        } else {
+            calculateResult();
+        }
+    }
+
+    function calculateResult() {
+        const score = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        answers.forEach((type) => {
+            if (type in score) {
+                score[type]++;
+            }
+        });
+
+        const mbtiType =
+            (score.E >= score.I ? 'E' : 'I') +
+            (score.S >= score.N ? 'S' : 'N') +
+            (score.T >= score.F ? 'T' : 'F') +
+            (score.J >= score.P ? 'J' : 'P');
+
+        resultType.textContent = mbtiType;
+
+        const fashionRec = mbtiFashion[mbtiType];
+        if (fashionRec) {
+            document.getElementById('fashionStyle').textContent = fashionRec.style;
+            document.getElementById('fashionDescription').textContent = fashionRec.description;
+            document.getElementById('fashionItems').innerHTML = fashionRec.items.map(item => `<li>${item}</li>`).join('');
+        }
+
+        questionCard.classList.add('hidden');
+        resultScreen.classList.add('active');
+    }
+
+    function retry() {
+        initializeTest();
+    }
+
+    // Event listeners
+    leftChoice.addEventListener('click', () => {
+        handleChoice(questions[currentQuestion].leftOption.type);
+    });
+
+    rightChoice.addEventListener('click', () => {
+        handleChoice(questions[currentQuestion].rightOption.type);
+    });
+
+    retryBtn.addEventListener('click', retry);
+
+    // Initialize on load
+    window.addEventListener('load', initializeTest);
+</script>
 </body>
 </html>
