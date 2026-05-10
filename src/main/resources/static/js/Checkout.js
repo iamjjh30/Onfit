@@ -35,7 +35,6 @@ var urlParams = new URLSearchParams(window.location.search);
 var MODE      = urlParams.get('mode') === 'direct' ? 'direct' : 'cart';
 
 // 토스 결제수단 코드 매핑
-// 버튼 data-method → 토스 requestPayment() 첫 번째 인자
 var PAY_METHOD_MAP = {
     '카드':     '카드',
     '카카오페이': '카카오페이',
@@ -49,7 +48,8 @@ var PAY_METHOD_MAP = {
 ---------------------------------------------------------------- */
 function init() {
     initPayMethodBtns();
-    initSameAsOrderer(); // 🌟 추가
+    initSameAsOrderer();
+    initLoadAddressBtn(); // 🌟 배송지 불러오기 버튼 활성화!
     initAddressSearch();
     loadCoupons();
     if (MODE === 'direct') {
@@ -105,33 +105,32 @@ function initDirect() {
 ---------------------------------------------------------------- */
 function fetchCartAndInit() {
     fetch(API_BASE + '/api/cart', { headers: authHeaders() })
-    .then(function(res) {
-        if (!res.ok) throw new Error('장바구니 조회 실패');
-        return res.json();
-    })
-    .then(function(data) {
-        cartItems  = data;
-        sumPrice   = cartItems.reduce(function(acc, i) { return acc + i.price * i.qty; }, 0);
-        deliPrice  = (sumPrice === 0 || sumPrice >= 50000) ? 0 : 5000;
-        totalPrice = sumPrice + deliPrice;
-        renderCheckoutItems();
-        renderSummary();
-        positionSummary();
-    })
-    .catch(function(err) {
-        console.error(err);
-        alert('장바구니 정보를 불러오지 못했습니다. 로그인 상태를 확인해주세요.');
-    });
+        .then(function(res) {
+            if (!res.ok) throw new Error('장바구니 조회 실패');
+            return res.json();
+        })
+        .then(function(data) {
+            cartItems  = data;
+            sumPrice   = cartItems.reduce(function(acc, i) { return acc + i.price * i.qty; }, 0);
+            deliPrice  = (sumPrice === 0 || sumPrice >= 50000) ? 0 : 5000;
+            totalPrice = sumPrice + deliPrice;
+            renderCheckoutItems();
+            renderSummary();
+            positionSummary();
+        })
+        .catch(function(err) {
+            console.error(err);
+            alert('장바구니 정보를 불러오지 못했습니다. 로그인 상태를 확인해주세요.');
+        });
 }
 
 /* ----------------------------------------------------------------
-   5. 주문 상품 렌더링 (Checkout.js)
+   5. 주문 상품 렌더링
 ---------------------------------------------------------------- */
 function renderCheckoutItems() {
     var container = document.getElementById('checkout-items');
     if (!container) return;
     container.innerHTML = cartItems.map(function(item) {
-        // 🌟 수정: item.name과 item.productName 모두 호환되도록 변경
         var itemName = item.name || item.productName || '상품명 없음';
 
         return (
@@ -159,13 +158,12 @@ function renderSummary() {
     if (pd) pd.textContent = sumPrice.toLocaleString() + '원';
     if (dd) dd.textContent = deliPrice === 0 ? '무료배송' : deliPrice.toLocaleString() + '원';
 
-    // 🌟 할인 반영
     totalPrice = Math.max(0, sumPrice + deliPrice - discountPrice);
     if (td) td.textContent = totalPrice.toLocaleString() + '원';
 }
 
 /* ----------------------------------------------------------------
-   7. 결제 요청 (토스 v1 requestPayment) 일부 수정
+   7. 결제 요청 (토스)
 ---------------------------------------------------------------- */
 function requestPayment() {
     var btn      = document.getElementById('pay-btn');
@@ -179,7 +177,8 @@ function requestPayment() {
         phone:    phone,
         address:  address,
         deliFee:  deliPrice,
-        couponId: selectedCoupon ? selectedCoupon.id : '',  // 🌟 추가
+        couponId: selectedCoupon ? selectedCoupon.id : '',
+        mode: MODE,
         items:    JSON.stringify(cartItems.map(function(item) {
             var actualId = item.productId || item.id || item.itemNo;
             return { productId: actualId, size: item.size || 'FREE', qty: item.qty || item.quantity || 1 };
@@ -195,7 +194,6 @@ function requestPayment() {
         return;
     }
 
-    // 🌟 수정: 토스 결제창에 넘어가는 대표 주문명도 호환되도록 변경
     var firstItemName = cartItems[0].name || cartItems[0].productName || '상품';
     var orderName = cartItems.length > 1
         ? firstItemName + ' 외 ' + (cartItems.length - 1) + '건'
@@ -203,7 +201,6 @@ function requestPayment() {
 
     var orderId = 'ONFIT-' + Date.now();
 
-    // 🌟 변경된 부분: 정적 HTML 대신 스프링 부트 API 주소로 리다이렉트
     var successUrl = window.location.origin + '/api/payment/success?' + extraQuery;
     var failUrl    = window.location.origin + '/api/payment/fail';
 
@@ -255,7 +252,7 @@ function positionSummary() {
 }
 
 /* ----------------------------------------------------------------
-   9. 초기화
+   9. 초기화 및 이벤트 리스너
 ---------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', function() {
     init();
@@ -263,6 +260,98 @@ document.addEventListener('DOMContentLoaded', function() {
     if (payBtn) payBtn.addEventListener('click', requestPayment);
     window.addEventListener('resize', positionSummary);
 });
+
+/* ----------------------------------------------------------------
+   🌟 배송지 불러오기 버튼 로직 (모달 열고 목록 렌더링)
+---------------------------------------------------------------- */
+function initLoadAddressBtn() {
+    var btn = document.getElementById('btn-load-address');
+    var modal = document.getElementById('address-modal');
+    var listContainer = document.getElementById('modal-address-list');
+
+    if (!btn) return;
+
+    btn.addEventListener('click', function() {
+        // 1. 서버에서 다중 배송지 목록 가져오기
+        fetch('/api/mypage/addresses', { credentials: 'include' })
+            .then(function(res) {
+                if (!res.ok) throw new Error('배송지 목록 조회 실패');
+                return res.json();
+            })
+            .then(function(addresses) {
+                if (!addresses || addresses.length === 0) {
+                    alert('등록된 배송지가 없습니다. 마이페이지에서 먼저 등록해주세요.');
+                    return;
+                }
+
+                // 2. 모달 열기
+                if (modal) modal.style.display = 'flex';
+
+                // 3. 모달 안에 배송지 목록 그리기
+                if (listContainer) {
+                    listContainer.innerHTML = addresses.map(function(addr) {
+                        // 따옴표 에러 방지
+                        var safeAddr = addr.address.replace(/'/g, "\\'");
+                        var safeDetail = addr.addressDetail ? addr.addressDetail.replace(/'/g, "\\'") : '';
+
+                        return `
+                        <div class="modal-addr-item" 
+                             onclick="selectAddress('${safeAddr}', '${safeDetail}')"
+                             style="padding:16px; border:1px solid #eee; border-radius:12px; margin-bottom:12px; cursor:pointer; background:#fff; transition:background 0.2s;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                <span style="font-weight:700; font-size:14px; color:#111;">${addr.addressName}</span>
+                                ${addr.isDefault ? '<span style="font-size:11px; background:#000; color:#fff; padding:2px 6px; border-radius:4px;">기본</span>' : ''}
+                            </div>
+                            <p style="margin:0; font-size:13px; color:#555;">${addr.address}</p>
+                            <p style="margin:4px 0 0; font-size:13px; color:#888;">${addr.addressDetail || ''}</p>
+                        </div>
+                    `;
+                    }).join('');
+                }
+            })
+            .catch(function(err) {
+                console.error(err);
+                alert('배송지 목록을 불러오는 중 오류가 발생했습니다.');
+            });
+    });
+}
+/* ----------------------------------------------------------------
+   🌟 배송지 선택 시 폼 자동 입력 로직
+---------------------------------------------------------------- */
+window.selectAddress = function(addr, detail) {
+    // 1. 입력 필드 찾기
+    const nameInput    = document.getElementById('input-name');
+    const phoneInput   = document.getElementById('input-phone');
+    const addrInput    = document.getElementById('input-address');
+    const detailInput  = document.getElementById('input-address-detail');
+
+    // 2. 값 채워넣기 (이름/번호는 세션 데이터, 주소는 선택한 값)
+    if (window.MEMBER_DATA) {
+        nameInput.value  = window.MEMBER_DATA.name || '';
+        phoneInput.value = window.MEMBER_DATA.tel || '';
+    }
+    addrInput.value   = addr;
+    detailInput.value = detail;
+
+    // 3. 모달 닫기
+    closeAddressModal();
+
+    // 4. 입력 성공 시각 효과 (입력창이 파랗게 깜빡임)
+    [nameInput, phoneInput, addrInput, detailInput].forEach(function(el) {
+        if (el) {
+            el.style.transition = 'background 0.5s';
+            el.style.background = '#f0f9ff';
+            setTimeout(function() { el.style.background = '#fff'; }, 500);
+        }
+    });
+};
+/* ----------------------------------------------------------------
+   🌟 모달 닫기 함수
+---------------------------------------------------------------- */
+window.closeAddressModal = function() {
+    var modal = document.getElementById('address-modal');
+    if (modal) modal.style.display = 'none';
+};
 /* ----------------------------------------------------------------
    주문자 정보와 동일 체크박스
 ---------------------------------------------------------------- */
@@ -272,38 +361,46 @@ function initSameAsOrderer() {
 
     checkbox.addEventListener('change', function() {
         if (!this.checked) {
-            // 체크 해제 시 입력값 비우기
             document.getElementById('input-name').value    = '';
             document.getElementById('input-phone').value   = '';
             return;
         }
 
-        // 세션에서 회원 정보 불러오기
-        fetch('/api/member/me', {
-            credentials: 'include'
-        })
-            .then(function(res) {
-                if (!res.ok) throw new Error('로그인 필요');
-                return res.json();
-            })
-            .then(function(member) {
-                document.getElementById('input-name').value  = member.name  || '';
-                document.getElementById('input-phone').value = member.tel   || '';
-                document.getElementById('input-address').value       = member.address       || '';
-                document.getElementById('input-address-detail').value = member.addressDetail || '';
-            })
-            .catch(function(err) {
-                console.error('회원 정보 불러오기 실패:', err);
-                alert('회원 정보를 불러오지 못했습니다. 로그인 상태를 확인해주세요.');
-                checkbox.checked = false;
-            });
+        // Thymeleaf 주입 데이터 우선
+        if (window.MEMBER_DATA && window.MEMBER_DATA.name) {
+            document.getElementById('input-name').value           = window.MEMBER_DATA.name || '';
+            document.getElementById('input-phone').value          = window.MEMBER_DATA.tel || '';
+            document.getElementById('input-address').value        = window.MEMBER_DATA.address || '';
+            document.getElementById('input-address-detail').value = window.MEMBER_DATA.addressDetail || '';
+        } else {
+            fetch('/api/member/me', { credentials: 'include' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('로그인 필요');
+                    return res.json();
+                })
+                .then(function(member) {
+                    document.getElementById('input-name').value           = member.name  || '';
+                    document.getElementById('input-phone').value          = member.tel   || '';
+                    document.getElementById('input-address').value        = member.address       || '';
+                    document.getElementById('input-address-detail').value = member.addressDetail || '';
+                })
+                .catch(function(err) {
+                    console.error('회원 정보 불러오기 실패:', err);
+                    alert('회원 정보를 불러오지 못했습니다. 로그인 상태를 확인해주세요.');
+                    checkbox.checked = false;
+                });
+        }
     });
 }
+
+/* ----------------------------------------------------------------
+   주소 검색 (다음 우편번호 API)
+---------------------------------------------------------------- */
 function initAddressSearch() {
     var btn = document.getElementById('btn-address-search');
-    if (!btn) return;
+    var inputAddr = document.getElementById('input-address');
 
-    btn.addEventListener('click', function() {
+    function execDaum() {
         new daum.Postcode({
             oncomplete: function(data) {
                 var addr = data.roadAddress || data.jibunAddress;
@@ -311,8 +408,12 @@ function initAddressSearch() {
                 document.getElementById('input-address-detail').focus();
             }
         }).open();
-    });
+    }
+
+    if (btn) btn.addEventListener('click', execDaum);
+    if (inputAddr) inputAddr.addEventListener('click', execDaum);
 }
+
 /* ----------------------------------------------------------------
    쿠폰 목록 불러오기
 ---------------------------------------------------------------- */
