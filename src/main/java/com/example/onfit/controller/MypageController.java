@@ -1,8 +1,10 @@
 package com.example.onfit.controller;
 
 import com.example.onfit.entity.Coupon;
+import com.example.onfit.entity.DeliveryAddress;
 import com.example.onfit.entity.Member;
 import com.example.onfit.repository.CouponRepository;
+import com.example.onfit.repository.DeliveryAddressRepository;
 import com.example.onfit.repository.MemberRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MypageController {
 
+    private final DeliveryAddressRepository deliveryAddressRepository;
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
 
@@ -46,6 +49,9 @@ public class MypageController {
         model.addAttribute("progressPct",  progressPct);
         model.addAttribute("orderAmount",  orderAmount);
         model.addAttribute("orderCount",   loginMember.getTotalOrderCount());
+
+        List<DeliveryAddress> addressList = deliveryAddressRepository.findByMemberOrderByIdDesc(loginMember);
+        model.addAttribute("addressList", addressList);
 
         return "MyPage";
     }
@@ -102,24 +108,90 @@ public class MypageController {
     }
 
     /* ── 배송지 수정 API ── */
+    @PostMapping("/api/mypage/address")
+    @ResponseBody
+    public ResponseEntity<?> addAddress(HttpSession session, @RequestBody Map<String, Object> body) {
+        return saveAddressData(session, body, null); // id가 없으므로 신규 추가
+    }
+
+    /* ── 배송지 수정 API (PUT) ── */
     @PutMapping("/api/mypage/address")
     @ResponseBody
-    public ResponseEntity<?> updateAddress(
-            HttpSession session,
-            @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> updateAddress(HttpSession session, @RequestBody Map<String, Object> body) {
+        Long id = Long.valueOf(body.get("id").toString());
+        return saveAddressData(session, body, id); // id가 있으므로 기존 덮어쓰기
+    }
 
+    /* ── 공통 저장/수정 로직 ── */
+    private ResponseEntity<?> saveAddressData(HttpSession session, Map<String, Object> body, Long id) {
         Member loginMember = (Member) session.getAttribute("loginMember");
         if (loginMember == null) return ResponseEntity.status(401).build();
 
-        Optional<Member> opt = memberRepository.findById(loginMember.getId());
-        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+        Member member = memberRepository.findById(loginMember.getId()).orElse(null);
+        if (member == null) return ResponseEntity.notFound().build();
 
-        Member member = opt.get();
-        member.setAddress(body.getOrDefault("address", ""));
-        member.setAddressDetail(body.getOrDefault("addressDetail", ""));
-        memberRepository.save(member);
-        session.setAttribute("loginMember", member);
+        String addressName = (String) body.get("addressName");
+        String address = (String) body.get("address");
+        String addressDetail = (String) body.get("addressDetail");
+        Boolean isDefault = (Boolean) body.get("isDefault");
+
+        // 🌟 "기본 배송지"로 체크했다면?
+        if (isDefault != null && isDefault) {
+            // 1. 기존의 다른 배송지들은 모두 기본 해제(false) 처리
+            List<DeliveryAddress> existingList = deliveryAddressRepository.findByMember(member);
+            for (DeliveryAddress da : existingList) {
+                da.setIsDefault(false);
+            }
+            deliveryAddressRepository.saveAll(existingList);
+
+            // 2. Member 테이블의 대표 주소도 동기화 (결제창에서 바로 불러올 수 있게!)
+            member.setAddress(address);
+            member.setAddressDetail(addressDetail);
+            memberRepository.save(member);
+            session.setAttribute("loginMember", member); // 세션도 최신화
+        }
+
+        // 🌟 새 객체 생성 또는 기존 객체 불러오기
+        DeliveryAddress target;
+        if (id != null) {
+            target = deliveryAddressRepository.findById(id).orElse(new DeliveryAddress());
+        } else {
+            target = new DeliveryAddress();
+            target.setMember(member);
+        }
+
+        // 값 세팅
+        target.setAddressName(addressName);
+        target.setAddress(address);
+        target.setAddressDetail(addressDetail);
+        target.setIsDefault(isDefault != null ? isDefault : false);
+
+        deliveryAddressRepository.save(target);
         return ResponseEntity.ok().build();
+    }
+
+    /* ── 배송지 삭제 API (DELETE) ── */
+    @DeleteMapping("/api/mypage/address/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteAddress(@PathVariable("id") Long id, HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) return ResponseEntity.status(401).build();
+
+        // 선택한 배송지 삭제
+        deliveryAddressRepository.deleteById(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /* ── 배송지 전체 목록 조회 API (결제창에서 사용) ── */
+    @GetMapping("/api/mypage/addresses")
+    @ResponseBody
+    public ResponseEntity<List<DeliveryAddress>> getAddressList(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) return ResponseEntity.status(401).build();
+
+        List<DeliveryAddress> list = deliveryAddressRepository.findByMemberOrderByIdDesc(loginMember);
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/api/mypage/coupons")

@@ -1,6 +1,9 @@
 package com.example.onfit.controller;
 
+import com.example.onfit.entity.Member;
+import com.example.onfit.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class CheckoutController {
+
+    private final CartRepository cartRepository;
 
     // 1. 결제 화면 진입
     @GetMapping("/Checkout")
@@ -21,12 +26,24 @@ public class CheckoutController {
     public String paymentSuccess(@RequestParam String paymentKey,
                                  @RequestParam String orderId,
                                  @RequestParam Long amount,
+                                 @RequestParam(required = false) String mode,
+                                 HttpSession session,
                                  Model model) {
 
         // 🌟 [핵심] 실제 서비스에서는 여기서 paymentKey를 가지고
         // 토스 서버에 한 번 더 '결제 승인(Confirm)' API를 호출해야 완전히 돈이 빠져나갑니다.
         // 현재는 흐름을 완성하기 위해 바로 성공 페이지로 넘깁니다.
 
+        if ("cart".equals(mode)) {
+            Member loginMember = (Member) session.getAttribute("loginMember");
+            if (loginMember != null) {
+
+                cartRepository.deleteByMember(loginMember);
+                System.out.println("장바구니 결제 완료! -> 장바구니를 비웠습니다.");
+            }
+        } else if ("direct".equals(mode)) {
+            System.out.println("바로 구매 결제 완료! -> 장바구니는 그대로 유지됩니다.");
+        }
         // 화면에 결제 정보를 띄워주기 위해 Model에 담음
         model.addAttribute("orderId", orderId);
         model.addAttribute("amount", amount);
