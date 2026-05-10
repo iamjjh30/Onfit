@@ -944,12 +944,7 @@ footer {
 .faq-wrap { display: flex; flex-direction: column; }
 
 /* 헤더 */
-.faq-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 18px 20px 14px;
-    border-bottom: 1px solid #f0f0f0;
-}
-.faq-header-left { display: flex; flex-direction: column; gap: 1px; }
+
 .faq-logo {
     font-size: 0.75rem; font-weight: 800; letter-spacing: 0.14em;
     color: #111; text-transform: uppercase;
@@ -1031,20 +1026,6 @@ footer {
 .best-products-grid,
 .best-card { display: none !important; }
 
-/* 헤더 */
-.bp-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 32px;
-}
-.bp-header-left .section-label { text-align: left; margin-bottom: 8px; }
-.bp-header-left .section-main-title { text-align: left; margin-bottom: 6px; }
-.bp-header-left .section-sub-title { text-align: left; margin: 0; color: #888; font-size: 0.95rem; }
-.bp-header-right {
-    display: flex; flex-direction: column;
-    align-items: flex-end; gap: 10px; flex-shrink: 0;
-}
 .bp-count {
     font-size: 5.5rem; font-weight: 900; line-height: 1;
     letter-spacing: -6px; color: #ebebeb;
