@@ -46,14 +46,11 @@ public class MainController {
                     String o1 = p1.getOutfit() == null ? "" : p1.getOutfit();
                     String o2 = p2.getOutfit() == null ? "" : p2.getOutfit();
 
-                    // TOP / BOTTOM 글자를 빼고 같은 세트인지 확인 (예: NEUTRAL_SET01)
                     boolean sameSet = o1.replaceAll("_(TOP|BOTTOM)$", "").equals(o2.replaceAll("_(TOP|BOTTOM)$", ""));
 
                     if (sameSet) {
-                        // 같은 세트 안에서는 무조건 TOP이 먼저 오도록 역순 정렬 (T가 B보다 뒤에 있으므로)
                         return o2.compareTo(o1);
                     }
-                    // 다른 세트면 SET01 -> SET02 오름차순 정렬
                     return o1.compareTo(o2);
                 })
                 .collect(Collectors.toList());
@@ -68,6 +65,7 @@ public class MainController {
     public String findPage() {
         return "find";
     }
+
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable("id") Long id, Model model) {
         return "itemDetail";
@@ -77,14 +75,17 @@ public class MainController {
     public String orderPage() {
         return "Checkout";
     }
+
     @GetMapping("/order/success")
     public String orderSuccessPage() {
         return "CheckoutSuccess";
     }
+
     @GetMapping("/order/fail")
     public String orderFailPage() {
         return "CheckoutFail";
     }
+
     @GetMapping("/orderInfo/{id}")
     public String orderInfoDetail(@PathVariable("id") Long id, Model model) {
         return "OrderInfoDetail";
@@ -112,11 +113,11 @@ public class MainController {
 
     @GetMapping("/OrderInfoDetail")
     public String orderInfoDetail() {
-        return "OrderInfoDetail"; // templates/OrderInfoDetail.html 반환
+        return "OrderInfoDetail";
     }
+
     @GetMapping("/Cart")
     public String cartPage() {
-        // src/main/resources/templates/Cart.html 파일을 찾아서 화면에 띄워줍니다!
         return "Cart";
     }
 
@@ -124,15 +125,25 @@ public class MainController {
     public String diagnosisResultPage() {
         return "diagnosisResult";
     }
+
     @GetMapping("/Ask")
     public String AskPage() {
         return "Ask";
     }
+
     @GetMapping("/Ask_question")
     public String AskQuestionPage() {
         return "Ask_question";
     }
+
     @GetMapping("/Main2")
-    public String Main2Page() { return "Main"; }
+    public String Main2Page() {
+        return "Main";
+    }
+
+    @GetMapping("/colorTrend")
+    public String colorTrend() {
+        return "ColorTrend";
+    }
 
 }
