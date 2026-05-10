@@ -1237,8 +1237,7 @@
     color: #ff4d4f !important; /* 마우스 올리면 경고 느낌의 붉은색으로! */
 }
 /* ====================================================
-   컬러 트렌드 팝업 (#ct-overlay)
-   — 중복 정의 제거, 전역 단일 선언
+   컬러 트렌드 팝업 (#ct-overlay) — JS 동적 생성
    ==================================================== */
 #ct-overlay {
     display: none;
@@ -1252,7 +1251,7 @@
     justify-content: center;
     padding: 24px;
 }
-#ct-overlay.active {
+#ct-overlay.ct-open {
     display: flex;
 }
 

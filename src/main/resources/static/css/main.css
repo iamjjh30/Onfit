@@ -1601,113 +1601,144 @@ body {
 ===================================================== */
 .seasonal-colors-section {
     margin-top: 80px;
-    height: 150px;
-    border-radius: 20px;
+    height: 180px; /* 높이를 살짝 키워 여유 공간 확보 */
+    border-radius: 24px;
     background: #ffffff;
     border: 1.5px solid #ebebeb;
-    box-shadow: 0 4px 28px rgba(0,0,0,0.06);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
     position: relative;
     overflow: hidden;
-    display: flex;
+    display: grid; /* Grid로 변경하여 공간 분할 최적화 */
+    grid-template-columns: 180px 1.5px 1fr 150px;
     align-items: center;
-    padding: 0 40px;
-    gap: 32px;
+    padding: 0 50px;
+    gap: 0;
 }
+
+/* 배경에 은은한 대형 텍스트를 깔아 공백을 시각적으로 채움 */
 .seasonal-colors-section::before {
+    content: 'COLOR PALETTE';
+    position: absolute;
+    right: -20px;
+    bottom: -10px;
+    font-size: 5rem;
+    font-weight: 900;
+    color: rgba(0,0,0,0.02);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 기존 글로우 효과 유지 및 강화 */
+.seasonal-colors-section::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: var(--season-glow, radial-gradient(ellipse 60% 80% at 30% 50%, rgba(200,200,200,0.18) 0%, transparent 70%));
+    background: var(--season-glow, radial-gradient(circle at 50% 50%, rgba(200,200,200,0.1), transparent));
     pointer-events: none;
-    transition: background 0.8s ease;
+    z-index: 0;
 }
+
 .season-meta {
-    flex-shrink: 0;
-    z-index: 1;
+    z-index: 2;
+    padding-right: 20px;
 }
+
 .season-month-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    color: #bbb;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    color: #ccc;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
+
 .season-month-name {
     font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
+    font-size: 2.8rem;
     font-weight: 900;
     color: #111;
-    letter-spacing: -2px;
-    line-height: 1;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
 }
+
 .season-badge {
     display: inline-block;
-    margin-top: 6px;
-    padding: 3px 10px;
-    border-radius: 50px;
+    margin-top: 8px;
+    padding: 4px 12px;
+    border-radius: 6px; /* 더 모던한 느낌으로 변경 */
     border: 1px solid;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
-    opacity: 0.85;
+    letter-spacing: 0.1em;
+    background: rgba(255,255,255,0.8);
 }
+
 .season-divider {
-    width: 1px;
-    height: 60%;
-    background: rgba(0,0,0,0.08);
-    flex-shrink: 0;
+    width: 1.5px;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.06), transparent);
     z-index: 1;
 }
+
 .season-palette-wrap {
-    flex: 1;
     display: flex;
+    justify-content: center; /* 중앙 집중형 배치 */
     align-items: center;
-    gap: 14px;
-    z-index: 1;
-    overflow: hidden;
+    gap: 24px; /* 칩 간격을 넓혀 공간 점유율 확대 */
+    z-index: 2;
+    padding: 0 30px;
 }
+
 .season-chip-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
+    transition: transform 0.3s ease;
 }
+
+/* 칩 크기를 키우고 테두리 효과 강조 */
 .season-chip {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.4);
-    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    width: 54px;
+    height: 54px;
+    border-radius: 18px; /* 완전 원형보다 정갈한 스쿼클 형태 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1),
+                inset 0 0 0 2px rgba(255,255,255,0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
 }
-.season-chip:hover { transform: scale(1.2) translateY(-3px); }
+
+.season-chip:hover {
+    transform: translateY(-10px) scale(1.15);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
 .season-chip-name {
-    font-size: 0.56rem;
-    color: #aaa;
-    letter-spacing: 0.03em;
-    white-space: nowrap;
-    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #888;
+    letter-spacing: 0.02em;
 }
+
 .season-keyword-wrap {
-    margin-left: auto;
     text-align: right;
-    flex-shrink: 0;
-    z-index: 1;
+    z-index: 2;
+    border-left: 1px solid rgba(0,0,0,0.03);
+    padding-left: 20px;
 }
+
 .season-keyword {
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
-    color: #111;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 2px;
 }
+
 .season-season-text {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    color: #aaa;
-    letter-spacing: 0.06em;
-    margin-top: 4px;
+    color: #999;
+    letter-spacing: 0.08em;
 }
 
 /* =====================================================

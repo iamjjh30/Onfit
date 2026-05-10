@@ -211,7 +211,7 @@
                     <h2>이번 시즌의<br>뉴트럴 트렌드</h2>
                     <p>그레이, 블랙을 중심으로 한 뉴트럴 팔레트.<br>어떤 아이템과도 자연스럽게 어울리는 기본.</p>
                 </div>
-                <div class="trend-single-img" onclick="openColorTrendPopup('neutral')">
+                <div class="trend-single-img" onclick="location.href='/colorTrend?trend=neutral'">
                     <img th:src="@{/img/Main/ss.png}" alt="뉴트럴 트렌드">
                     <div class="trend-single-overlay">
                         <div class="trend-single-chips">
@@ -228,16 +228,41 @@
 
             <!-- 시즌 컬러 -->
             <div class="seasonal-colors-section" id="seasonalColorsSection">
+                <!-- 왼쪽: 시간 및 상태 정보 -->
                 <div class="season-meta">
                     <div class="season-month-label">THIS MONTH</div>
-                    <div class="season-month-name" id="scMonthName"></div>
-                    <span class="season-badge" id="scBadge"></span>
+                    <div class="season-month-name" id="scMonthName">MAY</div>
+                    <span class="season-badge" id="scBadge">SPRING LITE</span>
                 </div>
+
+                <!-- 구분선 -->
                 <div class="season-divider"></div>
-                <div class="season-palette-wrap" id="scPalette"></div>
+
+                <!-- 중앙: 가장 비어 보였던 공간을 풍성한 팔레트로 채움 -->
+                <div class="season-palette-wrap" id="scPalette">
+                    <!-- JS에서 생성될 영역 예시 -->
+                    <div class="season-chip-group">
+                        <div class="season-chip" style="background: #FFD1DC;"></div>
+                        <div class="season-chip-name">Petal</div>
+                    </div>
+                    <div class="season-chip-group">
+                        <div class="season-chip" style="background: #A0E7E5;"></div>
+                        <div class="season-chip-name">Sky</div>
+                    </div>
+                    <div class="season-chip-group">
+                        <div class="season-chip" style="background: #B4F8C8;"></div>
+                        <div class="season-chip-name">Leaf</div>
+                    </div>
+                    <div class="season-chip-group">
+                        <div class="season-chip" style="background: #FBE7C6;"></div>
+                        <div class="season-chip-name">Sand</div>
+                    </div>
+                </div>
+
+                <!-- 오른쪽: 시즌 키워드 -->
                 <div class="season-keyword-wrap">
-                    <div class="season-keyword" id="scKeyword"></div>
-                    <div class="season-season-text" id="scSeasonText"></div>
+                    <div class="season-keyword" id="scKeyword">BLOOMING</div>
+                    <div class="season-season-text" id="scSeasonText">2026 SPRING</div>
                 </div>
             </div>
 
@@ -250,8 +275,8 @@
                     </div>
                     <div class="fitbti-right">
                         <div class="bti-type-pills">
-                            <span class="bti-pill">미니멀리스트</span><span class="bti-pill">스트리터</span>
-                            <span class="bti-pill">클래식맨</span><span class="bti-pill">보헤미안</span>
+                            <span class="bti-pill">INFP</span><span class="bti-pill">ENTP</span>
+                            <span class="bti-pill">ISTJ</span><span class="bti-pill">ESFJ</span>
                         </div>
                         <span class="fitbti-btn">검사하기 →</span>
                     </div>
@@ -398,7 +423,7 @@
                     <h2>이번 시즌의<br>스프링 웜 트렌드</h2>
                     <p>살구, 코랄, 아이보리를 중심으로 한 스프링.<br>따뜻하고 생기 넘치는 봄의 스타일링.</p>
                 </div>
-                <div class="trend-single-img" onclick="openColorTrendPopup('spring_warm')">
+                <div class="trend-single-img" onclick="location.href='/colorTrend?trend=spring_warm'">
                     <img th:src="@{/img/Main/sp_img.jpg}" alt="봄 웜 트렌드">
                     <div class="trend-single-overlay">
                         <div class="trend-single-chips">
@@ -585,7 +610,7 @@
                     <h2>이번 시즌의<br>써머 쿨 트렌드</h2>
                     <p>아쿠아, 아이시 블루, 틸의 써머 쿨.<br>시원하고 선명한 여름의 스타일링.</p>
                 </div>
-                <div class="trend-single-img" onclick="openColorTrendPopup('summer_cool')">
+                <div class="trend-single-img" onclick="location.href='/colorTrend?trend=summer_cool'">
                     <img th:src="@{/img/Main/s_img.jpg}" alt="써머 쿨 트렌드">
                     <div class="trend-single-overlay">
                         <div class="trend-single-chips">
@@ -773,7 +798,7 @@
                     <h2>이번 시즌의<br>어텀 웜 트렌드</h2>
                     <p>번트 오렌지, 러스트의 어텀 웜.<br>깊은 가을의 무게를 담은 스타일.</p>
                 </div>
-                <div class="trend-single-img" onclick="openColorTrendPopup('autumn_warm')">
+                <div class="trend-single-img" onclick="location.href='/colorTrend?trend=autumn_warm'">
                     <img th:src="@{/img/Main/f_img.jpg}" alt="어텀 웜 트렌드">
                     <div class="trend-single-overlay">
                         <div class="trend-single-chips">
@@ -961,7 +986,7 @@
                     <h2>이번 시즌의<br>윈터 쿨 트렌드</h2>
                     <p>미드나잇, 인디고, 아이시 블루.<br>차갑고 선명한 겨울의 윈터 쿨.</p>
                 </div>
-                <div class="trend-single-img" onclick="openColorTrendPopup('winter_cool')">
+                <div class="trend-single-img" onclick="location.href='/colorTrend?trend=winter_cool'">
                     <img th:src="@{/img/Main/w_img.jpg}" alt="윈터 쿨 트렌드">
                     <div class="trend-single-overlay">
                         <div class="trend-single-chips">
@@ -1153,27 +1178,7 @@
 <div id="main-cart-toast"></div>
 
 
-<!-- ══════════════════════════════════════════
-     컬러 트렌드 팝업 — body 최하단 (stacking context 완전 탈출)
-══════════════════════════════════════════ -->
-<div id="ct-overlay" onclick="ctOverlayClick(event)">
-    <div id="ct-box">
-        <button id="ct-close" onclick="ctClose()">✕</button>
-        <div id="ct-img-col">
-            <img id="ct-img" src="" alt="">
-        </div>
-        <div id="ct-info-col">
-            <div id="ct-badge"></div>
-            <h2 id="ct-title"></h2>
-            <p id="ct-desc"></p>
-            <div id="ct-palette"></div>
-            <div id="ct-tags"></div>
-            <div id="ct-keywords"></div>
-            <button id="ct-cta" onclick="location.href='/store'">트렌드 아이템 보러가기 →</button>
-        </div>
-    </div>
-</div>
-
+<!-- 컬러 트렌드 상세: /colorTrend?trend={key} 로 이동 -->
 <script th:src="@{/js/Main.js}"></script>
 </body>
 </html>

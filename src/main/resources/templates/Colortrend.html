@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnFit.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #f7f6f3;
+            --fg: #111;
+            --muted: #888;
+            --border: #e0ddd6;
+        }
+
+        html, body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+        }
+
+        /* ════════════════════════════
+           헤더
+        ════════════════════════════ */
+        .ct-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 52px;
+            height: 64px;
+            background: rgba(247,246,243,0.92);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        /* 왼쪽: 브랜드 + 룩북 */
+        .ct-header-brand {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--fg);
+        }
+        .ct-header-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        .ct-header-divider {
+            width: 1px;
+            height: 14px;
+            background: #ccc;
+            flex-shrink: 0;
+        }
+        .ct-header-sub {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        /* 오른쪽: 돌아가기 */
+        .ct-back {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+            transition: color 0.2s;
+        }
+        .ct-back:hover { color: var(--fg); }
+        .ct-back svg { width: 13px; height: 13px; }
+
+        /* ════════════════════════════
+           탭 바
+        ════════════════════════════ */
+        .ct-tabs {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 0 52px;
+            gap: 4px;
+        }
+        .ct-tabs::-webkit-scrollbar { display: none; }
+        .ct-tab {
+            flex-shrink: 0;
+            padding: 0 22px;
+            height: 48px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--muted);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .ct-tab:hover { color: var(--fg); }
+        .ct-tab.active { color: var(--fg); border-bottom-color: var(--fg); }
+
+        /* ════════════════════════════
+           패널 애니메이션
+        ════════════════════════════ */
+        .ct-panel { display: none; }
+        .ct-panel.active {
+            display: block;
+            animation: fadeUp 0.38s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════
+           히어로 배너 (풀 width)
+        ════════════════════════════ */
+        .ct-banner {
+            position: relative;
+            width: 100%;
+            height: 72vh;
+            min-height: 480px;
+            max-height: 700px;
+            overflow: hidden;
+            background: #111;
+        }
+        .ct-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+            transition: transform 0.8s ease;
+        }
+        .ct-banner:hover img { transform: scale(1.03); }
+
+        /* 배너 위 그라데이션 오버레이 */
+        .ct-banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.08) 0%,
+                rgba(0,0,0,0.0) 40%,
+                rgba(0,0,0,0.55) 100%
+            );
+        }
+
+        /* 배너 하단 텍스트 */
+        .ct-banner-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 48px 52px 44px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .ct-banner-left {}
+        .ct-banner-badge {
+            display: inline-block;
+            padding: 4px 13px;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .ct-banner-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.06;
+            letter-spacing: -1.5px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .ct-banner-desc {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.7;
+            max-width: 480px;
+        }
+        .ct-banner-right {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 14px;
+        }
+        /* 팔레트 스와치 (배너 우하단) */
+        .ct-banner-palette {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .ct-b-swatch {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+            transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            cursor: default;
+        }
+        .ct-b-swatch:hover { transform: scale(1.22); }
+
+        /* ════════════════════════════
+           정보 섹션 (배너 아래)
+        ════════════════════════════ */
+        .ct-info-section {
+            background: #fff;
+            padding: 52px 52px 48px;
+            display: flex;
+            align-items: flex-start;
+            gap: 80px;
+            border-bottom: 1px solid var(--border);
+        }
+        .ct-info-left { flex: 1; }
+        .ct-info-right { flex-shrink: 0; width: 320px; }
+
+        .ct-info-eyebrow {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+        .ct-info-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+        .ct-info-desc {
+            font-size: 0.92rem;
+            color: var(--muted);
+            line-height: 1.9;
+            margin-bottom: 28px;
+            max-width: 480px;
+        }
+        .ct-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 32px;
+        }
+        .ct-tag {
+            padding: 5px 14px;
+            border-radius: 50px;
+            border: 1.5px solid var(--border);
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #555;
+            background: var(--bg);
+        }
+        .ct-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 30px;
+            background: var(--fg);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: background 0.2s, transform 0.18s;
+            text-decoration: none;
+        }
+        .ct-cta-btn:hover { background: #333; transform: translateY(-2px); }
+
+        /* 오른쪽: 스와치 상세 */
+        .ct-palette-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+        .ct-palette-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ct-swatch-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .ct-swatch-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .ct-swatch-info {}
+        .ct-swatch-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--fg);
+        }
+        .ct-swatch-hex {
+            font-size: 0.68rem;
+            color: var(--muted);
+            letter-spacing: 0.06em;
+            font-family: monospace;
+        }
+
+        /* ════════════════════════════
+           키워드 카드
+        ════════════════════════════ */
+        .ct-keywords-section {
+            padding: 52px 52px 48px;
+            background: var(--bg);
+        }
+        .ct-section-eyebrow {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+        .ct-kw-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .ct-kw-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 26px 22px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .ct-kw-card:hover {
+            box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+        }
+        .ct-kw-icon { font-size: 1.7rem; margin-bottom: 12px; }
+        .ct-kw-label { font-size: 0.82rem; font-weight: 700; margin-bottom: 5px; }
+        .ct-kw-sub { font-size: 0.74rem; color: var(--muted); line-height: 1.6; }
+
+        /* ════════════════════════════
+           스토어 배너
+        ════════════════════════════ */
+        .ct-store-banner {
+            margin: 0 52px 60px;
+            border-radius: 20px;
+            background: var(--fg);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 42px 52px;
+            gap: 24px;
+        }
+        .ct-store-banner h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .ct-store-banner p { font-size: 0.84rem; color: rgba(255,255,255,0.6); }
+        .ct-store-btn {
+            flex-shrink: 0;
+            padding: 14px 30px;
+            background: #fff;
+            color: var(--fg);
+            border: none;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.18s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .ct-store-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        /* ════════════════════════════
+           반응형
+        ════════════════════════════ */
+        @media (max-width: 900px) {
+            .ct-header { padding: 0 24px; }
+            .ct-tabs { padding: 0 24px; }
+            .ct-banner { height: 56vw; min-height: 320px; }
+            .ct-banner-caption { padding: 28px 24px 28px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .ct-banner-right { align-items: flex-start; }
+            .ct-info-section { flex-direction: column; gap: 36px; padding: 36px 24px; }
+            .ct-info-right { width: 100%; }
+            .ct-palette-detail { flex-direction: row; flex-wrap: wrap; gap: 10px; }
+            .ct-keywords-section { padding: 36px 24px; }
+            .ct-kw-grid { grid-template-columns: repeat(2, 1fr); }
+            .ct-store-banner { margin: 0 24px 40px; flex-direction: column; padding: 30px 24px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="ct-header">
+    <a href="/" class="ct-header-brand">
+        <span class="ct-header-logo">OnFit</span>
+        <div class="ct-header-divider"></div>
+        <span class="ct-header-sub">Lookbook</span>
+    </a>
+    <a href="javascript:history.back()" class="ct-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        돌아가기
+    </a>
+</header>
+
+<!-- ── 탭 ── -->
+<nav class="ct-tabs" id="ctTabs">
+    <button class="ct-tab active" data-key="neutral">🌫️ 뉴트럴</button>
+    <button class="ct-tab" data-key="spring_warm">🌸 스프링 웜</button>
+    <button class="ct-tab" data-key="summer_cool">🌊 써머 쿨</button>
+    <button class="ct-tab" data-key="autumn_warm">🍂 어텀 웜</button>
+    <button class="ct-tab" data-key="winter_cool">❄️ 윈터 쿨</button>
+</nav>
+
+<!-- ── 패널 마운트 포인트 ── -->
+<main id="ctMain"></main>
+
+<script>
+    var CT_DATA = {
+        neutral: {
+            badge: '2026 S/S · NEUTRAL',
+            badgeColor: '#444',
+            badgeBg: 'rgba(255,255,255,0.18)',
+            title: '뉴트럴 트렌드',
+            desc: '그레이, 블랙, 크림을 중심으로 한 무채색 팔레트입니다.\n어떤 아이템과도 자연스럽게 어울리는 기본 컬러 타입.',
+            colors: ['#212121','#616161','#9e9e9e','#e0e0e0','#f5f0e8'],
+            colorNames: ['Noir','Charcoal','Gray','Silver','Cream'],
+            tags: ['#미니멀룩','#모노톤','#베이직','#무채색'],
+            img: '/img/Main/ss.png',
+            keywords: [
+                { icon: '🖤', label: 'Monochrome', sub: '단색 레이어드로 깊이감 연출' },
+                { icon: '🧥', label: 'Oversized', sub: '여유있는 실루엣으로 모던한 느낌' },
+                { icon: '✨', label: 'Texture Mix', sub: '소재 믹스로 단조로움 탈출' },
+                { icon: '💼', label: 'Minimal Acc', sub: '심플한 액세서리로 포인트' },
+            ]
+        },
+        spring_warm: {
+            badge: '2026 S/S · SPRING WARM',
+            badgeColor: '#b84d00',
+            badgeBg: 'rgba(255,243,236,0.22)',
+            title: '스프링 웜 트렌드',
+            desc: '살구, 코랄, 피치를 중심으로 한 따뜻하고 화사한 봄 팔레트.\n밝고 생동감 넘치는 컬러로 봄 스타일링을 완성하세요.',
+            colors: ['#ff8a65','#ffab91','#ffe0b2','#f8bbd0','#fff8e1'],
+            colorNames: ['Coral','Peach','Apricot','Blush','Ivory'],
+            tags: ['#스프링웜','#코랄룩','#봄코디','#웜톤'],
+            img: '/img/Main/sp_img.jpg',
+            keywords: [
+                { icon: '🌸', label: 'Floral Touch', sub: '플로럴 패턴으로 봄 분위기' },
+                { icon: '🍑', label: 'Peach Tone', sub: '피치&코랄 계열 메인 컬러' },
+                { icon: '👗', label: 'Light Layer', sub: '가벼운 레이어드로 봄 캐주얼' },
+                { icon: '☀️', label: 'Bright Pop', sub: '밝은 포인트 컬러 믹스매치' },
+            ]
+        },
+        summer_cool: {
+            badge: '2026 S/S · SUMMER COOL',
+            badgeColor: '#006d82',
+            badgeBg: 'rgba(224,247,250,0.2)',
+            title: '써머 쿨 트렌드',
+            desc: '아쿠아, 틸, 스카이블루를 중심으로 한 청량한 여름 팔레트.\n시원하고 선명한 컬러로 여름을 더 시원하게.',
+            colors: ['#00bcd4','#0097a7','#80deea','#b2ebf2','#e0f7fa'],
+            colorNames: ['Aqua','Teal','Sky','Mist','Ice'],
+            tags: ['#써머쿨','#아쿠아룩','#쿨톤코디','#블루계열'],
+            img: '/img/Main/s_img.jpg',
+            keywords: [
+                { icon: '🌊', label: 'Ocean Blue', sub: '딥 아쿠아&틸로 리조트 무드' },
+                { icon: '🧊', label: 'Ice Tone', sub: '아이시한 파스텔로 쿨한 여름' },
+                { icon: '👙', label: 'Linen Fit', sub: '린넨 소재로 시원한 착용감' },
+                { icon: '🕶️', label: 'Minimal Acc', sub: '실버 액세서리로 쿨톤 강조' },
+            ]
+        },
+        autumn_warm: {
+            badge: '2026 F/W · AUTUMN WARM',
+            badgeColor: '#7d2000',
+            badgeBg: 'rgba(255,240,232,0.2)',
+            title: '어텀 웜 트렌드',
+            desc: '러스트, 번트 오렌지, 앰버를 중심으로 한 가을의 온기 팔레트.\n대지의 따뜻함을 담은 깊이 있는 레이어드.',
+            colors: ['#bf360c','#e64a19','#ff8f00','#a1887f','#fff3e0'],
+            colorNames: ['Rust','Burnt','Amber','Taupe','Cream'],
+            tags: ['#어텀웜','#테라코타','#가을코디','#어스톤'],
+            img: '/img/Main/f_img.jpg',
+            keywords: [
+                { icon: '🍂', label: 'Earth Tone', sub: '테라코타&러스트 어스 팔레트' },
+                { icon: '🧣', label: 'Heavy Layer', sub: '니트&우븐 소재 레이어드' },
+                { icon: '🤎', label: 'Brown Base', sub: '브라운 계열 베이스 스타일링' },
+                { icon: '🪵', label: 'Natural Acc', sub: '나무&가죽 소재 액세서리' },
+            ]
+        },
+        winter_cool: {
+            badge: '2026 F/W · WINTER COOL',
+            badgeColor: '#1a237e',
+            badgeBg: 'rgba(238,240,255,0.2)',
+            title: '윈터 쿨 트렌드',
+            desc: '인디고, 딥블루, 바이올렛을 중심으로 한 선명한 겨울 팔레트.\n강렬하고 드라마틱한 윈터 쿨 무드.',
+            colors: ['#3f51b5','#1a237e','#7c4dff','#b0bec5','#eceff1'],
+            colorNames: ['Indigo','Deep Blue','Violet','Steel','White'],
+            tags: ['#윈터쿨','#인디고룩','#겨울코디','#쿨톤'],
+            img: '/img/Main/w_img.jpg',
+            keywords: [
+                { icon: '❄️', label: 'Icy Contrast', sub: '화이트&블루 선명한 대비' },
+                { icon: '💙', label: 'Deep Blue', sub: '딥 인디고&네이비 기본 톤' },
+                { icon: '🧤', label: 'Wool Layer', sub: '울 소재 풍성한 레이어드' },
+                { icon: '💎', label: 'Silver Acc', sub: '실버&크롬 쿨한 메탈릭 포인트' },
+            ]
+        }
+    };
+
+    function renderPanel(key) {
+        var d = CT_DATA[key];
+        if (!d) return '';
+
+        // 배너 스와치
+        var bannerSwatches = d.colors.slice(0, 5).map(function(c) {
+            var b = ['#e0e0e0','#f5f0e8','#fff8e1','#ffe0b2','#b2ebf2','#e0f7fa','#eceff1','#fff3e0'].indexOf(c) >= 0
+                ? 'border:2px solid rgba(255,255,255,0.5);' : '';
+            return '<div class="ct-b-swatch" style="background:' + c + ';' + b + '"></div>';
+        }).join('');
+
+        // 상세 팔레트
+        var paletteDetail = d.colors.map(function(c, i) {
+            var b = ['#e0e0e0','#f5f0e8','#fff8e1','#ffe0b2','#b2ebf2','#e0f7fa','#eceff1','#fff3e0'].indexOf(c) >= 0
+                ? 'border:1px solid #ddd;' : '';
+            return '<div class="ct-swatch-row">' +
+                '<div class="ct-swatch-circle" style="background:' + c + ';' + b + '"></div>' +
+                '<div class="ct-swatch-info">' +
+                    '<div class="ct-swatch-name">' + d.colorNames[i] + '</div>' +
+                    '<div class="ct-swatch-hex">' + c.toUpperCase() + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        var tags = d.tags.map(function(t) {
+            return '<span class="ct-tag">' + t + '</span>';
+        }).join('');
+
+        var kwCards = d.keywords.map(function(k) {
+            return '<div class="ct-kw-card">' +
+                '<div class="ct-kw-icon">' + k.icon + '</div>' +
+                '<div class="ct-kw-label">' + k.label + '</div>' +
+                '<div class="ct-kw-sub">' + k.sub + '</div>' +
+            '</div>';
+        }).join('');
+
+        var descHtml = d.desc.replace(/\n/g, '<br>');
+
+        return '<div class="ct-panel active" data-key="' + key + '">' +
+
+            /* ── 풀 width 배너 ── */
+            '<div class="ct-banner">' +
+                '<img src="' + d.img + '" alt="' + d.title + '">' +
+                '<div class="ct-banner-overlay"></div>' +
+                '<div class="ct-banner-caption">' +
+                    '<div class="ct-banner-left">' +
+                        '<div class="ct-banner-badge" style="color:#fff;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);">' + d.badge + '</div>' +
+                        '<div class="ct-banner-title">' + d.title + '</div>' +
+                        '<div class="ct-banner-desc">' + descHtml + '</div>' +
+                    '</div>' +
+                    '<div class="ct-banner-right">' +
+                        '<div class="ct-banner-palette">' + bannerSwatches + '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ── 정보 섹션 ── */
+            '<div class="ct-info-section">' +
+                '<div class="ct-info-left">' +
+                    '<div class="ct-info-eyebrow">2026 시즌 트렌드</div>' +
+                    '<h2 class="ct-info-title">' + d.title + '</h2>' +
+                    '<p class="ct-info-desc">' + descHtml + '</p>' +
+                    '<div class="ct-tag-row">' + tags + '</div>' +
+                    '<a href="/store" class="ct-cta-btn">트렌드 아이템 보러가기 →</a>' +
+                '</div>' +
+                '<div class="ct-info-right">' +
+                    '<div class="ct-palette-label">시즌 컬러 팔레트</div>' +
+                    '<div class="ct-palette-detail">' + paletteDetail + '</div>' +
+                '</div>' +
+            '</div>' +
+
+            /* ── 키워드 ── */
+            '<div class="ct-keywords-section">' +
+                '<div class="ct-section-eyebrow">스타일 키워드</div>' +
+                '<div class="ct-kw-grid">' + kwCards + '</div>' +
+            '</div>' +
+
+            /* ── 스토어 배너 ── */
+            '<div class="ct-store-banner">' +
+                '<div>' +
+                    '<h3>' + d.title + ' 아이템 모아보기</h3>' +
+                    '<p>나의 퍼스널 컬러에 맞는 아이템을 스토어에서 찾아보세요.</p>' +
+                '</div>' +
+                '<a href="/store" class="ct-store-btn">스토어 바로가기</a>' +
+            '</div>' +
+
+        '</div>';
+    }
+
+    function showTab(key) {
+        document.querySelectorAll('.ct-tab').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.key === key);
+        });
+        document.getElementById('ctMain').innerHTML = renderPanel(key);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('ctTabs').addEventListener('click', function(e) {
+        var btn = e.target.closest('.ct-tab');
+        if (btn) showTab(btn.dataset.key);
+    });
+
+    var params = new URLSearchParams(location.search);
+    var initKey = params.get('trend');
+    if (!CT_DATA[initKey]) initKey = 'neutral';
+    showTab(initKey);
+</script>
+</body>
+</html>
