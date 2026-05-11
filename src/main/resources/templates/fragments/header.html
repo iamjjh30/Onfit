@@ -20,12 +20,10 @@
             height: auto !important;
             border-radius: 10px !important;
 
-            /* [수정] 배경을 더 투명하게(0.72 -> 0.4) 변경하여 흰색 겹침 현상 해결 */
             background: rgba(255, 255, 255, 0.4) !important;
             backdrop-filter: blur(8px) saturate(180%) !important;
             -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
 
-            /* [수정] 테두리를 더 은은하게 조정 */
             border: 1px solid rgba(255, 255, 255, 0.25) !important;
 
             box-shadow:
@@ -44,7 +42,6 @@
         #header.search-open, #header.icon-open {
             overflow: hidden !important;
             border-radius: 20px 20px 16px 16px !important;
-            /* 패널이 열렸을 때는 가독성을 위해 배경을 조금 더 채움 */
             background: rgba(255, 255, 255, 0.92) !important;
             border-color: rgba(220, 220, 220, 0.5) !important;
             box-shadow:
@@ -125,6 +122,15 @@
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         #header-bar > nav ul li a:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* ── Active Nav (현재 페이지) ── */
+        #header-bar > nav ul li a.nav-active {
+            color: rgba(0, 0, 0, 0.95);
+            font-weight: 600;
+        }
+        #header-bar > nav ul li a.nav-active::after {
             transform: scaleX(1);
         }
 
@@ -506,7 +512,7 @@
 
         /* Scrolled */
         #header.scrolled {
-            background: rgba(255,255,255,0.7) !important; /* 스크롤 시에도 투명도 유지 */
+            background: rgba(255,255,255,0.7) !important;
             box-shadow:
                 0 2px 0 0 rgba(255,255,255,0.5) inset,
                 0 12px 40px -6px rgba(0,0,0,0.08),
@@ -684,10 +690,20 @@
             const header = document.getElementById('header');
             const mask = document.getElementById('header-mask');
 
-            // 스크롤 이벤트
+            // ── 스크롤 이벤트 ──
             window.addEventListener('scroll', () => {
-                if(header) header.classList.toggle('scrolled', window.scrollY > 20);
+                if (header) header.classList.toggle('scrolled', window.scrollY > 20);
             }, { passive: true });
+
+            // ── 현재 페이지 Nav Active 처리 ──
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('#header-bar > nav ul li a').forEach(link => {
+                const linkPath = new URL(link.href, location.origin).pathname;
+                // 루트(/)는 제외하고, 현재 경로가 링크 경로로 시작하면 active
+                if (linkPath !== '/' && currentPath.startsWith(linkPath)) {
+                    link.classList.add('nav-active');
+                }
+            });
 
             const triggerBox = document.getElementById('header-search-box');
             const cancelBtn = document.getElementById('sp-cancel');
@@ -700,20 +716,20 @@
             // 검색창 열기/닫기
             function openSearch() {
                 closeIconPanel();
-                if(header) header.classList.add('search-open');
-                if(mask) mask.classList.add('active');
-                setTimeout(() => { if(spInput) spInput.focus(); }, 420);
+                if (header) header.classList.add('search-open');
+                if (mask) mask.classList.add('active');
+                setTimeout(() => { if (spInput) spInput.focus(); }, 420);
             }
             function closeSearch() {
-                if(header) header.classList.remove('search-open');
-                if(mask) mask.classList.remove('active');
-                if(spInput) spInput.value = '';
-                if(initialContent) initialContent.style.display = 'block';
-                if(resultsContent) resultsContent.style.display = 'none';
+                if (header) header.classList.remove('search-open');
+                if (mask) mask.classList.remove('active');
+                if (spInput) spInput.value = '';
+                if (initialContent) initialContent.style.display = 'block';
+                if (resultsContent) resultsContent.style.display = 'none';
             }
 
-            if(triggerBox) triggerBox.onclick = openSearch;
-            if(cancelBtn) cancelBtn.onclick = closeSearch;
+            if (triggerBox) triggerBox.onclick = openSearch;
+            if (cancelBtn) cancelBtn.onclick = closeSearch;
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSearch(); closeIconPanel(); } });
 
             // Popular Keywords 태그 클릭 시 검색 실행
@@ -741,9 +757,7 @@
                 closeSearch();
                 if (currentPanel === panelKey) { closeIconPanel(); return; }
 
-                // 오른쪽 패널
                 document.querySelectorAll('.icon-panel-content').forEach(el => el.classList.remove('active'));
-                // 왼쪽 패널
                 document.querySelectorAll('.left-panel').forEach(el => el.classList.remove('active'));
 
                 let contentId, leftId;
@@ -786,15 +800,15 @@
             if (iconPanelClose) iconPanelClose.onclick = closeIconPanel;
             if (mask) mask.onclick = () => { closeSearch(); closeIconPanel(); };
 
-            // 라이브 검색 로직
-            if(spInput) {
+            // ── 라이브 검색 로직 ──
+            if (spInput) {
                 spInput.oninput = function () {
                     const keyword = this.value.trim();
                     if (keyword.length > 0) {
                         fetch(`/api/search/live?keyword=${encodeURIComponent(keyword)}&limit=8`)
                             .then(res => res.json())
                             .then(data => {
-                                if(menuContainer) menuContainer.innerHTML = '';
+                                if (menuContainer) menuContainer.innerHTML = '';
                                 if (data.menus && data.menus.length > 0) {
                                     data.menus.forEach((menu, idx) => {
                                         const btn = document.createElement('button');
@@ -803,9 +817,9 @@
                                         btn.onclick = () => location.href = menu.url;
                                         menuContainer.appendChild(btn);
                                     });
-                                } else if(menuContainer) { menuContainer.innerHTML = '<p style="font-size:12px;color:#ccc;">결과 없음</p>'; }
+                                } else if (menuContainer) { menuContainer.innerHTML = '<p style="font-size:12px;color:#ccc;">결과 없음</p>'; }
 
-                                if(productGrid) productGrid.innerHTML = '';
+                                if (productGrid) productGrid.innerHTML = '';
                                 if (data.products && data.products.length > 0) {
                                     data.products.forEach(p => {
                                         productGrid.insertAdjacentHTML('beforeend', `
@@ -817,15 +831,15 @@
                                                 </div>
                                             </div>`);
                                     });
-                                } else if(productGrid) { productGrid.innerHTML = '<p style="font-size:12px;color:#ccc;">상품 없음</p>'; }
+                                } else if (productGrid) { productGrid.innerHTML = '<p style="font-size:12px;color:#ccc;">상품 없음</p>'; }
 
-                                if(initialContent) initialContent.style.display = 'none';
-                                if(resultsContent) resultsContent.style.display = 'block';
+                                if (initialContent) initialContent.style.display = 'none';
+                                if (resultsContent) resultsContent.style.display = 'block';
                             })
                             .catch(err => console.error("Search API Error:", err));
                     } else {
-                        if(initialContent) initialContent.style.display = 'block';
-                        if(resultsContent) resultsContent.style.display = 'none';
+                        if (initialContent) initialContent.style.display = 'block';
+                        if (resultsContent) resultsContent.style.display = 'none';
                     }
                 };
             }
