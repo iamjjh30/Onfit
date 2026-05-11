@@ -162,21 +162,33 @@
                     <p style="text-align:center; padding:50px 0; color:var(--text-muted); font-size: 14px;">등록된 배송지가 없습니다.</p>
                 </div>
 
-                <div th:each="addr : ${addressList}" class="mp-address-card" style="margin-bottom: 16px; padding: 20px; border: 1px solid var(--border); border-radius: 10px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-weight: 700; font-size: 15px;" th:text="${addr.addressName}">집</span>
-                            <div th:if="${addr.isDefault}" class="mp-address-badge" style="background: var(--accent); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">기본 배송지</div>
+                <div th:each="addr : ${addressList}" class="mp-address-item">
+                    <div class="mp-address-item-header">
+                        <div class="mp-address-item-left">
+                            <span class="mp-address-label-tag" th:text="${addr.addressName}">집</span>
+                            <span class="mp-address-default-tag"
+                                  th:if="${addr.isDefault}">기본 배송지</span>
                         </div>
-                        <div style="display: flex; gap: 6px;">
-                            <button type="button" class="mp-btn-outline btn-edit-item" th:data-id="${addr.id}" th:data-name="${addr.addressName}" th:data-addr="${addr.address}" th:data-detail="${addr.addressDetail}" th:data-default="${addr.isDefault}" style="padding: 4px 10px; font-size: 12px;">수정</button>
-                            <button type="button" class="mp-btn-danger btn-delete-item" th:data-id="${addr.id}" style="padding: 4px 10px; font-size: 12px;">삭제</button>
+                        <div class="mp-address-item-actions">
+                            <button type="button"
+                                    class="mp-address-item-btn btn-edit-item"
+                                    th:data-id="${addr.id}"
+                                    th:data-name="${addr.addressName}"
+                                    th:data-addr="${addr.address}"
+                                    th:data-detail="${addr.addressDetail}"
+                                    th:data-default="${addr.isDefault}">
+                                수정
+                            </button>
+                            <button type="button"
+                                    class="mp-address-item-btn danger btn-delete-item"
+                                    th:data-id="${addr.id}">
+                                삭제
+                            </button>
                         </div>
                     </div>
-                    <div class="mp-address-info">
-                        <p class="mp-address-main" th:text="${addr.address}">도로명 주소</p>
-                        <p class="mp-address-detail" th:text="${addr.addressDetail}">상세 주소</p>
-                    </div>
+                    <p class="mp-address-text-main" th:text="${addr.address}">도로명 주소</p>
+                    <p class="mp-address-text-detail" th:text="${addr.addressDetail}">상세 주소</p>
+                </div>
                 </div>
             </div>
 

@@ -4,7 +4,7 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const AI_SERVER_URL = "https://leesa-pseudosquamate-peristaltically.ngrok-free.dev";
+    const AI_SERVER_URL = "http://127.0.0.1:5000";
 
     // ✅ URL 파라미터 확인용 로그
     const urlParams = new URLSearchParams(window.location.search);
@@ -66,7 +66,29 @@ document.addEventListener('DOMContentLoaded', async function () {
         // 전신 사진 + 상의 또는 하의 중 하나라도 있으면 활성화
         tryOnBtn.disabled = !(bodyFile && (topFile || bottomFile));
     }
+    // ==============================================================
+    // 🌟 퍼스널 컬러 진단 버튼 상태 업데이트 (새로 추가됨!)
+    // ==============================================================
+    function updateDiagnoseBtn() {
+        const diagnoseBtn = document.getElementById('diagnose-btn');
+        if (!diagnoseBtn) return;
+        // 얼굴 사진이 없으면 버튼 비활성화
+        diagnoseBtn.disabled = !faceFile;
+    }
 
+    // 사진 업로드 설정 (사진이 들어오면 버튼 상태 검사 함수 실행)
+    setupPreview('face-input', 'face-preview', 'face-placeholder', (f) => {
+        faceFile = f;
+        updateDiagnoseBtn(); // 🌟 사진 업로드 시 진단 버튼 활성화!
+    });
+    setupPreview('body-input', 'body-preview', 'body-placeholder', (f) => {
+        bodyFile = f;
+        updateTryOnBtn();
+    });
+
+    // 🌟 페이지 로드 직후 초기 버튼 상태 셋팅 (둘 다 비활성화로 시작)
+    updateDiagnoseBtn();
+    updateTryOnBtn();
     // ==============================================================
     // [A] 퍼스널 컬러 진단 로직
     // ==============================================================
@@ -79,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             diagnoseBtn.disabled = true;
-            document.getElementById('diagnosis-loading').style.display = 'block';
+            document.getElementById('diagnosis-loading').style.display = 'flex';
             document.getElementById('initial-message').style.display = 'none';
             document.getElementById('diagnosis-result').style.display = 'none';
 
@@ -135,13 +157,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         let toneColor = "#111";
         const toneName = data.tone;
 
-        if (toneName.includes('봄') || toneName.includes('Spring')) {
+        if (toneName.includes('봄') || toneName.includes('스프링') || toneName.includes('Spring')) {
             toneColor = "#ef6c00";
-        } else if (toneName.includes('여름') || toneName.includes('Summer')) {
+        } else if (toneName.includes('여름') || toneName.includes('써머') || toneName.includes('Summer')) {
             toneColor = "#00acc1";
-        } else if (toneName.includes('가을') || toneName.includes('Autumn')) {
+        } else if (toneName.includes('가을') || toneName.includes('어텀') || toneName.includes('Autumn')) {
             toneColor = "#8d6e63";
-        } else if (toneName.includes('겨울') || toneName.includes('Winter')) {
+        } else if (toneName.includes('겨울') || toneName.includes('Winter') || toneName.includes('Winter')) {
             toneColor = "#311b92";
         }
 
@@ -280,12 +302,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     // ==============================================================
     const tryOnBtn = document.getElementById('try-on-btn');
     if (tryOnBtn) {
-        tryOnBtn.addEventListener('click', async () => {
+        // 🌟 1. 괄호 안에 'e' (이벤트 객체)를 넣어줍니다.
+        tryOnBtn.addEventListener('click', async (e) => {
+            // 🌟 2. 브라우저가 멋대로 새로고침하는 것을 차단합니다!
+            e.preventDefault();
+
             if (!bodyFile) {
                 alert("전신 사진이 필요합니다."); return;
-            }
-            if (!topFile && !bottomFile) {
-                alert("상의 또는 하의 상품을 선택해주세요."); return;
             }
 
             tryOnBtn.disabled = true;
