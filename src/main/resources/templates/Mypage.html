@@ -11,7 +11,7 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div id="wrap">
+<div id="mypage-wrap">
 
     <!-- ── 히어로 ── -->
     <section class="mp-hero">
@@ -101,10 +101,10 @@
                     <div class="mp-field">
                         <label class="mp-label">퍼스널 컬러</label>
                         <input type="text" class="mp-input mp-input-disabled"
-                               th:value="${session.loginMember.personalColor == 'SPRING_WARM' ? '봄 웜톤' :
-                                          (session.loginMember.personalColor == 'SUMMER_COOL' ? '여름 쿨톤' :
-                                          (session.loginMember.personalColor == 'AUTUMN_WARM' ? '가을 웜톤' :
-                                          (session.loginMember.personalColor == 'WINTER_COOL' ? '겨울 쿨톤' : '미진단')))}"
+                               th:value="${session.loginMember.personalColor == 'SPRING_WARM' ? '스프링 웜' :
+                                          (session.loginMember.personalColor == 'SUMMER_COOL' ? '써머 쿨' :
+                                          (session.loginMember.personalColor == 'AUTUMN_WARM' ? '어텀 웜' :
+                                          (session.loginMember.personalColor == 'WINTER_COOL' ? '윈터 쿨' : '미진단')))}"
                                disabled>
                     </div>
                 </div>
@@ -227,80 +227,95 @@
                     <button type="button" id="btn-cancel-address" class="mp-btn-ghost">취소</button>
                 </div>
             </div>
-        </div>
     </section>
 
-    <!-- 3. 보유 쿠폰 -->
-    <section class="mp-section" id="tab-coupon">
-        <div class="section-card">
-            <div class="section-header">
-                <span class="section-eyebrow">COUPON</span>
-                <h2 class="section-title">보유 쿠폰</h2>
-                <p class="section-sub">사용 가능한 쿠폰 <strong th:text="${couponCount}">0</strong>장</p>
+<!-- 3. 보유 쿠폰 -->
+<section class="mp-section" id="tab-coupon">
+    <div class="section-card">
+        <div class="section-header">
+            <span class="section-eyebrow">COUPON</span>
+            <h2 class="section-title">보유 쿠폰</h2>
+            <p class="section-sub">사용 가능한 쿠폰 <strong th:text="${couponCount}">0</strong>장</p>
+        </div>
+
+        <div class="mp-coupon-list">
+            <div th:if="${#lists.isEmpty(coupons)}">
+                <p style="text-align:center; padding:60px 0; color:#aaa; font-size:0.9rem;">보유한 쿠폰이 없습니다.</p>
             </div>
 
-            <!-- 미사용 쿠폰 -->
-            <div class="mp-coupon-list">
-                <div th:if="${#lists.isEmpty(coupons)}">
-                    <p style="text-align:center; padding:60px 0; color:#aaa; font-size:0.9rem;">보유한 쿠폰이 없습니다.</p>
-                </div>
-                <div class="mp-coupon-card" th:each="coupon : ${coupons}"
-                     th:classappend="${coupon.isUsed ? ' used' : ''}">
-                    <div class="mp-coupon-left">
-                        <p class="mp-coupon-discount"
-                           th:text="${coupon.discountAmount != null ? #numbers.formatInteger(coupon.discountAmount, 3, 'COMMA') + '원' : coupon.discountRate + '%'}">
-                            할인
-                        </p>
-                        <p class="mp-coupon-name" th:text="${coupon.name}">쿠폰명</p>
-                        <p class="mp-coupon-condition"
-                           th:text="${coupon.minOrderAmount > 0 ? #numbers.formatInteger(coupon.minOrderAmount, 3, 'COMMA') + '원 이상 구매 시' : '금액 제한 없음'}">
-                            조건
-                        </p>
+            <!-- 🌟 배송지 아이템과 동일한 구조 -->
+            <div class="mp-coupon-item" th:each="coupon : ${coupons}"
+                 th:classappend="${coupon.isUsed ? ' used' : ''}">
+                <div class="mp-coupon-item-left">
+                    <!-- 할인 비주얼 박스 -->
+                    <div class="mp-coupon-visual"
+                         th:text="${coupon.discountAmount != null ?
+                                   #numbers.formatInteger(coupon.discountAmount, 3, 'COMMA') + '원' :
+                                   coupon.discountRate + '%'}">
                     </div>
-                    <div class="mp-coupon-right">
-                        <span class="mp-coupon-status"
-                              th:text="${coupon.isUsed ? '사용완료' : '사용가능'}"
-                              th:classappend="${coupon.isUsed ? ' status-used' : ' status-active'}">
-                        </span>
-                        <p class="mp-coupon-expire"
-                           th:text="'~ ' + ${#temporals.format(coupon.expiredAt, 'yyyy.MM.dd')}">
-                            만료일
-                        </p>
-                        <p class="mp-coupon-code" th:text="${coupon.code}">CODE</p>
+                    <!-- 쿠폰 정보 -->
+                    <div class="mp-coupon-info-text">
+                        <span class="mp-coupon-name-main" th:text="${coupon.name}">쿠폰명</span>
+                        <div class="mp-coupon-meta">
+                            <span th:text="${coupon.minOrderAmount > 0 ?
+                                           #numbers.formatInteger(coupon.minOrderAmount, 3, 'COMMA') + '원 이상 구매 시' :
+                                           '금액 제한 없음'}">조건</span>
+                            <span th:text="'~ ' + ${#temporals.format(coupon.expiredAt, 'yyyy.MM.dd')}">만료일</span>
+                        </div>
                     </div>
-                    <div class="mp-coupon-hole-left"></div>
-                    <div class="mp-coupon-hole-right"></div>
+                </div>
+                <!-- 상태 뱃지 -->
+                <div class="mp-address-item-actions">
+                    <span class="mp-address-default-tag"
+                          th:if="${!coupon.isUsed}"
+                          style="background:#e8f5e9; color:#27ae60;">사용가능</span>
+                    <span class="mp-address-default-tag"
+                          th:if="${coupon.isUsed}"
+                          style="background:#f0f0f0; color:#aaa;">사용완료</span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- 4. 회원 탈퇴 -->
-    <section class="mp-section" id="tab-withdraw">
-        <div class="section-card">
-            <div class="section-header">
-                <span class="section-eyebrow">WITHDRAW</span>
-                <h2 class="section-title">회원 탈퇴</h2>
-            </div>
-
-            <div class="mp-withdraw-warn">
-                <p class="mp-warn-title">⚠️ 탈퇴 전 꼭 확인해주세요</p>
-                <ul class="mp-warn-list">
-                    <li>탈퇴 시 모든 주문 내역, 쿠폰, 스타일 DNA 데이터가 삭제됩니다.</li>
-                    <li>삭제된 데이터는 복구가 불가능합니다.</li>
-                    <li>보유 쿠폰은 자동으로 소멸되며 환급되지 않습니다.</li>
-                    <li>탈퇴 후 동일 아이디로 재가입이 불가합니다.</li>
-                </ul>
-            </div>
-
-            <div class="mp-field" style="max-width:400px; margin-bottom:20px;">
-                <label class="mp-label">비밀번호 확인</label>
-                <input type="password" id="input-withdraw-pw" class="mp-input" placeholder="비밀번호를 입력해주세요">
-            </div>
-            <p class="mp-pw-msg" id="withdraw-msg"></p>
-            <button type="button" id="btn-withdraw" class="mp-btn-danger">회원 탈퇴</button>
+<!-- 4. 회원 탈퇴 -->
+<section class="mp-section" id="tab-withdraw">
+    <div class="section-card">
+        <div class="section-header">
+            <span class="section-eyebrow">WITHDRAW</span>
+            <h2 class="section-title">회원 탈퇴</h2>
         </div>
-    </section>
+
+        <!-- 🌟 배송지 아이템과 동일한 카드 스타일 -->
+        <div class="mp-address-item" style="margin-bottom: 24px; border-color: #ffd0cc;">
+            <div class="mp-address-item-header" style="margin-bottom: 16px;">
+                <div class="mp-address-item-left">
+                    <span class="mp-address-label-tag" style="color: var(--danger);">⚠️ 탈퇴 전 꼭 확인해주세요</span>
+                </div>
+            </div>
+            <ul class="mp-warn-list">
+                <li>탈퇴 시 모든 주문 내역, 쿠폰, 스타일 DNA 데이터가 삭제됩니다.</li>
+                <li>삭제된 데이터는 복구가 불가능합니다.</li>
+                <li>보유 쿠폰은 자동으로 소멸되며 환급되지 않습니다.</li>
+                <li>탈퇴 후 동일 아이디로 재가입이 불가합니다.</li>
+            </ul>
+        </div>
+
+        <div class="mp-address-item" style="margin-bottom: 24px;">
+            <div class="mp-address-item-header" style="margin-bottom: 12px;">
+                <span class="mp-address-label-tag">비밀번호 확인</span>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <input type="password" id="input-withdraw-pw" class="mp-input"
+                       placeholder="비밀번호를 입력해주세요"
+                       style="max-width:400px;">
+                <button type="button" id="btn-withdraw" class="mp-btn-danger"
+                        style="flex-shrink:0;">회원 탈퇴</button>
+            </div>
+            <p class="mp-pw-msg" id="withdraw-msg" style="margin-top:8px;"></p>
+        </div>
+    </div>
+</section>
 
 </div><!-- /#wrap -->
 

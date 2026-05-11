@@ -3,6 +3,32 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
+    const avatarInput = document.getElementById('avatarFileInput');
+    const profileImg = document.getElementById('profileImg');
+
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 🌟 서버로 프로필 이미지 전송 (이미지 저장 API 필요)
+            const formData = new FormData();
+            formData.append('profileImage', file);
+
+            fetch('/api/mypage/profile-image', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        profileImg.src = data.newImageUrl; // 이미지 즉시 교체
+                        alert('프로필 이미지가 변경되었습니다.');
+                    }
+                })
+                .catch(err => console.error('업로드 실패:', err));
+        });
+    }
 
     /* ── 1. 탭 전환 ── */
     document.querySelectorAll('.mp-tab').forEach(function (tab) {

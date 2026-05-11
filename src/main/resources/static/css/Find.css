@@ -51,12 +51,15 @@ body {
     color: var(--dark);
 }
 
-#wrap {
-    min-height: 100vh;
+body #wrap {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1; /* 애니메이션 충돌 방지 */
     display: flex;
     flex-direction: column;
-    opacity: 0;
-    animation: fadeInPage 0.5s ease-out 0.05s forwards;
+    min-height: 100vh;
 }
 
 /* ── Header ── */

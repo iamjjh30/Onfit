@@ -145,10 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (rawSeason && rawSeason !== "미진단") {
             var s = rawSeason.toLowerCase();
-            if (s.includes('spring') || s.includes('봄')) season = 'spring_warm';
-            else if (s.includes('summer') || s.includes('여름')) season = 'summer_cool';
-            else if (s.includes('autumn') || s.includes('가을')) season = 'autumn_warm';
-            else if (s.includes('winter') || s.includes('겨울')) season = 'winter_cool';
+            if (s.includes('spring') || s.includes('스프링')) season = 'spring_warm';
+            else if (s.includes('summer') || s.includes('써머')) season = 'summer_cool';
+            else if (s.includes('autumn') || s.includes('어텀')) season = 'autumn_warm';
+            else if (s.includes('winter') || s.includes('윈터')) season = 'winter_cool';
             else season = rawSeason;
 
             if (season) {

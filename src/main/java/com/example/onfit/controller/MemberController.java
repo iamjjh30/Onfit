@@ -141,13 +141,13 @@ public class MemberController {
         String dbTone = "미진단";
 
         if (rawTone != null) {
-            if (rawTone.contains("봄")) {
+            if (rawTone.contains("스프링") || rawTone.contains("봄")) {
                 dbTone = "SPRING_WARM";
-            } else if (rawTone.contains("여름")) {
+            } else if (rawTone.contains("써머") || rawTone.contains("여름")) {
                 dbTone = "SUMMER_COOL";
-            } else if (rawTone.contains("가을")) {
+            } else if (rawTone.contains("어텀") || rawTone.contains("가을")) {
                 dbTone = "AUTUMN_WARM";
-            } else if (rawTone.contains("겨울")) {
+            } else if (rawTone.contains("윈터") || rawTone.contains("겨울")) {
                 dbTone = "WINTER_COOL";
             }
         }
@@ -177,6 +177,13 @@ public class MemberController {
         if (loginMember == null) {
             return "redirect:/login";
         }
+
+        // 🌟 모델에 직접 담아주면 타임리프에서 읽기 훨씬 편합니다.
+        model.addAttribute("member", loginMember);
+
+        // DB에서 최신 정보를 다시 조회해서 넘겨주는 것이 가장 정확합니다.
+        Member freshMember = memberRepository.findById(loginMember.getId()).orElse(loginMember);
+        model.addAttribute("personalColor", freshMember.getPersonalColor());
 
         // 3. 로그인이 되어있다면 templates 폴더 안의 MyPalette.html 파일 열기
         return "MyPalette";

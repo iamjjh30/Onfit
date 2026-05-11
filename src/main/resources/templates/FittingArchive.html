@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../img/interface/favicon.png" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/Main.css}">
-    <title>피팅 아카이브 — OnFit</title>
+    <title>OnFit.com</title>
     <style>
     :root {
         --accent: #b5830a; --accent-light: #fdf3dc;
@@ -115,8 +115,8 @@
     /* ── footer ── */
     footer {
         min-height: 320px; background-color: #0a0a0a;
-        border-radius: 24px 24px 0 0; overflow: hidden;
-        margin-top: 80px; padding: 60px 60px 50px;
+        overflow: hidden;
+        margin-top: 300px; padding: 60px 60px 50px;
         display: flex; gap: 60px; align-items: flex-start;
     }
     #f_left { flex-shrink: 0; width: 220px; display: flex; flex-direction: column; gap: 14px; }
@@ -331,13 +331,15 @@
             <h1 class="archive-title">나의 피팅 아카이브</h1>
             <p class="archive-sub">가상피팅을 통해 시도한 모든 스타일 기록이에요.</p>
         </div>
-        <a href="./MyPalette.html" class="archive-back">← 내 팔레트로</a>
+        <a href="/MyPalette" class="archive-back">← 내 팔레트로</a>
     </div>
 
     <!-- 필터 바 -->
     <div class="filter-bar">
         <span class="filter-label">필터</span>
         <button class="filter-btn active" onclick="filterItems(this,'all')">전체</button>
+        <button class="filter-btn" onclick="filterItems(this,'05')">5월</button>
+        <button class="filter-btn" onclick="filterItems(this,'04')">4월</button>
         <button class="filter-btn" onclick="filterItems(this,'03')">3월</button>
         <button class="filter-btn" onclick="filterItems(this,'02')">2월</button>
         <button class="filter-btn" onclick="filterItems(this,'01')">1월</button>

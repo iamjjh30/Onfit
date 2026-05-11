@@ -134,10 +134,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const savePaletteBtn = document.getElementById('save-palette-btn');
     if (savePaletteBtn) {
-        savePaletteBtn.addEventListener('click', () => {
+        savePaletteBtn.addEventListener('click', async () => {
             const currentTone = document.getElementById('result-tone').innerText;
-            saveColorToDB(currentTone);
-            alert("내 팔레트에 성공적으로 저장되었습니다!");
+            await saveColorToDB(currentTone);
         });
     }
 
@@ -192,24 +191,50 @@ document.addEventListener('DOMContentLoaded', async function () {
     // [DB 저장] 퍼스널 컬러 업데이트
     // ==============================================================
     async function saveColorToDB(tone) {
+        if (!tone) {
+            console.error("저장할 톤 정보가 없습니다.");
+            return;
+        }
+
         try {
             const response = await fetch('/api/save-personal-color', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest' // 🌟 스프링 시큐리티가 AJAX 요청임을 인지하게 함
+                },
+                credentials: 'include', // 🌟 세션 쿠키를 반드시 포함
                 body: JSON.stringify({ tone: tone })
             });
 
+            // 1. 로그인 안 된 경우 (401 Unauthorized)
             if (response.status === 401) {
-                console.warn("로그인이 되어있지 않아 컬러 진단 결과가 저장되지 않았습니다.");
+                if (confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                    // 현재 페이지 주소를 저장했다가 로그인 후 다시 보내주면 베스트지만, 우선 이동 처리
+                    location.href = "/login";
+                }
                 return;
             }
 
-            if (!response.ok) throw new Error(`서버 응답 오류: ${response.status}`);
-            console.log("🎉 내 팔레트에 퍼스널 컬러 저장 완료!");
+            // 2. 서버 에러 발생 시 (500 등)
+            if (!response.ok) {
+                // 응답이 JSON인지 확인 후 에러 메시지 추출
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || '저장 중 서버 오류가 발생했습니다.');
+                } else {
+                    throw new Error('서버와 통신 중 알 수 없는 오류가 발생했습니다.');
+                }
+            }
+
+            // 3. 성공 처리
+            console.log("🎉 내 팔레트에 퍼스널 컬러 저장 성공!");
+            alert("내 팔레트에 성공적으로 저장되었습니다!");
 
         } catch (error) {
             console.error("퍼스널 컬러 DB 저장 실패:", error);
+            alert("저장에 실패했습니다: " + error.message);
         }
     }
 
