@@ -4,7 +4,7 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const AI_SERVER_URL = "http://127.0.0.1:5000";
+    const AI_SERVER_URL = "https://leesa-pseudosquamate-peristaltically.ngrok-free.dev";
 
     // ✅ URL 파라미터 확인용 로그
     const urlParams = new URLSearchParams(window.location.search);
