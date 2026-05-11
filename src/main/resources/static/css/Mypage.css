@@ -30,11 +30,12 @@ body { background: #fff; font-family: -apple-system, 'Apple SD Gothic Neo', sans
 /* ====================================================
    WRAP
    ==================================================== */
-#wrap {
-    max-width: 1440px;
-    width: 90%;
-    margin-top: 100px;
-    padding: 0 25px 80px;
+body #wrap {
+    max-width: 1440px; !important;
+    width: 90%; !important;
+    margin : 100px auto 0 !important;
+    padding: 0 25px 80px !important;
+    padding-top: 0 !important;
     opacity: 0;
     animation: fadeUp 0.6s ease-out 0.2s forwards;
 }
@@ -502,4 +503,90 @@ body { background: #fff; font-family: -apple-system, 'Apple SD Gothic Neo', sans
     left: 0;
     color: var(--danger);
 }
+/* ====================================================
+   배송지 카드 (리스트형)
+   ==================================================== */
+.mp-address-list { display: flex; flex-direction: column; gap: 12px; }
 
+.mp-address-item {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    border: 1.5px solid #f0f0f0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.mp-address-item:hover {
+    border-color: #d0d0d0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.mp-address-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.mp-address-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mp-address-label-tag {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--black);
+}
+
+.mp-address-default-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 2px 8px;
+    border-radius: 100px;
+}
+
+.mp-address-item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.mp-address-item-btn {
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid #e8e8e8;
+    background: white;
+    color: var(--black);
+}
+.mp-address-item-btn:hover {
+    border-color: var(--black);
+    background: var(--black);
+    color: white;
+}
+.mp-address-item-btn.danger {
+    color: var(--danger);
+    border-color: #ffd0cc;
+}
+.mp-address-item-btn.danger:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
+.mp-address-text-main {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 4px;
+}
+.mp-address-text-detail {
+    font-size: 0.82rem;
+    color: var(--gray);
+}
