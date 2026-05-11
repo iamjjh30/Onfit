@@ -189,3 +189,51 @@ a:visited { color: black; }
     font-size: 1rem;
     color: #999;
 }
+/* ====================================================
+   FOOTER — 풀 화면 폭
+   ==================================================== */
+footer {
+    width: 100%;
+    min-height: 320px; background-color: #0a0a0a;
+    border-radius: 0;
+    margin-top: 245px;
+    padding: 60px 8vw 50px;
+    display: flex; gap: 60px; align-items: flex-start;
+    box-sizing: border-box;
+}
+#f_left {
+    flex-shrink: 0; width: 220px;
+    display: flex; flex-direction: column; gap: 14px;
+}
+#f_left img {
+    width: 44px; height: 44px;
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
+}
+#f_left img:hover { transform: rotate(45deg); }
+#f_tagline {
+    font-size: 0.82rem; color: rgba(255,255,255,0.4);
+    line-height: 1.6; margin-top: 4px;
+}
+#f_copy {
+    font-size: 0.72rem; color: rgba(255,255,255,0.2);
+    margin-top: auto; padding-top: 40px;
+}
+#f_right {
+    flex: 1; display: flex; gap: 48px; justify-content: flex-end;
+}
+.f_nav_group {
+    display: flex; flex-direction: column; gap: 10px; min-width: 100px;
+}
+.f_nav_title {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin-bottom: 4px;
+}
+.f_nav_group a { text-decoration: none; }
+.f_nav_group a span {
+    font-size: 0.88rem; color: rgba(255,255,255,0.6);
+    transition: color 0.2s ease; cursor: pointer;
+    display: block;
+}
+.f_nav_group a span:hover { color: white; }
+.f_nav_group a:visited span { color: rgba(255,255,255,0.6); }
