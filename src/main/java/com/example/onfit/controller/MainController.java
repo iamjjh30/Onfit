@@ -20,14 +20,14 @@ public class MainController {
     @GetMapping({"/", "/main", "/Main"})
     public String mainPage(HttpSession session, Model model) {
 
-        // ── 1. BEST PICKS (이제 isfeared 로직이 정상 작동합니다!) ──
+        // ── 1. BEST PICKS ──
         model.addAttribute("bestNeutral",    productRepository.findTop4ByIsfearedOrderByViewCountDesc("NEUTRAL"));
         model.addAttribute("bestSpringWarm", productRepository.findTop4ByIsfearedOrderByViewCountDesc("SPRING_WARM"));
         model.addAttribute("bestSummerCool", productRepository.findTop4ByIsfearedOrderByViewCountDesc("SUMMER_COOL"));
         model.addAttribute("bestAutumnWarm", productRepository.findTop4ByIsfearedOrderByViewCountDesc("AUTUMN_WARM"));
         model.addAttribute("bestWinterCool", productRepository.findTop4ByIsfearedOrderByViewCountDesc("WINTER_COOL"));
 
-        // ── 2. OUTFIT (상/하의 순서 꼬임 완벽 방지 적용!) ──
+        // ── 2. OUTFIT ──
         model.addAttribute("outfitNeutral",    getSortedOutfits("NEUTRAL"));
         model.addAttribute("outfitSpringWarm", getSortedOutfits("SPRING_WARM"));
         model.addAttribute("outfitSummerCool", getSortedOutfits("SUMMER_COOL"));
@@ -37,16 +37,17 @@ public class MainController {
         return "Main";
     }
 
-    // 🌟 아웃핏 전용 특수 정렬 도우미 (TOP은 무조건 앞, BOTTOM은 뒤로 강제 정렬)
+    // ✅ 수정: findOutfitsByPrefix 사용으로 _ 와일드카드 문제 해결
     private List<Product> getSortedOutfits(String colorPrefix) {
-        List<Product> rawList = productRepository.findTop6ByOutfitStartingWithOrderByIdAsc(colorPrefix);
+        List<Product> rawList = productRepository.findOutfitsByPrefix(colorPrefix);
 
         return rawList.stream()
                 .sorted((p1, p2) -> {
                     String o1 = p1.getOutfit() == null ? "" : p1.getOutfit();
                     String o2 = p2.getOutfit() == null ? "" : p2.getOutfit();
 
-                    boolean sameSet = o1.replaceAll("_(TOP|BOTTOM)$", "").equals(o2.replaceAll("_(TOP|BOTTOM)$", ""));
+                    boolean sameSet = o1.replaceAll("_(TOP|BOTTOM)$", "")
+                            .equals(o2.replaceAll("_(TOP|BOTTOM)$", ""));
 
                     if (sameSet) {
                         return o2.compareTo(o1);
@@ -145,5 +146,4 @@ public class MainController {
     public String colorTrend() {
         return "ColorTrend";
     }
-
 }
