@@ -20,6 +20,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByOutfit(String outfit);
 
+    // ✅ nativeQuery로 변경 - _ 와일드카드 문제 완전 해결
+    @Query(value = "SELECT * FROM products WHERE outfit LIKE CONCAT(:prefix, '_%') ORDER BY id ASC", nativeQuery = true)
+    List<Product> findOutfitsByPrefix(@Param("prefix") String prefix);
+
     @Modifying
     @Transactional
     @Query("UPDATE Product p SET p.outfit = :outfit WHERE p.id = :id")
