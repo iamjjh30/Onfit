@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response = await fetch('/api/save-personal-color', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
                 body: JSON.stringify({ tone: tone })
             });
 
