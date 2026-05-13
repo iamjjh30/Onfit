@@ -3,9 +3,10 @@
 ================================================================ */
 
 var state = {
-    currentMenu: 'ALL',
-    likedPosts:  {},
-    posts:       []
+    currentMenu:    'ALL',
+    likedPosts:     {},
+    posts:          [],
+    currentKeyword: ''   // 검색 키워드 상태 추적
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -36,6 +37,8 @@ function setupTabListeners() {
                 b.classList.toggle('active', b.getAttribute('data-menu') === menu);
             });
             state.currentMenu = menu;
+            state.currentKeyword = '';
+            clearSearchInputs();
             fetchPosts(menu === 'ALL' ? null : menu);
         });
     });
@@ -51,9 +54,18 @@ function setupMobileTabBar() {
             var menu = this.getAttribute('data-menu');
             document.querySelectorAll('.tab-btn[data-menu="' + menu + '"]').forEach(function (b) { b.classList.add('active'); });
             state.currentMenu = menu;
+            state.currentKeyword = '';
+            clearSearchInputs();
             fetchPosts(menu === 'ALL' ? null : menu);
         });
     });
+}
+
+function clearSearchInputs() {
+    var si = document.getElementById('searchInput');
+    var mi = document.getElementById('mobileSearchInput');
+    if (si) si.value = '';
+    if (mi) mi.value = '';
 }
 
 /* ── 모바일 스와이프 탭 전환 ── */
@@ -81,6 +93,8 @@ function setupSwipeTabChange() {
 
         var nextMenu = tabs[nextIdx];
         state.currentMenu = nextMenu;
+        state.currentKeyword = '';
+        clearSearchInputs();
         document.querySelectorAll('.tab-btn, .mobile-tab').forEach(function (b) {
             b.classList.toggle('active', b.getAttribute('data-menu') === nextMenu);
         });
@@ -96,11 +110,11 @@ function setupSearch() {
     input.addEventListener('input', function () {
         clearTimeout(timer);
         var kw = this.value.trim();
-        timer = setTimeout(function () {
-            renderPosts(kw.length === 0 ? state.posts : state.posts.filter(function (p) {
-                return (p.content || '').includes(kw) || (p.title || '').includes(kw);
-            }));
-        }, 250);
+        state.currentKeyword = kw;
+        // 모바일 검색창 동기화
+        var mi = document.getElementById('mobileSearchInput');
+        if (mi) mi.value = kw;
+        timer = setTimeout(function () { applySearch(kw); }, 250);
     });
 }
 
@@ -112,14 +126,24 @@ function setupMobileSearch() {
     mobileInput.addEventListener('input', function () {
         clearTimeout(timer);
         var kw = this.value.trim();
-        var desktopInput = document.getElementById('searchInput');
-        if (desktopInput) desktopInput.value = kw;
-        timer = setTimeout(function () {
-            renderPosts(kw.length === 0 ? state.posts : state.posts.filter(function (p) {
-                return (p.content || '').includes(kw) || (p.title || '').includes(kw);
-            }));
-        }, 250);
+        state.currentKeyword = kw;
+        // 데스크탑 검색창 동기화
+        var si = document.getElementById('searchInput');
+        if (si) si.value = kw;
+        timer = setTimeout(function () { applySearch(kw); }, 250);
     });
+}
+
+function applySearch(kw) {
+    if (!kw) {
+        renderPosts(state.posts);
+        return;
+    }
+    var filtered = state.posts.filter(function (p) {
+        var cleanedContent = cleanProductTags(p.content || '');
+        return cleanedContent.includes(kw) || (p.title || '').includes(kw);
+    });
+    renderPosts(filtered);
 }
 
 /* ── 프로필 이미지 로드 ── */
@@ -151,6 +175,7 @@ function fetchPosts(type) {
             });
             localStorage.setItem('likedPosts', JSON.stringify(state.likedPosts));
             state.posts = data;
+            // 탭 전환 시 검색 키워드는 이미 clearSearchInputs()로 초기화됨
             renderPosts(data);
         })
         .catch(function () {
@@ -275,10 +300,15 @@ function fetchAndRenderProducts(ids, containerEl) {
         if (!valid.length) { containerEl.innerHTML = ''; return; }
 
         containerEl.innerHTML = valid.map(function (p) {
-            return '<a href="/itemDetail?id=' + p.id + '" class="quoted-product-card" onclick="event.stopPropagation()">' +
-                '<img src="' + (p.imageUrl || '') + '" alt="' + escHtml(p.name) + '" onerror="this.style.display=\'none\'">' +
+            // 필드명 방어: imgUrl / imageUrl / img_url / thumbnail / image 순서로 시도
+            var imgSrc = p.imgUrl || p.imageUrl || p.img_url || p.thumbnail || p.image || '';
+            var imgTag = imgSrc
+                ? '<img src="' + imgSrc + '" alt="' + escHtml(p.name || '') + '">'
+                : '';
+            return '<a href="/itemDetail?id=' + (p.id || p.productId) + '" class="quoted-product-card" onclick="event.stopPropagation()">' +
+                imgTag +
                 '<div class="quoted-product-info">' +
-                '<span class="quoted-product-name">' + escHtml(p.name) + '</span>' +
+                '<span class="quoted-product-name">' + escHtml(p.name || '') + '</span>' +
                 '<span class="quoted-product-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
                 '</div></a>';
         }).join('');
@@ -324,16 +354,21 @@ function toggleLike(postId) {
     fetch('/api/posts/' + postId + '/like', { method: 'POST', credentials: 'include' })
         .then(function (r) {
             if (r.status === 401) { toast('로그인이 필요합니다.', '/login'); return null; }
+            if (!r.ok) throw new Error();
             return r.json();
         })
         .then(function (data) {
             if (!data) return;
             state.likedPosts[postId] = data.liked;
             localStorage.setItem('likedPosts', JSON.stringify(state.likedPosts));
+            // state.posts 업데이트
             state.posts = state.posts.map(function (p) {
-                return p.postId === postId ? Object.assign({}, p, { liked: data.liked, likeCount: data.likeCount }) : p;
+                return p.postId === postId
+                    ? Object.assign({}, p, { liked: data.liked, likeCount: data.likeCount })
+                    : p;
             });
-            renderPosts(state.posts);
+            // 검색 키워드가 있으면 필터 유지, 없으면 전체 렌더
+            applySearch(state.currentKeyword);
         })
         .catch(function () {});
 }
@@ -383,9 +418,9 @@ function toast(msg, redirect) {
     var toastEl = document.getElementById('toast');
     if (!toastEl) return;
     toastEl.textContent = msg;
-    toastEl.className = 'toast-show';
+    toastEl.classList.add('toast-show');   // className 덮어쓰기 → classList.add 로 수정
     setTimeout(function () {
-        toastEl.className = '';
+        toastEl.classList.remove('toast-show');
         if (redirect) window.location.href = redirect;
     }, 1200);
 }
