@@ -25,6 +25,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     });
 
+    // 해시(#tab-color / #tab-fitting)로 직접 진입 시 해당 탭 활성화
+    function activateTabByHash() {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            const targetBtn = document.querySelector(`.tab-btn[data-target="${hash}"]`);
+            if (targetBtn) targetBtn.click();
+        }
+    }
+
+    activateTabByHash();
+
+    // 같은 페이지 내에서 해시가 바뀔 때도 탭 전환 (푸터 링크 등)
+    window.addEventListener('hashchange', activateTabByHash);
+
     // 2. 파일 변수 관리
     let faceFile   = null;  // 퍼스널 컬러용 얼굴 사진
     let bodyFile   = null;  // 가상 피팅용 전신 사진

@@ -118,4 +118,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     filterAndShow();
+
+    // URL 파라미터(?category=SHIRT 등)로 진입 시 해당 탭 자동 활성화
+    var urlParams = new URLSearchParams(window.location.search);
+    var categoryParam = (urlParams.get('category') || '').toUpperCase();
+    if (categoryParam && categoryParam !== 'ALL') {
+        var targetTab = wrap.querySelector('.category-tabs a[data-target="' + categoryParam + '"]');
+        if (targetTab) {
+            categoryTabs.forEach(function(t) { t.classList.remove('active'); });
+            targetTab.classList.add('active');
+            filterAndShow();
+        }
+    }
 });

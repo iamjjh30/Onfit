@@ -14,19 +14,22 @@
     <div id="f_right">
         <div class="f_nav_group">
             <p class="f_nav_title">AI 진단</p>
-            <a th:href="@{/AIStyler}"><span>퍼스널 컬러 진단</span></a>
-            <a th:href="@{/AIStyler}"><span>Virtual Fitting</span></a>
+            <a th:href="@{/AIStyler} + '#tab-color'"><span>퍼스널 컬러 진단</span></a>
+            <a th:href="@{/AIStyler} + '#tab-fitting'"><span>가상 피팅룸</span></a>
         </div>
         <div class="f_nav_group">
             <p class="f_nav_title">스토어</p>
             <a th:href="@{/store}"><span>전체 상품</span></a>
-            <a th:href="@{/store}"><span>신상품</span></a>
-            <a th:href="@{/store}"><span>베스트</span></a>
+            <a th:href="@{/store} + '?category=SHIRT'"><span>셔츠</span></a>
+            <a th:href="@{/store} + '?category=HOODIE'"><span>후드티</span></a>
+            <a th:href="@{/store} + '?category=JACKET'"><span>자켓</span></a>
+            <a th:href="@{/store} + '?category=PANTS'"><span>팬츠</span></a>
+            <a th:href="@{/store} + '?category=CAP'"><span>모자</span></a>
         </div>
         <div class="f_nav_group">
             <p class="f_nav_title">커뮤니티</p>
-            <a th:href="@{/community}"><span>스타일 피드</span></a>
-            <a th:href="@{/community}"><span>코디 공유</span></a>
+            <a th:href="@{/community}"><span>커뮤니티</span></a>
+            <a th:href="@{/community/profile}"><span>프로필</span></a>
         </div>
     </div>
 </footer>
