@@ -275,7 +275,6 @@ function renderProductList(products) {
         return '<div class="product-item" data-id="' + p.id + '">' +
             '<img src="' + (p.imageUrl || '') + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
             '<span class="product-item-name">' + p.name + '</span>' +
-            '<span class="product-item-price">₩' + (p.price || 0).toLocaleString() + '</span>' +
             '<button class="' + btnClass + '" ' + disabledAttr + '>' + btnText + '</button>' +
             '</div>';
     }).join('');

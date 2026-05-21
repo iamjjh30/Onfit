@@ -10,6 +10,7 @@ import com.example.onfit.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -220,5 +221,21 @@ public class StyleDnaService {
                 System.out.println("강등 처리: " + member.getName() + " → " + demotedLevel + "레벨");
             }
         });
+    }
+    // StyleDnaService 내부에 추가
+    @Transactional
+    public void refreshMemberDna(Long memberId) {
+        // 1. 기존 메서드 활용하여 점수 계산
+        Map<String, Integer> scores = calculateDna(memberId);
+
+        // 2. 1등 DNA 추출
+        String topDna = getTopDna(scores);
+
+        // 3. 회원 정보 업데이트
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        member.setStyleDna(topDna);
+        memberRepository.save(member);
     }
 }

@@ -3,9 +3,11 @@ package com.example.onfit.controller;
 import com.example.onfit.entity.Coupon;
 import com.example.onfit.entity.DeliveryAddress;
 import com.example.onfit.entity.Member;
+import com.example.onfit.entity.Order;
 import com.example.onfit.repository.CouponRepository;
 import com.example.onfit.repository.DeliveryAddressRepository;
 import com.example.onfit.repository.MemberRepository;
+import com.example.onfit.repository.OrderRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ public class MypageController {
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
+    private final OrderRepository orderRepository;
 
     /* ── 페이지 렌더링 ── */
     @GetMapping("/MyPage")
@@ -34,6 +37,9 @@ public class MypageController {
         // 쿠폰 목록
         List<Coupon> coupons = couponRepository.findByMemberAndIsUsedFalseOrderByExpiredAtAsc(loginMember);
         long couponCount = coupons.stream().filter(c -> !c.getIsUsed()).count();
+
+        List<Order> orders = orderRepository.findByMemberOrderByCreatedAtDesc(loginMember);
+        model.addAttribute("orders", orders);
 
         // 레벨 정보
         int level = loginMember.getStyleLevel() != null ? loginMember.getStyleLevel() : 1;

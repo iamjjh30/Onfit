@@ -58,6 +58,7 @@
         <button class="mp-tab active" data-target="tab-info">회원 정보</button>
         <button class="mp-tab" data-target="tab-address">배송지 관리</button>
         <button class="mp-tab" data-target="tab-coupon">보유 쿠폰</button>
+        <button class="mp-tab" data-target="tab-orders">주문 내역</button>
         <button class="mp-tab" data-target="tab-withdraw">회원 탈퇴</button>
     </nav>
 
@@ -277,7 +278,55 @@
         </div>
     </div>
 </section>
+    <!-- 3. 주문 내역 -->
+    <section class="mp-section" id="tab-orders">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-eyebrow">ORDER HISTORY</span>
+                <h2 class="section-title">주문 내역</h2>
+            </div>
 
+            <div th:if="${#lists.isEmpty(orders)}">
+                <p style="text-align:center; padding:60px 0; color:#aaa; font-size:0.9rem;">주문 내역이 없습니다.</p>
+            </div>
+
+            <div th:each="order : ${orders}" class="mp-address-item" style="margin-bottom:16px;">
+                <div class="mp-address-item-header" style="margin-bottom:10px;">
+                    <div class="mp-address-item-left">
+                        <span class="mp-address-label-tag" th:text="${order.orderId}">주문번호</span>
+                        <span class="mp-address-default-tag"
+                              th:text="${order.status}"
+                              th:style="${order.status == '결제완료'} ? 'background:#e8f5e9; color:#27ae60;' :
+                                    (${order.status == '배송중'} ? 'background:#e3f2fd; color:#1976d2;' :
+                                    'background:#f0f0f0; color:#aaa;')">
+                    </span>
+                    </div>
+                    <span style="font-size:12px; color:#aaa;"
+                          th:text="${#temporals.format(order.createdAt, 'yyyy.MM.dd HH:mm')}">날짜</span>
+                </div>
+
+                <!-- 주문 상품 목록 -->
+                <div th:each="item : ${order.orderItems}" style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                    <img th:src="${item.product.imageUrl}" style="width:50px; height:60px; object-fit:cover; border-radius:6px; border:1px solid #eee;"
+                         onerror="this.src='/img/no-image.png'" />
+                    <div>
+                        <div style="font-weight:500; font-size:14px;" th:text="${item.product.name}">상품명</div>
+                        <div style="font-size:12px; color:#aaa;"
+                             th:text="${item.size != null ? item.size + ' / ' : ''} + ${item.quantity} + '개'">사이즈 / 수량</div>
+                        <div style="font-size:13px; font-weight:600; color:var(--accent);"
+                             th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">가격</div>
+                    </div>
+                </div>
+
+                <!-- 총 결제금액 -->
+                <div style="text-align:right; border-top:1px solid #f0f0f0; padding-top:10px; margin-top:6px;">
+                    <span style="font-size:13px; color:#aaa;">총 결제금액 </span>
+                    <span style="font-weight:700; font-size:15px;"
+                          th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')} + '원'">0원</span>
+                </div>
+            </div>
+        </div>
+    </section>
 <!-- 4. 회원 탈퇴 -->
 <section class="mp-section" id="tab-withdraw">
     <div class="section-card">

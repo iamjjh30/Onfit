@@ -55,6 +55,13 @@ public class PaletteController {
         String dnaTop = dnaService.getTopDna(dnaScores); // ✅ dnaTop도 추가
         model.addAttribute("dnaTop", dnaTop);
 
+        // ✅ 이 부분 추가 — DB에 저장
+        if (!"미진단".equals(dnaTop)) {
+            loginMember.setStyleDna(dnaTop);
+            memberRepository.save(loginMember);
+            session.setAttribute("loginMember", loginMember); // 세션도 갱신
+        }
+
         // 2. JSON 변환 (예외 처리 필수!)
         ObjectMapper mapper = new ObjectMapper();
         try {

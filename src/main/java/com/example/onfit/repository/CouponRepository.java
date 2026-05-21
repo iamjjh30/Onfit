@@ -9,4 +9,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findByMemberAndIsUsedFalseOrderByExpiredAtAsc(Member member);
     List<Coupon> findByMemberOrderByExpiredAtAsc(Member member);
     List<Coupon> findByMemberAndIsUsedFalse(Member member);
+
+    void deleteByMember(Member member);
 }

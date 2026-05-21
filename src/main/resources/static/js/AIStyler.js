@@ -4,7 +4,7 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const AI_SERVER_URL = "https://leesa-pseudosquamate-peristaltically.ngrok-free.dev";
+    const AI_SERVER_URL = "http://localhost:5000";
 
     // ✅ URL 파라미터 확인용 로그
     const urlParams = new URLSearchParams(window.location.search);
@@ -44,6 +44,44 @@ document.addEventListener('DOMContentLoaded', async function () {
     let bodyFile   = null;  // 가상 피팅용 전신 사진
     let topFile    = null;  // 🌟 상의 이미지
     let bottomFile = null;  // 🌟 하의 이미지
+
+    // 이미지를 최대 max_size로 리사이즈하고 Blob으로 변환하는 함수
+    function resizeImage(file, maxSize = 768) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                    }, 'image/jpeg', 0.85); // 85% 품질로 압축
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     // 미리보기 설정 유틸리티
     function setupPreview(inputId, previewId, placeholderId, fileVariableSetter) {
@@ -126,7 +164,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const response = await fetch(`${AI_SERVER_URL}/api/analyze-face`, {
                     method: 'POST',
                     headers: {
-                        'ngrok-skip-browser-warning': '69420' // 🌟 Ngrok 경고창 무시 마법의 헤더
                     },
                     body: formData
                 });
@@ -344,7 +381,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (tryOnBtn) {
         // 🌟 1. 괄호 안에 'e' (이벤트 객체)를 넣어줍니다.
         tryOnBtn.addEventListener('click', async (e) => {
-            // 🌟 2. 브라우저가 멋대로 새로고침하는 것을 차단합니다!
             e.preventDefault();
 
             if (!bodyFile) {
@@ -354,31 +390,34 @@ document.addEventListener('DOMContentLoaded', async function () {
             tryOnBtn.disabled = true;
             document.getElementById('fitting-loading-overlay').style.display = 'flex';
 
-            const formData = new FormData();
-            formData.append('user_image', bodyFile);
-
-            // 🌟 상의+하의 동시 or 단일 전송
-            if (topFile && bottomFile) {
-                formData.append('top_image', topFile);
-                formData.append('bottom_image', bottomFile);
-            } else {
-                formData.append('cloth_image', topFile || bottomFile);
-            }
-
             try {
+                const formData = new FormData();
+
+                // 🚀 [프론트엔드 압축 적용] 서버로 보내기 전 768px로 압축
+                const compressedBody = await resizeImage(bodyFile, 768);
+                formData.append('user_image', compressedBody);
+
+                if (topFile && bottomFile) {
+                    const compressedTop = await resizeImage(topFile, 768);
+                    const compressedBottom = await resizeImage(bottomFile, 768);
+                    formData.append('top_image', compressedTop);
+                    formData.append('bottom_image', compressedBottom);
+                } else {
+                    const targetCloth = topFile || bottomFile;
+                    const compressedCloth = await resizeImage(targetCloth, 768);
+                    formData.append('cloth_image', compressedCloth);
+                }
+
                 const response = await fetch(`${AI_SERVER_URL}/api/try-on`, {
                     method: 'POST',
-                    headers: {
-                        'ngrok-skip-browser-warning': '69420' // 🌟 여기도 추가!
-                    },
+                    headers: { 'ngrok-skip-browser-warning': '69420' },
                     body: formData
                 });
-                const data = await response.json();
 
+                const data = await response.json();
                 if (!response.ok) throw new Error(data.error || '피팅 처리 중 문제가 발생했습니다.');
 
-                // 결과 표시
-                const resultImg  = document.getElementById('fitting-result-img');
+                const resultImg = document.getElementById('fitting-result-img');
                 const placeholder = document.getElementById('fitting-placeholder-main');
                 if (resultImg) {
                     resultImg.src = data.result_url;
@@ -386,8 +425,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
                 if (placeholder) placeholder.style.display = 'none';
 
-                // DB 저장 (상의 우선, 없으면 하의 ID)
-                const topId    = document.getElementById('top-product-id')?.value;
+                const topId = document.getElementById('top-product-id')?.value;
                 const bottomId = document.getElementById('bottom-product-id')?.value;
                 saveFittingToDB(topId, bottomId, data.result_url);
 

@@ -12,7 +12,6 @@
 <div id="wrap">
     <div class="store-header">
         <h1>STORE</h1>
-
         <div class="store-nav">
             <div class="store-tabs-wrap">
                 <div class="store-tab-row">
@@ -20,7 +19,7 @@
                     <nav class="category-tabs">
                         <a href="#" class="active" data-target="ALL">전체</a>
                         <a href="#" data-target="SHIRT">셔츠</a>
-                        <a href="#" data-target="HOODIE">후드티</a>
+                        <a href="#" data-target="HOODIE">후디</a>
                         <a href="#" data-target="JACKET">자켓</a>
                         <a href="#" data-target="PANTS">팬츠</a>
                         <a href="#" data-target="CAP">모자</a>
@@ -31,10 +30,10 @@
                     <nav class="tone-tabs">
                         <a href="#" class="active" data-tone="ALL">전체</a>
                         <a href="#" data-tone="NEUTRAL">뉴트럴</a>
-                        <a href="#" data-tone="SPRING_WARM">봄 웜톤</a>
-                        <a href="#" data-tone="SUMMER_COOL">여름 쿨톤</a>
-                        <a href="#" data-tone="AUTUMN_WARM">가을 웜톤</a>
-                        <a href="#" data-tone="WINTER_COOL">겨울 쿨톤</a>
+                        <a href="#" data-tone="SPRING_WARM">스프링 웜</a>
+                        <a href="#" data-tone="SUMMER_COOL">써머 쿨</a>
+                        <a href="#" data-tone="AUTUMN_WARM">어텀 웜</a>
+                        <a href="#" data-tone="WINTER_COOL">윈터 쿨</a>
                     </nav>
                 </div>
             </div>
@@ -90,7 +89,7 @@
                        th:text="${product.category == 'SHIRT' ? '셔츠' :
                                 (product.category == 'JACKET' ? '자켓' :
                                 (product.category == 'PANTS' ? '팬츠' :
-                                (product.category == 'CAP' ? '모자' : '후드티')))}">
+                                (product.category == 'CAP' ? '모자' : '후디')))}">
                         카테고리
                     </p>
                 </div>

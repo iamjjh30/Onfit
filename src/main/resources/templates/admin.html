@@ -9,6 +9,7 @@
     <link
             href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
             rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* ═══════════════════════════════════════════════
            OnFit Admin — Complete CSS (Dark luxury utility)
@@ -297,6 +298,7 @@
             <div class="nav-group">
                 <div class="nav-label">Overview</div>
                 <button class="nav-item active" data-section="dashboard" onclick="showSection('dashboard', this)">📊 Dashboard</button>
+                <button class="nav-item" data-section="sales" onclick="showSection('sales', this)">📈 Sales</button>
             </div>
             <div class="nav-group">
                 <div class="nav-label">Site Management</div>
@@ -369,7 +371,140 @@
                     </div>
                 </div>
             </section>
+            <!-- ═══════════════════════════════════════════════
+   ══════ 📈 SALES & ANALYTICS SECTION ══════
+═══════════════════════════════════════════════ -->
+            <section id="sales" class="section">
+                <!-- 섹션 헤더 및 기간 필터 -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 style="font-family:var(--font-display); font-size:24px;">Sales & Analytics</h2>
+                    <select id="salesPeriodFilter" style="width:auto; background: var(--bg-card);" onchange="handlePeriodChange(this.value)">
+                        <option value="TODAY" th:selected="${param.period != null and param.period[0] == 'TODAY'}">오늘 기준</option>
+                        <option value="WEEK" th:selected="${param.period != null and param.period[0] == 'WEEK'}">최근 7일</option>
+                        <option value="MONTH" th:selected="${param.period == null or (param.period != null and param.period[0] == 'MONTH')}">이번 달 (당월)</option>
+                        <option value="YEAR" th:selected="${param.period != null and param.period[0] == 'YEAR'}">올해 전체</option>
+                    </select>
+                </div>
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-head">
+                        <span class="card-title">📈 기간별 매출 추이</span>
+                    </div>
+                    <div style="height: 300px; padding: 20px;">
+                        <canvas id="salesLineChart"></canvas>
+                    </div>
+                </div>
+                <!-- 매출 핵심 지표 KPI 그리드 -->
+                <div class="kpi-grid">
+                    <div class="kpi-card kpi-1">
+                        <div class="kpi-label">금일 결제 금액</div>
+                        <div class="kpi-value" th:text="${todaySales != null ? #numbers.formatInteger(todaySales, 0, 'COMMA') + '원' : '0원'}">0원</div>
+                        <div class="kpi-unit">실시간 반영 지표</div>
+                    </div>
+                    <div class="kpi-card kpi-2">
+                        <div class="kpi-label">누적 매출</div>
+                        <div class="kpi-value" th:text="${periodSales != null ? #numbers.formatInteger(periodSales, 0, 'COMMA') + '원' : '0원'}">0원</div>
+                        <div class="kpi-unit">취소 건 제외액</div>
+                    </div>
+                    <div class="kpi-card kpi-3">
+                        <div class="kpi-label">진단 후 구매 전환율</div>
+                        <div class="kpi-value" th:text="${curationConversion != null ? curationConversion + '%' : '0%'}">0.0%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">평균 주문 객단가</div>
+                        <div class="kpi-value" th:text="${avgOrderValue != null ? #numbers.formatInteger(avgOrderValue, 0, 'COMMA') + '원' : '0원'}">0원</div>
+                    </div>
+                </div>
 
+                <!-- 데이터 분석 레이아웃 (2분할 그리드) -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom: 20px;">
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-head"><span class="card-title">🎨 퍼스널 컬러별 매출 비중</span></div>
+                        <div style="padding:20px; display:flex; flex-direction:column; gap:20px;">
+                            <div>
+                                <div style="display:flex; flex-direction:column; gap:10px;">
+                                    <div>
+                                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>스프링 웜</span><span th:text="${springSalesRate ?: 0} + '%'">0%</span></div>
+                                        <div style="background:var(--bg-hover); height:6px; border-radius:3px;"><div style="background:var(--spring); height:100%; border-radius:3px;" th:style="'width:' + (${springSalesRate ?: 0}) + '%; background:var(--spring);'"></div></div>
+                                    </div>
+                                    <div>
+                                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>써머 쿨</span><span th:text="${summerSalesRate ?: 0} + '%'">0%</span></div>
+                                        <div style="background:var(--bg-hover); height:6px; border-radius:3px;"><div style="background:var(--summer); height:100%; border-radius:3px;" th:style="'width:' + (${summerSalesRate ?: 0}) + '%; background:var(--summer);'"></div></div>
+                                    </div>
+                                    <div>
+                                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>어텀 웜</span><span th:text="${autumnSalesRate ?: 0} + '%'">0%</span></div>
+                                        <div style="background:var(--bg-hover); height:6px; border-radius:3px;"><div style="background:var(--autumn); height:100%; border-radius:3px;" th:style="'width:' + (${autumnSalesRate ?: 0}) + '%; background:var(--autumn);'"></div></div>
+                                    </div>
+                                    <div>
+                                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>윈터 쿨</span><span th:text="${winterSalesRate ?: 0} + '%'">0%</span></div>
+                                        <div style="background:var(--bg-hover); height:6px; border-radius:3px;"><div style="background:var(--winter); height:100%; border-radius:3px;" th:style="'width:' + (${winterSalesRate ?: 0}) + '%; background:var(--winter);'"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-head"><span class="card-title">🔥 판매 실적 우수 상품 TOP 5</span></div>
+                        <table class="tbl">
+                            <thead>
+                            <tr><th>순위</th><th>상품명</th><th>카테고리</th><th>판매량</th><th>총 매출액</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item, stat : ${topProducts}">
+                                <td style="font-weight:800; color:var(--accent);" th:text="${stat.count}">1</td>
+                                <td style="font-weight:500;" th:text="${item.name}">상품명</td>
+                                <td><span class="badge badge-admin" th:text="${item.category}">CLOTHES</span></td>
+                                <td th:text="${item.salesCount} + '개'">0개</td>
+                                <td style="font-variant-numeric: tabular-nums;" th:text="${item.totalRevenue != null ? #numbers.formatInteger(item.totalRevenue, 0, 'COMMA') + '원' : '0원'}">0원</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(topProducts)}">
+                                <td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">판매 데이터가 아직 없습니다.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 하단 대형 카드: 주문 거래 원장 (최근 주문 상세 현황) -->
+                <div class="card">
+                    <div class="card-head"><span class="card-title">📦 최근 주문 거래 내역</span></div>
+                    <table class="tbl">
+                        <thead>
+                        <tr><th>주문번호</th><th>고객 정보</th><th>매칭 타입</th><th>상품 및 수량</th><th>결제금액</th><th>상태</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order : ${recentOrders}">
+                            <td style="color:var(--text-muted); font-variant-numeric: tabular-nums;" th:text="${order.orderId}">20260520-0089</td>
+                            <td>
+                                <div style="font-weight:500;" th:text="${order.customerName}">김도율</div>
+                                <div style="font-size:11px; color:var(--text-muted);" th:text="${order.loginId}">kdoryul</div>
+                            </td>
+                            <td><span class="badge badge-cool" th:text="${order.personalColor ?: 'SUMMER_COOL'}">SUMMER COOL</span></td>
+                            <td th:text="${order.productSummary ?: '릴랙스 블레이저 외 1건'}">릴랙스 블레이저 외 1건</td>
+                            <td style="font-weight:600; font-variant-numeric: tabular-nums;" th:text="${#numbers.formatInteger(order.totalPrice ?: 0, 1, 'COMMA')} + '원'">148,000원</td>
+                            <td><span class="badge badge-active">결제완료</span></td>
+                        </tr>
+                        <!-- 서버 데이터 누락 대비용 하드코딩 Mock 데이터셋 -->
+                        <tr th:if="${#lists.isEmpty(recentOrders)}">
+                            <td style="color:var(--text-muted); font-variant-numeric: tabular-nums;">20260520-0041</td>
+                            <td><div style="font-weight:500;">이지은</div><div style="font-size:11px; color:var(--text-muted);">dlwlrma</div></td>
+                            <td><span class="badge badge-warm">SPRING_WARM</span></td>
+                            <td>린넨 데일리 베이직 셔츠 1개</td>
+                            <td style="font-weight:600; font-variant-numeric: tabular-nums;">59,000원</td>
+                            <td><span class="badge badge-active">결제완료</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentOrders)}">
+                            <td style="color:var(--text-muted); font-variant-numeric: tabular-nums;">20260520-0040</td>
+                            <td><div style="font-weight:500;">박서준</div><div style="font-size:11px; color:var(--text-muted);">seojun99</div></td>
+                            <td><span class="badge badge-cool">WINTER_COOL</span></td>
+                            <td>릴랙스 세미포멀 블레이저 1개</td>
+                            <td style="font-weight:600; font-variant-numeric: tabular-nums;">149,000원</td>
+                            <td><span class="badge badge-cool">배송중</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
             <!-- ══════ SHOPPING ══════ -->
             <section id="shopping" class="section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -604,7 +739,7 @@
             <section id="project" class="section">
                 <h2 style="font-family:var(--font-display); font-size:24px; margin-bottom:20px;">Project</h2>
                 <div class="card">
-                    <textarea id="adminMemoArea" th:text="${adminMemo}" placeholder="팀 메모를 작성하세요..." style="width:100%; min-height:400px; background:transparent; color:var(--text-primary); padding:20px; border:none;"></textarea>
+                    <textarea id="adminMemoArea" th:text="${adminMemo ?: '값없음'}" placeholder="팀 메모를 작성하세요..." style="width:100%; min-height:400px; background:transparent; color:var(--text-primary); padding:20px; border:none;"></textarea>
                     <div style="padding:10px; display:flex; justify-content:space-between; align-items:center;">
                         <span id="memoCount" style="font-size:11px; color:var(--text-muted);">0자</span>
                         <button class="btn-primary" onclick="saveMemo()">저장</button>
@@ -643,11 +778,55 @@
         </div>
     </main>
 </div>
-<script>
+<script th:inline="javascript">
     /* ====================================================
        OnFit Admin - 직접 삽입된 JavaScript (캐시 문제 원천 차단!)
        ==================================================== */
+    function autoSaveMemo(content) {
+        fetch('/admin/project/memo/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'content=' + encodeURIComponent(content)
+        });
+    }
 
+    function saveMemo() {
+        const area = document.getElementById('adminMemoArea');
+        if (area) autoSaveMemo(area.value);
+    }
+
+    function updateMemoCount(val) {
+        const el = document.getElementById('memoCount');
+        if (el) el.textContent = (val || '').length + '자';
+    }
+    const labels = /*[[${chartLabels}]]*/ [];
+    const dataValues = /*[[${chartValues}]]*/ [];
+
+    // 차트가 그려질 canvas 요소가 확실히 로드된 후 실행
+    const ctxLine = document.getElementById('salesLineChart').getContext('2d');
+    new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '기간별 매출 추이 (원)',
+                data: dataValues,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    function handlePeriodChange(period) {
+        // URL에 period 파라미터를 붙여 페이지를 다시 호출합니다.
+        // 예: /admin?section=sales&period=WEEK (메뉴 탭 유지를 위한 파라미터도 고려 가능)
+        window.location.href = '/admin/dashboard?period=' + period;
+    }
     // [1] 섹션 전환 (무조건 실행되도록 window 강제 할당)
     window.showSection = function(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -664,6 +843,7 @@
                 'main-section': 'Main', project: 'Project', access: 'Access Control'
             }[id] || id;
         }
+        localStorage.setItem('activeTab', id); // 탭 위치를 저장!
     };
 
     // [2] 시계 업데이트
@@ -768,7 +948,7 @@
         fetch('/admin/best/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'color=' + encodeURIComponent(color) + '&productId=' + productId
+            body: 'color=' + encodeURIComponent(color) + '&slot=' + slotNum + '&productId=' + productId
         })
             .then(res => res.json())
             .then(data => {
@@ -839,6 +1019,15 @@
     // 문서 로딩 완료 후 이벤트 리스너 초기화
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
+
+        const memoArea = document.getElementById('adminMemoArea');
+        if (memoArea) {
+            updateMemoCount(memoArea.value);
+            memoArea.addEventListener('input', () => {
+                updateMemoCount(memoArea.value);
+            });
+        }
+
         updateClock();
 
         // 접근 제어 메뉴 표시
@@ -861,6 +1050,12 @@
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeProductModal();
         });
+
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            const btn = document.querySelector(`[onclick*="${savedTab}"]`);
+            showSection(savedTab, btn);
+        }
     });
 </script>
 </body>

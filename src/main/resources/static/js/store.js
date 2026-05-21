@@ -25,12 +25,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* ── 필터 초기화 함수 ── */
+    function resetFilters() {
+        // 정렬 라디오 버튼 초기화
+        wrap.querySelectorAll('input[name="sort"]').forEach(function(input) {
+            input.checked = false;
+        });
+        // 가격 입력 초기화
+        var minInput = wrap.querySelector('#min-price');
+        var maxInput = wrap.querySelector('#max-price');
+        if (minInput) minInput.value = '';
+        if (maxInput) maxInput.value = '';
+    }
+
     /* ── 카테고리 탭 ── */
     categoryTabs.forEach(function(tab) {
         tab.addEventListener('click', function(e) {
             e.preventDefault();
             categoryTabs.forEach(function(t) { t.classList.remove('active'); });
             this.classList.add('active');
+            resetFilters();
             filterAndShow();
         });
     });
@@ -41,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             toneTabs.forEach(function(t) { t.classList.remove('active'); });
             this.classList.add('active');
+            resetFilters();
             filterAndShow();
         });
     });

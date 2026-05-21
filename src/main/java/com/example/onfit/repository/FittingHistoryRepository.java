@@ -16,4 +16,6 @@ public interface FittingHistoryRepository extends JpaRepository<FittingHistory, 
 
     // 3. 컨트롤러의 에러를 해결하기 위한 기본 메서드 추가
     List<FittingHistory> findByMember(Member member);
+
+    void deleteByMember(Member member);
 }

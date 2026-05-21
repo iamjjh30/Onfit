@@ -21,8 +21,6 @@
             border-radius: 10px !important;
 
             background: rgba(255, 255, 255, 0.4) !important;
-            backdrop-filter: blur(8px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
 
             border: 1px solid rgba(255, 255, 255, 0.25) !important;
 
@@ -37,17 +35,6 @@
                     box-shadow 0.5s cubic-bezier(0.16,1,0.3,1),
                     border-radius 0.4s cubic-bezier(0.16,1,0.3,1) !important;
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        }
-
-        #header.search-open {
-            overflow: hidden !important;
-            border-radius: 20px 20px 16px 16px !important;
-            background: rgba(255, 255, 255, 0.92) !important;
-            border-color: rgba(220, 220, 220, 0.5) !important;
-            box-shadow:
-                    0 2px 0 0 rgba(255,255,255,1) inset,
-                    0 32px 80px -8px rgba(0,0,0,0.12),
-                    0 8px 24px -4px rgba(0,0,0,0.05) !important;
         }
 
         /* ── Header Bar ── */
@@ -170,8 +157,6 @@
 
         /* ── Icon Buttons ── */
         .header_icon {
-            text-decoration: none;
-            color: inherit;
             flex-shrink: 0;
             width: auto;
             height: 54px;
@@ -182,12 +167,11 @@
             cursor: pointer;
         }
         .header_icon-btn {
+            width: 34px;
+            height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            height: 100%;
-            padding: 0 10px;
             border-radius: 10px;
             transition: background 0.2s ease;
         }
@@ -202,55 +186,98 @@
             filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.0);
         }
 
-        /* ── 프로필 아이콘 툴팁 (로그인 시 로그아웃 노출) ── */
-        .profile-tooltip-wrap {
-            position: relative;
+        /* ── Icon Panel ── */
+        .header_icon.icon-open .header_icon-btn {
+            background: rgba(0, 0, 0, 0.06);
         }
-        .profile-tooltip {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            background: rgba(255,255,255,0.97);
+        .header_icon.icon-open img {
+            transform: scale(1.1);
+            filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.0);
+        }
+
+        /* ── Icon Panel — 오른쪽 1/3 슬라이드 ── */
+        #icon-panel {
+            position: fixed;
+            top: 76px;
+            right: 4vw;
+            width: 200px;
+            background: rgba(255,255,255,0.98);
             border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px -4px rgba(0,0,0,0.12), 0 2px 8px -2px rgba(0,0,0,0.06);
-            padding: 6px;
-            min-width: 130px;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px -4px rgba(0,0,0,0.14);
+            overflow: hidden;
+            max-height: 0;
             opacity: 0;
-            visibility: hidden;
-            transform: translateY(-6px);
-            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+            transition: max-height 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease;
             z-index: 10000;
-            white-space: nowrap;
         }
-        .profile-tooltip-wrap:hover .profile-tooltip {
+        #header.icon-open #icon-panel {
+            max-height: 300px;
             opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
         }
-        .profile-tooltip a,
-        .profile-tooltip span {
-            display: block;
-            padding: 8px 12px;
+
+        #icon-panel-inner {
+            padding: 12px 10px;
+        }
+
+        .icon-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .icon-panel-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: -0.02em;
+        }
+
+        .icon-panel-close {
+            font-size: 11px;
+            font-weight: 600;
+            color: #aaa;
+            cursor: pointer;
+            padding: 3px 7px;
             border-radius: 8px;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+        .icon-panel-close:hover { color: #333; background: rgba(0,0,0,0.05); }
+
+        .icon-panel-content { display: none; }
+        .icon-panel-content.active { display: flex; flex-direction: column; gap: 2px; }
+
+        .icon-panel-welcome {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            padding: 2px 0 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 4px;
+        }
+        .icon-panel-welcome strong { color: #111; font-weight: 700; }
+
+        .icon-panel-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: rgba(0,0,0,0.72);
             font-size: 13px;
             font-weight: 500;
-            color: rgba(0,0,0,0.72);
-            text-decoration: none;
-            letter-spacing: -0.01em;
             cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease;
+            transition: background 0.18s ease, color 0.18s ease;
+            white-space: nowrap;
         }
-        .profile-tooltip a:hover,
-        .profile-tooltip span:hover {
+        .icon-panel-item:hover {
             background: rgba(255,184,52,0.1);
             color: #C8860A;
             font-weight: 600;
-        }
-        .profile-tooltip-divider {
-            height: 1px;
-            background: rgba(0,0,0,0.06);
-            margin: 4px 6px;
         }
 
         /* ── Search Panel ── */
@@ -407,19 +434,6 @@
             transform: translateY(-1px);
         }
 
-        /* ── Mask ── */
-        #header-mask {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.12);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.35s ease, visibility 0.35s;
-            z-index: 9998;
-        }
-        #header-mask.active { opacity: 1; visibility: visible; }
 
         /* Scrolled */
         #header.scrolled {
@@ -430,8 +444,6 @@
                     0 3px 10px -3px rgba(0,0,0,0.04) !important;
         }
     </style>
-
-    <div id="header-mask"></div>
     <div id="header">
         <div id="header-bar">
             <a th:href="@{/}" style="text-decoration:none; display:flex; align-items:center;">
@@ -454,34 +466,40 @@
                 </div>
             </div>
 
-            <!-- 프로필 아이콘: 로그인 시 마이페이지 이동 + hover 툴팁(로그아웃) -->
-            <a th:if="${session.loginMember != null}" th:href="@{/MyPage}" class="header_icon profile-tooltip-wrap" id="icon-profile" aria-label="마이페이지">
-                <div class="header_icon-btn">
-                    <img th:src="@{/img/Main/icon_profile_login.png}" alt="프로필">
-                </div>
-                <div class="profile-tooltip">
-                    <span>마이페이지</span>
-                    <div class="profile-tooltip-divider"></div>
-                    <span th:onclick="|location.href='@{/logout}'|">로그아웃</span>
-                </div>
-            </a>
-
-            <!-- 프로필 아이콘: 비로그인 시 로그인 페이지 이동 -->
-            <a th:unless="${session.loginMember != null}" th:href="@{/login}" class="header_icon" id="icon-profile" aria-label="로그인">
+            <div class="header_icon" id="icon-profile" data-panel="profile">
                 <div class="header_icon-btn">
                     <img th:src="@{/img/Main/icon_profile.png}" alt="프로필">
                 </div>
-            </a>
+            </div>
 
-            <!-- 장바구니 아이콘: 바로 이동 -->
-            <a th:href="@{/Cart}" class="header_icon" id="icon-cart" style="padding-right: 14px;" aria-label="장바구니">
+            <a th:href="@{/Cart}" style="padding-right: 14px; text-decoration:none;" class="header_icon">
                 <div class="header_icon-btn">
                     <img th:src="@{/img/Main/icon_cart (1).png}" alt="장바구니">
                 </div>
             </a>
         </div>
 
+        <div id="icon-panel">
+            <div id="icon-panel-inner">
+                <div class="icon-panel-header">
+                    <span class="icon-panel-title" id="icon-panel-title"></span>
+                    <span class="icon-panel-close" id="icon-panel-close">X</span>
+                </div>
 
+                <div class="icon-panel-content" id="panel-profile-guest">
+                    <a th:href="@{/login}" class="icon-panel-item">🔑 로그인</a>
+                    <a th:href="@{/join}" class="icon-panel-item">✨ 회원가입</a>
+                </div>
+
+                <div class="icon-panel-content" id="panel-profile-member">
+                    <div class="icon-panel-welcome" th:if="${session.loginMember != null}">
+                        안녕하세요, <strong th:text="${session.loginMember.name}">사용자</strong>님 👋
+                    </div>
+                    <a th:href="@{/MyPage}" class="icon-panel-item">🎨 마이페이지</a>
+                    <a th:href="@{/logout}" class="icon-panel-item">👋 로그아웃</a>
+                </div>
+            </div>
+        </div>
 
         <div id="search-panel">
             <div id="search-panel-inner">
@@ -517,7 +535,6 @@
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
             const header = document.getElementById('header');
-            const mask = document.getElementById('header-mask');
 
             // ── 스크롤 이벤트 ──
             window.addEventListener('scroll', () => {
@@ -544,13 +561,12 @@
 
             // 검색창 열기/닫기
             function openSearch() {
+                closeIconPanel();
                 if (header) header.classList.add('search-open');
-                if (mask) mask.classList.add('active');
                 setTimeout(() => { if (spInput) spInput.focus(); }, 420);
             }
             function closeSearch() {
                 if (header) header.classList.remove('search-open');
-                if (mask) mask.classList.remove('active');
                 if (spInput) spInput.value = '';
                 if (initialContent) initialContent.style.display = 'block';
                 if (resultsContent) resultsContent.style.display = 'none';
@@ -558,7 +574,7 @@
 
             if (triggerBox) triggerBox.onclick = openSearch;
             if (cancelBtn) cancelBtn.onclick = closeSearch;
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSearch(); closeIconPanel(); } });
 
             // Popular Keywords 태그 클릭 시 검색 실행
             document.querySelectorAll('.sp-tag').forEach(tag => {
@@ -571,7 +587,62 @@
                 });
             });
 
-            if (mask) mask.onclick = () => closeSearch();
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#icon-panel') && !e.target.closest('.header_icon')) {
+                    closeIconPanel();
+                }
+                if (!e.target.closest('#search-panel') && !e.target.closest('#header-search-box')) {
+                    closeSearch();
+                }
+            });
+
+            // ── 아이콘 패널 (오른쪽 1/3) ──
+            const iconPanelTitle = document.getElementById('icon-panel-title');
+            const iconPanelClose = document.getElementById('icon-panel-close');
+            let currentPanel = null;
+
+            const panelConfig = {
+                profile: { title: '계정' }
+            };
+
+            window.openIconPanel = function(panelKey) {
+                closeSearch();
+                if (currentPanel === panelKey) { closeIconPanel(); return; }
+
+                document.querySelectorAll('.icon-panel-content').forEach(el => el.classList.remove('active'));
+
+                let contentId;
+                if (panelKey === 'profile') {
+                    var isLogin = /*[[${session.loginMember != null}]]*/ false;
+                    contentId = isLogin ? 'panel-profile-member' : 'panel-profile-guest';
+                } else {
+                    contentId = 'panel-' + panelKey;
+                }
+
+                const content = document.getElementById(contentId);
+                if (content) content.classList.add('active');
+
+                if (iconPanelTitle) iconPanelTitle.textContent = panelConfig[panelKey]?.title || '';
+                if (header) header.classList.add('icon-open');
+
+                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
+                const currentIcon = document.getElementById('icon-' + panelKey);
+                if (currentIcon) currentIcon.classList.add('icon-open');
+
+                currentPanel = panelKey;
+            };
+
+            window.closeIconPanel = function() {
+                if (header) header.classList.remove('icon-open');
+                document.querySelectorAll('.header_icon').forEach(el => el.classList.remove('icon-open'));
+                currentPanel = null;
+            };
+
+            document.querySelectorAll('.header_icon[data-panel]').forEach(iconEl => {
+                iconEl.addEventListener('click', () => openIconPanel(iconEl.dataset.panel));
+            });
+
+            if (iconPanelClose) iconPanelClose.onclick = closeIconPanel;
 
             // ── 라이브 검색 로직 ──
             if (spInput) {

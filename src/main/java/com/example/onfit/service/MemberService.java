@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -60,5 +62,19 @@ public class MemberService {
     public boolean isAdmin(String loginId) {
         java.util.List<String> adminIds = java.util.Arrays.asList("kdoryul", "ad1", "ad2"); // 여기에 진짜 ID 3개 넣어
         return adminIds.contains(loginId);
+    }
+    @Transactional
+    public void updateStyleDnaByResult(Long memberId, Map<String, Integer> styleScores) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        // 가장 높은 점수를 가진 스타일 키 찾기
+        String topStyle = styleScores.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("CASUAL"); // 기본값
+
+        member.setStyleDna(topStyle);
+        // memberRepository.save(member); // @Transactional이 있으므로 자동 업데이트
     }
 }

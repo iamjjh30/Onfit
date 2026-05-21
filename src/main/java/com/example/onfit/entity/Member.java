@@ -56,4 +56,11 @@ public class Member {
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // Member.java에 추가
+    private Integer casualScore = 0;
+    private Integer minimalScore = 0;
+    private Integer streetScore = 0;
+    private Integer formalScore = 0;
+    private Integer vintageScore = 0;
 }

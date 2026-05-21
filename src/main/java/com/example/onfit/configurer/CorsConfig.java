@@ -1,4 +1,4 @@
-package com.example.onfit.config;
+package com.example.onfit.configurer;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -10,13 +10,13 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                // 프론트 파일을 브라우저에서 직접 열 경우 (file://)
-                .allowedOriginPatterns("*")
-                // 로컬 개발 서버가 있다면 명시 추가 (예: Live Server 포트)
-                // .allowedOrigins("http://localhost:5500", "http://127.0.0.1:5500")
+                .allowedOriginPatterns(
+                        "http://localhost:8080",
+                        "https://*.ngrok-free.app",
+                        "https://*.ngrok-free.dev"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false)
-                .maxAge(3600);
+                .allowCredentials(true);
     }
 }

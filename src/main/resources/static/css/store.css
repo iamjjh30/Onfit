@@ -95,7 +95,7 @@ h1 {
     margin-right: 25px;
     text-decoration: none;
     color: #aaa;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .category-tabs,
@@ -111,7 +111,6 @@ h1 {
     margin-right: 24px;
     text-decoration: none;
     color: #aaa;
-    font-size: 14px;
     font-weight: 500;
     padding-bottom: 4px;
     border-bottom: 2px solid transparent;
